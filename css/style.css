@@ -1,25 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&display=swap');
 
 :root {
-  --primary-bg-color: #1a1a1a;
-  --secondary-bg-color: #121212;
-  --tertiary-bg-color: #0d0d0d;
-  --primary-color: #ffffff;
-  --secondary-color: #b3b3b3;
-  --highlight-color: #00ffcc;
-  --button-bg-start: #3a3a3a;
-  --button-bg-end: #2e2e2e;
-  --button-hover-bg-start: #4d4d4d;
-  --button-hover-bg-end: #3b3b3b;
-  --input-bg-color: rgba(255, 255, 255, 0.1);
-  --input-border-color: #00ffcc;
-  --input-placeholder-color: #5f5f5f;
-  --text-shadow: 0 2px 8px rgba(0, 255, 255, 0.7);
+  --primary-bg-color: #0b0c10;
+  --secondary-bg-color: #1f2833;
+  --tertiary-bg-color: #0b0c10;
+  --primary-color: #c5c6c7;
+  --secondary-color: #66fcf1;
+  --highlight-color: #45a29e;
+  --button-bg-start: #1f2833;
+  --button-bg-end: #45a29e;
+  --button-hover-bg-start: #45a29e;
+  --button-hover-bg-end: #66fcf1;
+  --input-bg-color: rgba(69, 162, 158, 0.1);
+  --input-border-color: #45a29e;
+  --input-placeholder-color: #c5c6c7;
+  --text-shadow: 0 2px 8px rgba(69, 162, 158, 0.7);
   --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
   --sphere-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
-  --sphere-inset-shadow: inset 0 10px 20px rgba(0, 255, 255, 0.1);
+  --sphere-inset-shadow: inset 0 10px 20px rgba(69, 162, 158, 0.1);
   --font-size-base: 16px;
-  --accent-color: #00ffcc;
+  --accent-color: #45a29e;
 }
 
 html, body {
@@ -30,7 +30,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%);
+  background: radial-gradient(circle, var(--primary-bg-color) 0%, var(--secondary-bg-color) 100%);
   font-family: 'Montserrat', sans-serif;
   color: var(--primary-color);
   text-align: center;
@@ -52,7 +52,7 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%);
+  background: radial-gradient(circle, var(--primary-bg-color) 0%, var(--secondary-bg-color) 100%);
   z-index: -1;
   filter: blur(30px);
 }
@@ -76,7 +76,6 @@ h1 {
   margin-bottom: 30px;
   letter-spacing: 2px;
   animation: fadeInSlideDown 1s ease-out;
-  font-family: 'Montserrat', sans-serif;
 }
 
 .motto {
@@ -85,7 +84,6 @@ h1 {
   color: var(--secondary-color);
   margin-bottom: 30px;
   animation: fadeInSlideUp 1s ease-out;
-  font-family: 'Montserrat', sans-serif;
 }
 
 #login-form {
@@ -117,7 +115,6 @@ h1 {
   font-size: 1rem;
   color: var(--primary-color);
   box-sizing: border-box;
-  font-family: 'Montserrat', sans-serif;
 }
 
 .email-container input {
@@ -125,6 +122,7 @@ h1 {
   margin: 0;
   border: none;
   background: transparent;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .email-container span {
@@ -183,7 +181,7 @@ h1 {
   border-radius: 50%;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, rgba(0, 255, 255, 0.1), transparent);
+  background: radial-gradient(circle, rgba(69, 162, 158, 0.1), transparent);
   animation: shine 8s infinite alternate ease-in-out;
 }
 
@@ -282,7 +280,7 @@ input[type="search"]::placeholder {
 
 input[type="search"]:focus {
   border-color: var(--highlight-color);
-  background-color: rgba(0, 255, 255, 0.2);
+  background-color: rgba(69, 162, 158, 0.2);
   outline: none;
 }
 

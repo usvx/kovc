@@ -1,25 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&display=swap');
 
 :root {
-  --primary-bg-color: #0b0c10;
-  --secondary-bg-color: #1f2833;
-  --tertiary-bg-color: #0b0c10;
-  --primary-color: #c5c6c7;
-  --secondary-color: #66fcf1;
-  --highlight-color: #45a29e;
-  --button-bg-start: #1f2833;
-  --button-bg-end: #45a29e;
-  --button-hover-bg-start: #45a29e;
-  --button-hover-bg-end: #66fcf1;
-  --input-bg-color: rgba(69, 162, 158, 0.1);
-  --input-border-color: #45a29e;
-  --input-placeholder-color: #c5c6c7;
-  --text-shadow: 0 2px 8px rgba(69, 162, 158, 0.7);
-  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  --primary-bg-color: #0a0a0a;
+  --secondary-bg-color: #0f0f0f;
+  --tertiary-bg-color: #1a1a1a;
+  --primary-color: #e0e0e0;
+  --secondary-color: #b3b3b3;
+  --highlight-color: #ffffff;
+  --button-bg-start: #4444ff;
+  --button-bg-end: #2222cc;
+  --button-hover-bg-start: #6666ff;
+  --button-hover-bg-end: #3333cc;
+  --input-bg-color: rgba(255, 255, 255, 0.1);
+  --input-border-color: #555;
+  --input-placeholder-color: #888;
+  --text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   --sphere-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
-  --sphere-inset-shadow: inset 0 10px 20px rgba(69, 162, 158, 0.1);
+  --sphere-inset-shadow: inset 0 10px 20px rgba(255, 255, 255, 0.1);
   --font-size-base: 16px;
-  --accent-color: #45a29e;
+  --accent-color: #FF5733;
 }
 
 html, body {
@@ -30,7 +30,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle, var(--primary-bg-color) 0%, var(--secondary-bg-color) 100%);
+  background: linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%);
   font-family: 'Montserrat', sans-serif;
   color: var(--primary-color);
   text-align: center;
@@ -40,9 +40,10 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   position: relative;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: auto;
   font-size: var(--font-size-base);
   transition: background 0.5s ease;
+  -webkit-overflow-scrolling: touch;
 }
 
 body::before {
@@ -52,7 +53,7 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle, var(--primary-bg-color) 0%, var(--secondary-bg-color) 100%);
+  background: linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%);
   z-index: -1;
   filter: blur(30px);
 }
@@ -106,7 +107,7 @@ h1 {
   box-sizing: border-box;
   overflow: hidden;
   margin-bottom: 20px;
-  background: var(--input-bg-color);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .email-container input,
@@ -129,7 +130,7 @@ h1 {
   width: 30%;
   margin: 0;
   border: none;
-  background: #333;
+  background: #444;
   text-align: center;
 }
 
@@ -177,11 +178,11 @@ h1 {
 
 .sphere::before, .sphere::after {
   content: '';
-  position:absolute;
+  position: absolute;
   border-radius: 50%;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle, rgba(69, 162, 158, 0.1), transparent);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
   animation: shine 8s infinite alternate ease-in-out;
 }
 
@@ -279,8 +280,8 @@ input[type="search"]::placeholder {
 }
 
 input[type="search"]:focus {
-  border-color: var(--highlight-color);
-  background-color: rgba(69, 162, 158, 0.2);
+  border-color: var(--button-bg-start);
+  background-color: rgba(255, 255, 255, 0.2);
   outline: none;
 }
 
@@ -354,7 +355,7 @@ input[type="search"]::-webkit-search-results-decoration {
     width: 18vw;
     height: 18vw;
     max-width: 130px;
-    max_height: 130px;
+    max-height: 130px;
   }
   .email-container input, .email-container span {
     font-size: 0.9rem;

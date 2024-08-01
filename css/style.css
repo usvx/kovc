@@ -1,26 +1,18 @@
-@font-face {
-  font-family: 'Montserrat';
-  src: url('../fonts/Montserrat-Thin.woff2') format('woff2'),
-       url('../fonts/Montserrat-Thin.woff') format('woff'),
-       url('../fonts/Montserrat-Thin.ttf') format('truetype');
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&display=swap');
 
 :root {
-  --primary-bg-color: #000;
-  --secondary-bg-color: #080808;
-  --tertiary-bg-color: #121212;
-  --primary-color: #fff;
+  --primary-bg-color: #1a1a1a;
+  --secondary-bg-color: #121212;
+  --tertiary-bg-color: #0d0d0d;
+  --primary-color: #ffffff;
   --secondary-color: #b3b3b3;
-  --highlight-color: #0ff;
-  --button-bg-start: #9b59b6;
-  --button-bg-end: #8e44ad;
-  --button-hover-bg-start: #af7ac5;
-  --button-hover-bg-end: #7d3c98;
-  --input-bg-color: rgba(0, 255, 255, 0.1);
-  --input-border-color: #0ff;
+  --highlight-color: #00ffcc;
+  --button-bg-start: #3a3a3a;
+  --button-bg-end: #2e2e2e;
+  --button-hover-bg-start: #4d4d4d;
+  --button-hover-bg-end: #3b3b3b;
+  --input-bg-color: rgba(255, 255, 255, 0.1);
+  --input-border-color: #00ffcc;
   --input-placeholder-color: #5f5f5f;
   --text-shadow: 0 2px 8px rgba(0, 255, 255, 0.7);
   --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
@@ -48,10 +40,9 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   position: relative;
   box-sizing: border-box;
-  overflow: auto;
+  overflow: hidden;
   font-size: var(--font-size-base);
   transition: background 0.5s ease;
-  -webkit-overflow-scrolling: touch;
 }
 
 body::before {
@@ -115,7 +106,7 @@ h1 {
   box-sizing: border-box;
   overflow: hidden;
   margin-bottom: 20px;
-  background: rgba(0, 255, 255, 0.1);
+  background: var(--input-bg-color);
 }
 
 .email-container input,

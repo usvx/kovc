@@ -76,6 +76,7 @@ h1 {
   margin-bottom: 30px;
   letter-spacing: 2px;
   animation: fadeInSlideDown 1s ease-out;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .motto {
@@ -84,6 +85,7 @@ h1 {
   color: var(--secondary-color);
   margin-bottom: 30px;
   animation: fadeInSlideUp 1s ease-out;
+  font-family: 'Montserrat', sans-serif;
 }
 
 #login-form {
@@ -115,6 +117,7 @@ h1 {
   font-size: 1rem;
   color: var(--primary-color);
   box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .email-container input {
@@ -122,7 +125,6 @@ h1 {
   margin: 0;
   border: none;
   background: transparent;
-  font-family: 'Montserrat', sans-serif;
 }
 
 .email-container span {

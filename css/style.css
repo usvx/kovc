@@ -177,7 +177,7 @@ h1 {
 
 .sphere::before, .sphere::after {
   content: '';
-  position: absolute;
+  position:absolute;
   border-radius: 50%;
   width: 100%;
   height: 100%;
@@ -354,7 +354,7 @@ input[type="search"]::-webkit-search-results-decoration {
     width: 18vw;
     height: 18vw;
     max-width: 130px;
-    max-height: 130px;
+    max_height: 130px;
   }
   .email-container input, .email-container span {
     font-size: 0.9rem;

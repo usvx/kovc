@@ -15,8 +15,8 @@
   --primary-color: #e0e0e0;
   --secondary-color: #b3b3b3;
   --highlight-color: #ffffff;
-  --sphere-color-start: #4444ff;
-  --sphere-color-end: #2222cc;
+  --button-bg-start: #4444ff;
+  --button-bg-end: #2222cc;
   --button-hover-bg-start: #6666ff;
   --button-hover-bg-end: #3333cc;
   --input-bg-color: rgba(255, 255, 255, 0.1);
@@ -50,6 +50,8 @@ html, body {
   box-sizing: border-box;
   overflow: auto;
   font-size: var(--font-size-base);
+  transition: background 0.5s ease;
+  -webkit-overflow-scrolling: touch;
 }
 
 body::before {
@@ -73,6 +75,7 @@ main {
   max-width: 1200px;
   min-height: 100vh;
   padding: 40px 20px;
+  box-sizing: border-box;
 }
 
 h1 {
@@ -99,6 +102,8 @@ h1 {
   width: 50%;
   max-width: 400px;
   margin-top: 40px;
+  box-sizing: border-box;
+  animation: fadeIn 1.5s ease-out;
 }
 
 .email-container {
@@ -107,6 +112,7 @@ h1 {
   width: 100%;
   border-radius: 8px;
   box-shadow: var(--box-shadow);
+  box-sizing: border-box;
   overflow: hidden;
   margin-bottom: 20px;
   background: rgba(0, 0, 0, 0.5);
@@ -117,6 +123,7 @@ h1 {
   padding: 12px;
   font-size: 1rem;
   color: var(--primary-color);
+  box-sizing: border-box;
 }
 
 .email-container input {
@@ -124,10 +131,13 @@ h1 {
   margin: 0;
   border: none;
   background: transparent;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .email-container span {
   width: 30%;
+  margin: 0;
+  border: none;
   background: #444;
   text-align: center;
 }
@@ -135,13 +145,17 @@ h1 {
 #login-form button {
   width: 100%;
   padding: 12px;
-  margin-top: 20px;
+  margin: 20px 0 0 0;
+  border: none;
   border-radius: 8px;
   font-size: 1rem;
-  background: linear-gradient(145deg, var(--sphere-color-start), var(--sphere-color-end));
+  background: linear-gradient(145deg, var(--button-bg-start), var(--button-bg-end));
   color: #fff;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+  box-shadow: var(--box-shadow);
+  box-sizing: border-box;
 }
 
 #login-form button:hover {
@@ -163,33 +177,33 @@ h1 {
   min-width: 150px;
   min-height: 150px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, var(--sphere-color-start), var(--sphere-color-end) 70%);
+  background: radial-gradient(circle at 50% 50%, var(--button-bg-start), var(--button-bg-end) 70%);
   box-shadow: var(--sphere-shadow), var(--sphere-inset-shadow);
-  animation: rotate 15s infinite linear, pulse 6s infinite ease-in-out;
+  animation: rotate 10s infinite linear, pulse 4s infinite ease-in-out;
   transform-style: preserve-3d;
   position: relative;
-  overflow: hidden;
 }
 
 .sphere::before, .sphere::after {
   content: '';
-  position:absolute;
+  position: absolute;
   border-radius: 50%;
   width: 100%;
   height: 100%;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
-  animation: shine 12s infinite alternate ease-in-out;
+  animation: shine 8s infinite alternate ease-in-out;
 }
 
 .sphere::before {
   top: 0;
   left: 0;
+  animation-delay: 0s;
 }
 
 .sphere::after {
   top: 0;
   left: 0;
-  animation-delay: 6s;
+  animation-delay: 4s;
 }
 
 @keyframes shine {
@@ -198,8 +212,8 @@ h1 {
     opacity: 0.3;
   }
   100% {
-    transform: scale(1.2);
-    opacity: 0.05;
+    transform: scale(1.1);
+    opacity: 0.1;
   }
 }
 
@@ -217,7 +231,7 @@ h1 {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.08);
+    transform: scale(1.05);
   }
   100% {
     transform: scale(1);
@@ -259,11 +273,13 @@ input[type="search"] {
   appearance: none;
   background-color: var(--input-bg-color);
   color: var(--primary-color);
-  border: 1px solid var(--input-border_color);
+  border: 1px solid var(--input-border-color);
   border-radius: 8px;
   padding: 12px;
   font-size: 1rem;
+  box-sizing: border-box;
   width: 100%;
+  font-family: 'Montserrat', sans-serif;
   transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
@@ -272,7 +288,7 @@ input[type="search"]::placeholder {
 }
 
 input[type="search"]:focus {
-  border-color: var(--sphere-color-start);
+  border-color: var(--button-bg-start);
   background-color: rgba(255, 255, 255, 0.2);
   outline: none;
 }
@@ -359,11 +375,14 @@ input[type="search"]::-webkit-search-results-decoration {
     overflow: auto;
     height: 100vh;
     width: 100vw;
+    margin: 0;
+    padding: 0;
   }
   main {
     width: 100vw;
     padding: 20px 5%;
     min-height: 100vh;
+    justify-content: center;
   }
   #login-form {
     width: 100%;
@@ -388,8 +407,8 @@ input[type="search"]::-webkit-search-results-decoration {
     width: -webkit-fill-available;
   }
   .sphere {
-    animation: rotate 15s infinite linear, pulse 6s infinite ease-in-out;
-    -webkit-animation: rotate 15s infinite linear, pulse 6s infinite ease-in-out;
+    animation: rotate 10s infinite linear, pulse 4s infinite ease-in-out;
+    -webkit-animation: rotate 10s infinite linear, pulse 4s infinite ease-in-out;
   }
   #login-form button {
     transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;

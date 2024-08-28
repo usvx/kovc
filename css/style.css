@@ -27,7 +27,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%);
+  background: radial-gradient(circle at 50% 50%, var(--primary-bg-color), var(--secondary-bg-color) 70%, var(--tertiary-bg-color) 100%);
   font-family: 'Montserrat', sans-serif;
   color: var(--primary-color);
   text-align: center;
@@ -49,9 +49,9 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%);
+  background: radial-gradient(circle at 50% 50%, var(--primary-bg-color), var(--secondary-bg-color) 70%, var(--tertiary-bg-color) 100%);
   z-index: -1;
-  filter: blur(20px);
+  filter: blur(30px);
 }
 
 main {
@@ -64,6 +64,7 @@ main {
   min-height: 100vh;
   padding: 40px 20px;
   box-sizing: border-box;
+  backdrop-filter: blur(10px);
 }
 
 h1 {
@@ -95,6 +96,7 @@ h1 {
   border-radius: 12px;
   padding: 20px;
   box-shadow: var(--box-shadow);
+  backdrop-filter: blur(20px);
 }
 
 .email-container {
@@ -154,6 +156,7 @@ h1 {
 .sphere-container {
   perspective: 1000px;
   margin-bottom: 30px;
+  animation: rotate 10s infinite linear;
 }
 
 .sphere {

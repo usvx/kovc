@@ -417,3 +417,8 @@ input[type="search"]::-webkit-search-results-decoration {
     display: none;
   }
 }
+
+body.has-mouse::before {
+  transition: none;
+  background: none;
+}

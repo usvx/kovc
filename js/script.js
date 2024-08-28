@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('touchstart', () => {
         if (hasMouse) {
             hasMouse = false;
-            body.style.background = `linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%)`;
+            body.style.background = `radial-gradient(circle at 50% 50%, var(--primary-bg-color), var(--secondary-bg-color) 70%, var(--tertiary-bg-color) 100%)`;
         }
     });
 

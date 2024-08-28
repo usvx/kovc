@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateBackground(xPercent, yPercent) {
         cancelAnimationFrame(animationId);
         animationId = requestAnimationFrame(() => {
-            body.style.background = `radial-gradient(circle at ${xPercent}% ${yPercent}%, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 1) 100%)`;
+            body.style.background = `radial-gradient(circle at ${xPercent}% ${yPercent}%, var(--primary-bg-color), var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%)`;
             isAnimating = false;
         });
     }
@@ -50,19 +50,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (hasMouse) {
             hasMouse = false;
             body.classList.remove('has-mouse');
-            body.style.background = `linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 1) 100%)`;
+            body.style.background = `linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%)`;
         }
     });
 
     button.addEventListener('mouseenter', () => {
         sphere.style.transition = 'background 0.4s ease, transform 0.4s ease';
-        sphere.style.background = 'radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.8), rgba(255, 140, 0, 0.8) 70%)';
+        sphere.style.background = 'radial-gradient(circle at 50% 50%, var(--button-hover-bg-start), var(--button-hover-bg-end) 70%)';
         sphere.style.transform = 'scale(1.1)';
     });
 
     button.addEventListener('mouseleave', () => {
         sphere.style.transition = 'background 0.4s ease, transform 0.4s ease';
-        sphere.style.background = 'radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5) 70%)';
+        sphere.style.background = 'radial-gradient(circle at 50% 50%, var(--button-bg-start), var(--button-bg-end) 70%)';
         sphere.style.transform = 'scale(1)';
     });
 

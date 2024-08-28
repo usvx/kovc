@@ -4,8 +4,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
 
     let hasMouse = false;
+    let isAnimating = false;
+    let lastXPercent = 0;
+    let lastYPercent = 0;
 
-    window.addEventListener('mousemove', (e) => {
+    function throttle(callback, limit) {
+        let waiting = false;
+        return function () {
+            if (!waiting) {
+                callback.apply(this, arguments);
+                waiting = true;
+                setTimeout(() => {
+                    waiting = false;
+                }, limit);
+            }
+        };
+    }
+
+    function updateBackground(xPercent, yPercent) {
+        if (!isAnimating) {
+            isAnimating = true;
+            requestAnimationFrame(() => {
+                body.style.background = `radial-gradient(circle at ${xPercent}% ${yPercent}%, var(--primary-bg-color), var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%)`;
+                isAnimating = false;
+            });
+        }
+    }
+
+    window.addEventListener('mousemove', throttle((e) => {
         if (!hasMouse) {
             hasMouse = true;
             body.classList.add('has-mouse');
@@ -13,9 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const xPercent = e.clientX / window.innerWidth * 100;
         const yPercent = e.clientY / window.innerHeight * 100;
-        
-        body.style.background = `radial-gradient(circle at ${xPercent}% ${yPercent}%, var(--primary-bg-color), var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%)`;
-    });
+
+        if (Math.abs(xPercent - lastXPercent) > 1 || Math.abs(yPercent - lastYPercent) > 1) {
+            lastXPercent = xPercent;
+            lastYPercent = yPercent;
+            updateBackground(xPercent, yPercent);
+        }
+    }, 100));
 
     window.addEventListener('touchstart', () => {
         if (hasMouse) {

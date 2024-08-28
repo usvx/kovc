@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&family=Playfair+Display:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&display=swap');
 
 :root {
   --primary-bg-color: #121212;
@@ -15,14 +15,8 @@
   --input-border-color: #555;
   --input-placeholder-color: #888;
   --text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
-  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-  --sphere-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
-  --sphere-inset-shadow: inset 0 15px 30px rgba(255, 255, 255, 0.2);
+  --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
   --font-size-base: 16px;
-  --accent-color: #FF5733;
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border-color: rgba(255, 255, 255, 0.3);
-  --glass-blur: 20px;
 }
 
 html, body {
@@ -46,7 +40,6 @@ html, body {
   overflow: hidden;
   font-size: var(--font-size-base);
   transition: background 0.5s ease;
-  -webkit-overflow-scrolling: touch;
 }
 
 body::before {
@@ -58,7 +51,7 @@ body::before {
   bottom: 0;
   background: linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%);
   z-index: -1;
-  filter: blur(50px);
+  filter: blur(20px);
 }
 
 main {
@@ -74,16 +67,11 @@ main {
 }
 
 h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 4rem;
+  font-size: 3rem;
   color: var(--highlight-color);
-  text-shadow: var(--text-shadow);
   margin-bottom: 30px;
   letter-spacing: 2px;
-  animation: fadeInSlideDown 1s ease-out;
-  background: linear-gradient(145deg, #ffcc00, #ff5733);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  animation: fadeInSlideDown 0.8s ease-out;
 }
 
 .motto {
@@ -91,7 +79,7 @@ h1 {
   font-style: italic;
   color: var(--secondary-color);
   margin-bottom: 30px;
-  animation: fadeInSlideUp 1s ease-out;
+  animation: fadeInSlideUp 0.8s ease-out;
 }
 
 #login-form {
@@ -102,13 +90,11 @@ h1 {
   max-width: 400px;
   margin-top: 40px;
   box-sizing: border-box;
-  animation: fadeIn 1.5s ease-out;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border-color);
+  animation: fadeIn 1s ease-out;
+  background: var(--secondary-bg-color);
+  border-radius: 12px;
+  padding: 20px;
   box-shadow: var(--box-shadow);
-  border-radius: 20px;
-  padding: 30px;
-  backdrop-filter: blur(var(--glass-blur));
 }
 
 .email-container {
@@ -116,11 +102,8 @@ h1 {
   align-items: center;
   width: 100%;
   border-radius: 8px;
-  box-shadow: var(--box-shadow);
-  box-sizing: border-box;
-  overflow: hidden;
   margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--primary-bg-color);
 }
 
 .email-container input,
@@ -143,7 +126,7 @@ h1 {
   width: 30%;
   margin: 0;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--secondary-bg-color);
   text-align: center;
 }
 
@@ -152,7 +135,7 @@ h1 {
   padding: 14px;
   margin: 20px 0 0 0;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 1rem;
   background: linear-gradient(145deg, var(--button-bg-start), var(--button-bg-end));
   color: #fff;
@@ -160,72 +143,34 @@ h1 {
   transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   font-family: 'Montserrat', sans-serif;
   box-shadow: var(--box-shadow);
-  box-sizing: border-box;
 }
 
 #login-form button:hover {
   background: linear-gradient(145deg, var(--button-hover-bg-start), var(--button-hover-bg-end));
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
 }
 
 .sphere-container {
   perspective: 1000px;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 .sphere {
-  width: 25vw;
-  height: 25vw;
-  max-width: 300px;
-  max-height: 300px;
-  min-width: 150px;
-  min-height: 150px;
+  width: 20vw;
+  height: 20vw;
+  max-width: 200px;
+  max-height: 200px;
   border-radius: 50%;
   background: radial-gradient(circle at 50% 50%, var(--button-bg-start), var(--button-bg-end) 70%);
-  box-shadow: var(--sphere-shadow), var(--sphere-inset-shadow);
-  animation: rotate 10s infinite linear, pulse 4s infinite ease-in-out;
-  transform-style: preserve-3d;
+  box-shadow: var(--box-shadow);
+  animation: rotate 10s infinite linear;
   position: relative;
-  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  transition: transform 0.5s ease;
 }
 
 .sphere:hover {
-  transform: scale(1.1) rotateY(30deg) rotateX(30deg);
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9);
-}
-
-.sphere::before, .sphere::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent);
-  animation: shine 8s infinite alternate ease-in-out;
-}
-
-.sphere::before {
-  top: 0;
-  left: 0;
-  animation-delay: 0s;
-}
-
-.sphere::after {
-  top: 0;
-  left: 0;
-  animation-delay: 4s;
-}
-
-@keyframes shine {
-  0% {
-    transform: scale(1);
-    opacity: 0.3;
-  }
-  100% {
-    transform: scale(1.1);
-    opacity: 0.1;
-  }
+  transform: scale(1.05);
 }
 
 @keyframes rotate {
@@ -237,22 +182,10 @@ h1 {
   }
 }
 
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
 @keyframes fadeInSlideDown {
   0% {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-20px);
   }
   100% {
     opacity: 1;
@@ -263,13 +196,12 @@ h1 {
 @keyframes fadeInSlideUp {
   0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   100% {
     opacity: 1;
     transform: translateY(0);
   }
-}
 
 @keyframes fadeIn {
   0% {
@@ -285,8 +217,8 @@ input[type="search"] {
   background-color: var(--input-bg-color);
   color: var(--primary-color);
   border: 1px solid var(--input-border-color);
-  border-radius: 12px;
-  padding: 14px;
+  border-radius: 8px;
+  padding: 12px;
   font-size: 1rem;
   box-sizing: border-box;
   width: 100%;
@@ -313,31 +245,19 @@ input[type="search"]::-webkit-search-results-decoration {
 
 @media (min-width: 1440px) {
   h1 {
-    font-size: 4.5rem;
+    font-size: 3.5rem;
   }
   .motto {
     font-size: 2rem;
-  }
-  .sphere {
-    width: 20vw;
-    height: 20vw;
-    max-width: 250px;
-    max-height: 250px;
   }
 }
 
 @media (max-width: 1024px) {
   h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
   }
   .motto {
     font-size: 1.5rem;
-  }
-  .sphere {
-    width: 22vw;
-    height: 22vw;
-    max-width: 200px;
-    max-height: 200px;
   }
   #login-form {
     width: 60%;
@@ -347,16 +267,10 @@ input[type="search"]::-webkit-search-results-decoration {
 
 @media (max-width: 768px) {
   h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
   }
   .motto {
     font-size: 1.2rem;
-  }
-  .sphere {
-    width: 20vw;
-    height: 20vw;
-    max-width: 160px;
-    max-height: 160px;
   }
   #login-form {
     width: 80%;
@@ -365,79 +279,12 @@ input[type="search"]::-webkit-search-results-decoration {
 
 @media (max-width: 480px) {
   h1 {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
   .motto {
     font-size: 1rem;
   }
-  .sphere {
-    width: 18vw;
-    height: 18vw;
-    max-width: 130px;
-    max-height: 130px;
-  }
   .email-container input, .email-container span {
     font-size: 0.9rem;
   }
-}
-
-@media (max-width: 430px) and (orientation: landscape) {
-  html, body {
-    overflow: auto;
-    height: 100vh;
-    width: 100vw;
-    margin: 0;
-    padding: 0;
-  }
-  main {
-    width: 100vw;
-    padding: 20px 5%;
-    min-height: 100vh;
-    justify-content: center;
-  }
-  #login-form {
-    width: 100%;
-  }
-}
-
-@supports (-webkit-touch-callout: none) {
-  html {
-    height: -webkit-fill-available;
-    width: -webkit-fill-available;
-  }
-  body {
-    height: 100vh;
-    height: -webkit-fill-available;
-    width: 100vw;
-    width: -webkit-fill-available;
-  }
-  main {
-    height: 100vh;
-    height: -webkit-fill-available;
-    width: 100vw;
-    width: -webkit-fill-available;
-  }
-  .sphere {
-    animation: rotate 10s infinite linear, pulse 4s infinite ease-in-out;
-    -webkit-animation: rotate 10s infinite linear, pulse 4s infinite ease-in-out;
-  }
-  #login-form button {
-    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-    -webkit-transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  input[type="search"] {
-    appearance: none;
-    -webkit-appearance: none;
-  }
-  input[type="search"]::-webkit-search-decoration,
-  input[type="search"]::-webkit-search-cancel-button,
-  input[type="search"]::-webkit-search-results-button,
-  input[type="search"]::-webkit-search-results-decoration {
-    display: none;
-  }
-}
-
-body.has-mouse::before {
-  transition: none;
-  background: none;
 }

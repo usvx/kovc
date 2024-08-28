@@ -9,24 +9,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastYPercent = 0;
     let animationId;
 
-    function throttle(callback, limit) {
-        let waiting = false;
+    function throttle(callback, delay) {
+        let lastCall = 0;
         return function () {
-            if (!waiting) {
-                callback.apply(this, arguments);
-                waiting = true;
-                setTimeout(() => {
-                    waiting = false;
-                }, limit);
+            const now = new Date().getTime();
+            if (now - lastCall < delay) {
+                return;
             }
+            lastCall = now;
+            return callback.apply(this, arguments);
         };
     }
 
     function updateBackground(xPercent, yPercent) {
         cancelAnimationFrame(animationId);
         animationId = requestAnimationFrame(() => {
-            body.style.background = `radial-gradient(circle at ${xPercent}% ${yPercent}%, var(--primary-bg-color), var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%)`;
-            isAnimating = false;
+            if (!isAnimating) {
+                isAnimating = true;
+                body.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
+                isAnimating = false;
+            }
         });
     }
 
@@ -36,21 +38,21 @@ document.addEventListener('DOMContentLoaded', () => {
             body.classList.add('has-mouse');
         }
 
-        const xPercent = e.clientX / window.innerWidth * 100;
-        const yPercent = e.clientY / window.innerHeight * 100;
+        const xPercent = (e.clientX / window.innerWidth) * 100;
+        const yPercent = (e.clientY / window.innerHeight) * 100;
 
         if (Math.abs(xPercent - lastXPercent) > 0.5 || Math.abs(yPercent - lastYPercent) > 0.5) {
             lastXPercent = xPercent;
             lastYPercent = yPercent;
             updateBackground(xPercent, yPercent);
         }
-    }, 60));
+    }, 100));
 
     window.addEventListener('touchstart', () => {
         if (hasMouse) {
             hasMouse = false;
             body.classList.remove('has-mouse');
-            body.style.background = `linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%)`;
+            body.style.backgroundPosition = `center`;
         }
     });
 

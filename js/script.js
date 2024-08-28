@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('mousemove', (e) => {
         if (!hasMouse) {
             hasMouse = true;
+            body.classList.add('has-mouse');
         }
 
         const xPercent = e.clientX / window.innerWidth * 100;
@@ -19,7 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('touchstart', () => {
         if (hasMouse) {
             hasMouse = false;
-            body.style.background = `radial-gradient(circle at 50% 50%, var(--primary-bg-color), var(--secondary-bg-color) 70%, var(--tertiary-bg-color) 100%)`;
+            body.classList.remove('has-mouse');
+            body.style.background = `linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%)`;
         }
     });
 

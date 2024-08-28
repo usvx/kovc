@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isAnimating = false;
     let lastXPercent = 0;
     let lastYPercent = 0;
+    let animationId;
 
     function throttle(callback, limit) {
         let waiting = false;
@@ -22,13 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateBackground(xPercent, yPercent) {
-        if (!isAnimating) {
-            isAnimating = true;
-            requestAnimationFrame(() => {
-                body.style.background = `radial-gradient(circle at ${xPercent}% ${yPercent}%, var(--primary-bg-color), var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%)`;
-                isAnimating = false;
-            });
-        }
+        cancelAnimationFrame(animationId);
+        animationId = requestAnimationFrame(() => {
+            body.style.background = `radial-gradient(circle at ${xPercent}% ${yPercent}%, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 1) 100%)`;
+            isAnimating = false;
+        });
     }
 
     window.addEventListener('mousemove', throttle((e) => {
@@ -40,27 +39,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const xPercent = e.clientX / window.innerWidth * 100;
         const yPercent = e.clientY / window.innerHeight * 100;
 
-        if (Math.abs(xPercent - lastXPercent) > 1 || Math.abs(yPercent - lastYPercent) > 1) {
+        if (Math.abs(xPercent - lastXPercent) > 0.5 || Math.abs(yPercent - lastYPercent) > 0.5) {
             lastXPercent = xPercent;
             lastYPercent = yPercent;
             updateBackground(xPercent, yPercent);
         }
-    }, 100));
+    }, 60));
 
     window.addEventListener('touchstart', () => {
         if (hasMouse) {
             hasMouse = false;
             body.classList.remove('has-mouse');
-            body.style.background = `linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%)`;
+            body.style.background = `linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 1) 100%)`;
         }
     });
 
     button.addEventListener('mouseenter', () => {
-        sphere.style.background = 'radial-gradient(circle at 50% 50%, var(--button-hover-bg-start), var(--button-hover-bg-end) 70%)';
+        sphere.style.transition = 'background 0.4s ease, transform 0.4s ease';
+        sphere.style.background = 'radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.8), rgba(255, 140, 0, 0.8) 70%)';
+        sphere.style.transform = 'scale(1.1)';
     });
 
     button.addEventListener('mouseleave', () => {
-        sphere.style.background = 'radial-gradient(circle at 50% 50%, var(--button-bg-start), var(--button-bg-end) 70%)';
+        sphere.style.transition = 'background 0.4s ease, transform 0.4s ease';
+        sphere.style.background = 'radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5) 70%)';
+        sphere.style.transform = 'scale(1)';
     });
 
     document.getElementById('login-form').addEventListener('submit', redirectToGoogleLogin);

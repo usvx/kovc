@@ -30,7 +30,9 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%);
+  background: radial-gradient(circle at 50% 50%, var(--primary-bg-color), var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%);
+  background-size: 200% 200%;
+  background-position: center;
   font-family: 'Montserrat', sans-serif;
   color: var(--primary-color);
   text-align: center;
@@ -42,7 +44,7 @@ html, body {
   box-sizing: border-box;
   overflow: auto;
   font-size: var(--font-size-base);
-  transition: background 0.5s ease;
+  transition: background-position 0.1s ease-out;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -53,7 +55,9 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, var(--primary-bg-color) 0%, var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%);
+  background: inherit;
+  background-size: inherit;
+  background-position: inherit;
   z-index: -1;
   filter: blur(30px);
 }
@@ -174,6 +178,7 @@ h1 {
   animation: rotate 10s infinite linear, pulse 4s infinite ease-in-out;
   transform-style: preserve-3d;
   position: relative;
+  will-change: transform, background;
 }
 
 .sphere::before, .sphere::after {
@@ -184,6 +189,7 @@ h1 {
   height: 100%;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
   animation: shine 8s infinite alternate ease-in-out;
+  will-change: transform, opacity;
 }
 
 .sphere::before {

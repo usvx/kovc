@@ -51,17 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     button.addEventListener('mouseenter', () => {
-        sphere.style.transition = 'background 0.4s ease, transform 0.4s ease';
-        sphere.style.background = 'radial-gradient(circle at 50% 50%, var(--button-hover-bg-start), var(--button-hover-bg-end) 70%)';
-        sphere.style.transform = 'scale(1.1)';
-        button.style.boxShadow = '0 8px 16px rgba(255, 87, 51, 0.7)';
+        sphere.style.transform = 'scale(1.05)';
     });
 
     button.addEventListener('mouseleave', () => {
-        sphere.style.transition = 'background 0.4s ease, transform 0.4s ease';
-        sphere.style.background = 'radial-gradient(circle at 50% 50%, var(--button-bg-start), var(--button-bg-end) 70%)';
         sphere.style.transform = 'scale(1)';
-        button.style.boxShadow = 'var(--box-shadow)';
     });
 
     document.getElementById('login-form').addEventListener('submit', (event) => {

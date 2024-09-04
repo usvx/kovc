@@ -4,16 +4,14 @@
   --primary-bg-color: #121212;
   --secondary-bg-color: #1c1c1c;
   --highlight-color: #e0e0e0;
-  --accent-color: #ff5733;
   --button-bg: #333;
-  --button-hover-bg: #444;
   --input-bg-color: rgba(255, 255, 255, 0.05);
   --input-border-color: #555;
   --input-placeholder-color: #aaaaaa;
   --box-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
   --sphere-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
-  --sphere-glow: rgba(255, 87, 51, 0.6);
   --sphere-inset-shadow: inset 0 5px 10px rgba(255, 255, 255, 0.08);
+  --sphere-glow: rgba(255, 87, 51, 0.6);
   --font-size-base: 16px;
 }
 
@@ -34,18 +32,6 @@ html, body {
   overflow: hidden;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: inherit;
-  z-index: -1;
-  filter: blur(40px);
-}
-
 main {
   display: flex;
   flex-direction: column;
@@ -58,8 +44,6 @@ main {
 
 h1 {
   font-size: 3rem;
-  font-family: 'Montserrat', sans-serif;
-  color: var(--highlight-color);
   margin-bottom: 20px;
   letter-spacing: 2px;
   opacity: 0.9;
@@ -68,8 +52,6 @@ h1 {
 .motto {
   font-size: 1.5rem;
   font-style: italic;
-  font-family: 'Montserrat', sans-serif;
-  color: var(--input-placeholder-color);
   margin-bottom: 30px;
 }
 
@@ -89,32 +71,6 @@ h1 {
   background: var(--input-bg-color);
   box-shadow: var(--box-shadow);
   margin-bottom: 20px;
-  overflow: hidden;
-}
-
-.email-container input,
-.email-container span {
-  padding: 12px;
-  font-size: 1rem;
-  font-family: 'Montserrat', sans-serif;
-  color: var(--highlight-color);
-  box-sizing: border-box;
-  border-radius: 0;
-}
-
-.email-container input {
-  width: 70%;
-  background: transparent;
-  border: none;
-  outline: none;
-  padding-left: 20px;
-}
-
-.email-container span {
-  width: 30%;
-  background: var(--button-bg);
-  text-align: center;
-  border-left: 1px solid var(--input-border-color);
 }
 
 #login-form button {
@@ -123,18 +79,12 @@ h1 {
   margin-top: 20px;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(145deg, #3c3c3c, #1f1f1f);
+  background: var(--button-bg);
   color: #fff;
   font-size: 1rem;
-  font-family: 'Montserrat', sans-serif;
-  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: var(--box-shadow);
-}
-
-#login-form button:hover {
-  background: linear-gradient(145deg, #444444, #2a2a2a);
-  box-shadow: 0 6px 15px rgba(255, 87, 51, 0.3);
 }
 
 .sphere-container {
@@ -148,10 +98,12 @@ h1 {
   max-width: 220px;
   max-height: 220px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, var(--accent-color), #ff8b60);
-  box-shadow: var(--sphere-shadow), var(--sphere-inset-shadow);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2), transparent);
+  box-shadow: 0 20px 40px rgba(255, 255, 255, 0.3), inset 0 5px 10px rgba(255, 255, 255, 0.15);
+  opacity: 0.8;
   animation: rotate 10s infinite linear, pulse 6s infinite ease-in-out;
   position: relative;
+  backdrop-filter: blur(10px);
 }
 
 .sphere::before {
@@ -159,7 +111,7 @@ h1 {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 30% 30%, var(--sphere-glow), transparent);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), transparent);
   border-radius: 50%;
   opacity: 0.7;
   animation: shine 2s infinite alternate ease-in-out;
@@ -189,60 +141,5 @@ h1 {
   }
   100% {
     opacity: 0.8;
-  }
-}
-
-input[type="search"] {
-  appearance: none;
-  background-color: var(--input-bg-color);
-  color: var(--highlight-color);
-  border: 1px solid var(--input-border-color);
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 1rem;
-  font-family: 'Montserrat', sans-serif;
-  box-sizing: border-box;
-  width: 100%;
-  transition: border-color 0.3s ease;
-}
-
-input[type="search"]::placeholder {
-  color: var(--input-placeholder-color);
-}
-
-input[type="search"]:focus {
-  border-color: var(--accent-color);
-  outline: none;
-}
-
-@media (max-width: 768px) {
-  h1 {
-    font-size: 2.5rem;
-  }
-  .motto {
-    font-size: 1.3rem;
-  }
-  .sphere {
-    width: 18vw;
-    height: 18vw;
-  }
-  #login-form {
-    width: 70%;
-  }
-}
-
-@media (max-width: 480px) {
-  h1 {
-    font-size: 1.8rem;
-  }
-  .motto {
-    font-size: 1rem;
-  }
-  .sphere {
-    width: 16vw;
-    height: 16vw;
-  }
-  #login-form {
-    width: 80%;
   }
 }

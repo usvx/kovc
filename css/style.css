@@ -1,20 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400&display=swap');
 
 :root {
-  --primary-bg-color: #0e0e0e;
-  --secondary-bg-color: #1a1a1a;
-  --highlight-color: #ffffff;
-  --button-bg: #333333;
-  --button-hover-bg: #444444;
-  --input-bg-color: rgba(255, 255, 255, 0.05);
-  --input-border-color: #555555;
-  --input-placeholder-color: #aaaaaa;
-  --font-color: #f1f1f1;
-  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  --sphere-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
-  --sphere-inset-shadow: inset 0 5px 10px rgba(255, 255, 255, 0.05);
-  --font-size-base: 16px;
+  --primary-bg-color: #121212;
+  --secondary-bg-color: #1c1c1c;
+  --highlight-color: #e0e0e0;
   --accent-color: #ff5733;
+  --button-bg: #333;
+  --button-hover-bg: #444;
+  --input-bg-color: rgba(255, 255, 255, 0.05);
+  --input-border-color: #555;
+  --input-placeholder-color: #aaaaaa;
+  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --sphere-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+  --font-size-base: 16px;
 }
 
 html, body {
@@ -26,16 +24,12 @@ html, body {
   align-items: center;
   justify-content: center;
   background: radial-gradient(circle at 50% 50%, var(--primary-bg-color), var(--secondary-bg-color));
-  background-size: 200% 200%;
   font-family: 'Montserrat', sans-serif;
-  color: var(--font-color);
+  color: var(--highlight-color);
   text-align: center;
   user-select: none;
-  touch-action: manipulation;
   box-sizing: border-box;
   overflow: hidden;
-  font-size: var(--font-size-base);
-  transition: background-position 0.1s ease-out;
 }
 
 body::before {
@@ -46,8 +40,6 @@ body::before {
   right: 0;
   bottom: 0;
   background: inherit;
-  background-size: inherit;
-  background-position: inherit;
   z-index: -1;
   filter: blur(40px);
 }
@@ -59,9 +51,7 @@ main {
   justify-content: center;
   width: 90%;
   max-width: 1200px;
-  min-height: 100vh;
   padding: 40px;
-  box-sizing: border-box;
 }
 
 h1 {
@@ -85,7 +75,6 @@ h1 {
   align-items: center;
   width: 50%;
   max-width: 400px;
-  margin-top: 20px;
 }
 
 .email-container {
@@ -101,7 +90,7 @@ h1 {
 .email-container span {
   padding: 12px;
   font-size: 1rem;
-  color: var(--font-color);
+  color: var(--highlight-color);
   box-sizing: border-box;
 }
 
@@ -123,7 +112,7 @@ h1 {
   margin-top: 20px;
   border: none;
   border-radius: 10px;
-  background: var(--button-bg);
+  background: linear-gradient(145deg, #3c3c3c, #1f1f1f);
   color: #fff;
   font-size: 1rem;
   transition: background 0.3s ease, transform 0.3s ease;
@@ -132,7 +121,7 @@ h1 {
 }
 
 #login-form button:hover {
-  background: var(--button-hover-bg);
+  background: linear-gradient(145deg, #444444, #2a2a2a);
 }
 
 .sphere-container {
@@ -141,29 +130,15 @@ h1 {
 }
 
 .sphere {
-  width: 25vw;
-  height: 25vw;
-  max-width: 250px;
-  max-height: 250px;
+  width: 22vw;
+  height: 22vw;
+  max-width: 220px;
+  max-height: 220px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, var(--button-bg), var(--button-hover-bg) 70%);
-  box-shadow: var(--sphere-shadow), var(--sphere-inset-shadow);
-  animation: rotate 12s infinite linear, pulse 6s infinite ease-in-out;
+  background: radial-gradient(circle at 50% 50%, var(--accent-color), #ff8b60);
+  box-shadow: var(--sphere-shadow);
+  animation: rotate 15s infinite linear, pulse 8s infinite ease-in-out;
   position: relative;
-}
-
-.sphere::before, .sphere::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent);
-}
-
-.sphere::before {
-  top: 0;
-  left: 0;
 }
 
 @keyframes rotate {
@@ -187,7 +162,7 @@ h1 {
 input[type="search"] {
   appearance: none;
   background-color: var(--input-bg-color);
-  color: var(--font-color);
+  color: var(--highlight-color);
   border: 1px solid var(--input-border-color);
   border-radius: 8px;
   padding: 12px;
@@ -202,7 +177,7 @@ input[type="search"]::placeholder {
 }
 
 input[type="search"]:focus {
-  border-color: var(--button-hover-bg);
+  border-color: var(--accent-color);
   outline: none;
 }
 
@@ -214,8 +189,8 @@ input[type="search"]:focus {
     font-size: 1.3rem;
   }
   .sphere {
-    width: 22vw;
-    height: 22vw;
+    width: 18vw;
+    height: 18vw;
   }
   #login-form {
     width: 70%;
@@ -230,8 +205,8 @@ input[type="search"]:focus {
     font-size: 1rem;
   }
   .sphere {
-    width: 20vw;
-    height: 20vw;
+    width: 16vw;
+    height: 16vw;
   }
   #login-form {
     width: 80%;

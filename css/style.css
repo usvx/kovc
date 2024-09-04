@@ -10,8 +10,10 @@
   --input-bg-color: rgba(255, 255, 255, 0.05);
   --input-border-color: #555;
   --input-placeholder-color: #aaaaaa;
-  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  --sphere-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+  --box-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
+  --sphere-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+  --sphere-glow: rgba(255, 87, 51, 0.6);
+  --sphere-inset-shadow: inset 0 5px 10px rgba(255, 255, 255, 0.08);
   --font-size-base: 16px;
 }
 
@@ -56,6 +58,7 @@ main {
 
 h1 {
   font-size: 3rem;
+  font-family: 'Montserrat', sans-serif;
   color: var(--highlight-color);
   margin-bottom: 20px;
   letter-spacing: 2px;
@@ -65,6 +68,7 @@ h1 {
 .motto {
   font-size: 1.5rem;
   font-style: italic;
+  font-family: 'Montserrat', sans-serif;
   color: var(--input-placeholder-color);
   margin-bottom: 30px;
 }
@@ -81,29 +85,36 @@ h1 {
   display: flex;
   align-items: center;
   width: 100%;
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--input-bg-color);
+  box-shadow: var(--box-shadow);
   margin-bottom: 20px;
+  overflow: hidden;
 }
 
 .email-container input,
 .email-container span {
   padding: 12px;
   font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
   color: var(--highlight-color);
   box-sizing: border-box;
+  border-radius: 0;
 }
 
 .email-container input {
   width: 70%;
   background: transparent;
   border: none;
+  outline: none;
+  padding-left: 20px;
 }
 
 .email-container span {
   width: 30%;
   background: var(--button-bg);
   text-align: center;
+  border-left: 1px solid var(--input-border-color);
 }
 
 #login-form button {
@@ -115,17 +126,19 @@ h1 {
   background: linear-gradient(145deg, #3c3c3c, #1f1f1f);
   color: #fff;
   font-size: 1rem;
-  transition: background 0.3s ease, transform 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   box-shadow: var(--box-shadow);
 }
 
 #login-form button:hover {
   background: linear-gradient(145deg, #444444, #2a2a2a);
+  box-shadow: 0 6px 15px rgba(255, 87, 51, 0.3);
 }
 
 .sphere-container {
-  perspective: 800px;
+  perspective: 1000px;
   margin-bottom: 40px;
 }
 
@@ -136,9 +149,20 @@ h1 {
   max-height: 220px;
   border-radius: 50%;
   background: radial-gradient(circle at 50% 50%, var(--accent-color), #ff8b60);
-  box-shadow: var(--sphere-shadow);
-  animation: rotate 15s infinite linear, pulse 8s infinite ease-in-out;
+  box-shadow: var(--sphere-shadow), var(--sphere-inset-shadow);
+  animation: rotate 10s infinite linear, pulse 6s infinite ease-in-out;
   position: relative;
+}
+
+.sphere::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 30% 30%, var(--sphere-glow), transparent);
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: shine 2s infinite alternate ease-in-out;
 }
 
 @keyframes rotate {
@@ -159,6 +183,15 @@ h1 {
   }
 }
 
+@keyframes shine {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
+
 input[type="search"] {
   appearance: none;
   background-color: var(--input-bg-color);
@@ -167,6 +200,7 @@ input[type="search"] {
   border-radius: 8px;
   padding: 12px;
   font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
   box-sizing: border-box;
   width: 100%;
   transition: border-color 0.3s ease;

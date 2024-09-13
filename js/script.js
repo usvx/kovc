@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillRect(0, 0, width, height);
 
         ctx.fillStyle = '#00ffcc';
-        ctx.font = `${symbolSize}px 'Noto Sans', 'Montserrat', monospace`;
+        ctx.font = `${symbolSize}px 'Noto Sans', monospace`;
 
         for (let i = 0; i < drops.length; i++) {
             const text = getRandomCharacter();

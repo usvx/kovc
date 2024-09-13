@@ -1,253 +1,127 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&display=swap');
 
 :root {
-  --primary-bg-color: #0a0a0a;
-  --secondary-bg-color: #0f0f0f;
-  --tertiary-bg-color: #1a1a1a;
-  --primary-color: #e0e0e0;
-  --secondary-color: #b3b3b3;
-  --highlight-color: #ffffff;
-  --accent-color: #FF5733;
-  --font-size-base: 16px;
-  --button-bg-start: #4444ff;
-  --button-bg-end: #2222cc;
-  --button-hover-bg-start: #6666ff;
-  --button-hover-bg-end: #3333cc;
-  --input-bg-color: rgba(255, 255, 255, 0.1);
-  --input-border-color: #555;
-  --input-placeholder-color: #888;
-  --text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
-  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  --sphere-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
-  --sphere-inset-shadow: inset 0 10px 20px rgba(255, 255, 255, 0.1);
+    --background-color: #0d0d0d;
+    --foreground-color: #e0e0e0;
+    --accent-color: #ff4500;
+    --input-bg-color: rgba(255, 255, 255, 0.1);
+    --button-bg-color: #1a1a1a;
+    --button-hover-bg-color: #333333;
+    --font-family: 'Montserrat', sans-serif;
 }
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 html, body {
-  height: 100%;
-  width: 100%;
-  font-family: 'Montserrat', sans-serif;
-  font-size: var(--font-size-base);
-  color: var(--primary-color);
-  background: radial-gradient(circle at center, var(--primary-bg-color), var(--secondary-bg-color) 50%, var(--tertiary-bg-color) 100%);
-  background-size: 200% 200%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow-x: hidden;
-  user-select: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: inherit;
-  filter: blur(30px);
-  z-index: -1;
+    height: 100%;
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--foreground-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: min(90%, 1200px);
-  padding: 40px 20px;
-  min-height: 100vh;
+    text-align: center;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle at center, var(--accent-color), transparent 70%);
+    border-radius: 50%;
+    animation: pulse 4s infinite;
 }
 
 h1 {
-  font-size: clamp(2rem, 5vw, 3rem);
-  color: var(--highlight-color);
-  text-shadow: var(--text-shadow);
-  margin-bottom: 30px;
-  letter-spacing: 2px;
-  animation: fadeInSlideDown 1s ease-out both;
+    font-size: 2rem;
+    margin-bottom: 40px;
+    font-weight: 400;
 }
 
-.motto {
-  font-size: clamp(1rem, 3vw, 1.5rem);
-  font-style: italic;
-  color: var(--secondary-color);
-  margin-bottom: 30px;
-  animation: fadeInSlideUp 1s ease-out both;
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-#login-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: min(100%, 400px);
-  margin-top: 40px;
-  animation: fadeIn 1.5s ease-out both;
+.input-container {
+    display: flex;
+    align-items: center;
+    background-color: var(--input-bg-color);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-.email-container {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 20px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 8px;
-  box-shadow: var(--box-shadow);
+.input-container input {
+    flex: 1;
+    padding: 12px;
+    background: none;
+    border: none;
+    color: var(--foreground-color);
+    font-size: 1rem;
+    font-family: var(--font-family);
 }
 
-.email-container input,
-.email-container span {
-  padding: 12px;
-  font-size: 1rem;
-  color: var(--primary-color);
-  background: transparent;
-  border: none;
+.input-container span {
+    padding: 12px;
+    background-color: var(--button-bg-color);
+    color: var(--foreground-color);
+    font-size: 1rem;
+    font-family: var(--font-family);
 }
 
-.email-container input {
-  flex: 1;
+input::placeholder {
+    color: var(--foreground-color);
+    opacity: 0.7;
 }
 
-.email-container span {
-  background: #444;
-  text-align: center;
+button {
+    padding: 12px;
+    background-color: var(--button-bg-color);
+    color: var(--foreground-color);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-#login-form button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  color: #fff;
-  background: linear-gradient(145deg, var(--button-bg-start), var(--button-bg-end));
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: var(--box-shadow);
-}
-
-#login-form button:hover {
-  background: linear-gradient(145deg, var(--button-hover-bg-start), var(--button-hover-bg-end));
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-}
-
-.sphere-container {
-  perspective: 1000px;
-  margin-bottom: 30px;
-}
-
-.sphere {
-  width: min(25vw, 300px);
-  height: min(25vw, 300px);
-  border-radius: 50%;
-  background: radial-gradient(circle at center, var(--button-bg-start), var(--button-bg-end) 70%);
-  box-shadow: var(--sphere-shadow), var(--sphere-inset-shadow);
-  animation: rotate 10s infinite linear, pulse 4s infinite ease-in-out;
-  position: relative;
-  overflow: hidden;
-}
-
-.sphere::before,
-.sphere::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
-  animation: shine 8s infinite alternate ease-in-out;
-}
-
-.sphere::after {
-  animation-delay: 4s;
-}
-
-input[type="text"] {
-  width: 100%;
-  padding: 12px;
-  font-size: 1rem;
-  color: var(--primary-color);
-  background-color: var(--input-bg-color);
-  border: none;
-  outline: none;
-}
-
-input[type="text"]::placeholder {
-  color: var(--input-placeholder-color);
-}
-
-@keyframes shine {
-  from {
-    transform: scale(1);
-    opacity: 0.3;
-  }
-  to {
-    transform: scale(1.1);
-    opacity: 0.1;
-  }
-}
-
-@keyframes rotate {
-  to {
-    transform: rotateY(360deg) rotateX(360deg);
-  }
+button:hover {
+    background-color: var(--button-hover-bg-color);
 }
 
 @keyframes pulse {
-  50% {
-    transform: scale(1.05);
-  }
-}
-
-@keyframes fadeInSlideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
-}
-
-@media (max-width: 768px) {
-  #login-form {
-    width: 80%;
-  }
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
 }
 
 @media (max-width: 480px) {
-  .email-container input,
-  .email-container span {
-    font-size: 0.9rem;
-  }
-}
+    h1 {
+        font-size: 1.5rem;
+    }
 
-@supports (-webkit-touch-callout: none) {
-  html, body, main {
-    height: -webkit-fill-available;
-  }
+    .logo {
+        width: 80px;
+        height: 80px;
+    }
 }

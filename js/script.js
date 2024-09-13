@@ -3,17 +3,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('background');
     const ctx = canvas.getContext('2d');
 
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-    const symbols = [];
-    const symbolSize = 20;
-    const columns = Math.floor(width / symbolSize);
-    const rows = Math.floor(height / symbolSize);
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        initMatrix();
+    }
 
-    window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    });
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const symbolSize = 20;
+    let columns;
+    let symbols = [];
 
     class Symbol {
         constructor(x, y, speed) {
@@ -26,7 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         update() {
             this.value = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
-            this.y = (this.y + this.speed) % rows;
+            if (this.y * symbolSize > canvas.height) {
+                this.y = 0;
+            } else {
+                this.y += this.speed;
+            }
         }
 
         draw() {
@@ -36,14 +41,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initMatrix() {
+        columns = Math.floor(canvas.width / symbolSize);
+        symbols = [];
         for (let i = 0; i < columns; i++) {
-            symbols[i] = new Symbol(i, Math.floor(Math.random() * rows), Math.random() * 0.5 + 0.5);
+            symbols[i] = new Symbol(i, Math.random() * -50, Math.random() * 0.5 + 0.5);
         }
     }
 
     function animateMatrix() {
         ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
-        ctx.fillRect(0, 0, width, height);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.font = `${symbolSize}px monospace`;
         symbols.forEach(symbol => {
             symbol.update();

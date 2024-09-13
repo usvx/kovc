@@ -4,64 +4,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
 
     let width, height;
-    let stars = [];
-    const starCount = 200;
-    let hue = 0;
+    let symbolSize = 20;
+    let columns;
+    let drops = [];
 
     function resizeCanvas() {
-        width = canvas.width = window.innerWidth + 1;
-        height = canvas.height = window.innerHeight + 1;
-        initStars();
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        columns = Math.floor(width / symbolSize);
+        drops = Array(columns).fill(1);
     }
 
-    function initStars() {
-        stars = [];
-        for (let i = 0; i < starCount; i++) {
-            stars.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                z: Math.random() * width,
-            });
-        }
-    }
-
-    function moveStars() {
-        for (let star of stars) {
-            star.z -= 2;
-            if (star.z <= 0) {
-                star.z = width;
-            }
-        }
-    }
-
-    function drawStars() {
-        ctx.fillStyle = 'black';
+    function drawMatrix() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
         ctx.fillRect(0, 0, width, height);
 
-        ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
-        for (let star of stars) {
-            let x = (star.x - width / 2) * (width / star.z);
-            x += width / 2;
-            let y = (star.y - height / 2) * (width / star.z);
-            y += height / 2;
-            let radius = width / star.z;
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, 2 * Math.PI);
-            ctx.fill();
+        ctx.fillStyle = '#00ffcc';
+        ctx.font = `${symbolSize}px monospace`;
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = String.fromCharCode(0x30A0 + Math.random() * 97);
+            ctx.fillText(text, i * symbolSize, drops[i] * symbolSize);
+
+            if (drops[i] * symbolSize > height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
         }
 
-        hue += 0.5;
-    }
-
-    function animate() {
-        moveStars();
-        drawStars();
-        requestAnimationFrame(animate);
+        requestAnimationFrame(drawMatrix);
     }
 
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-    animate();
+    drawMatrix();
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -71,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/ko.vc`;
             window.location.href = loginUrl;
         } else {
-            alert('Please enter your access code.');
+            alert('Please enter your username.');
         }
     });
 });

@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&display=swap');
 
 :root {
-    --background-color: #0d0d0d;
+    --background-color: #0a0a0a;
     --foreground-color: #e0e0e0;
-    --accent-color: #ff4500;
-    --input-bg-color: rgba(255, 255, 255, 0.1);
-    --button-bg-color: #1a1a1a;
-    --button-hover-bg-color: #333333;
+    --accent-color: #ff0066;
+    --input-bg-color: rgba(255, 255, 255, 0.05);
+    --button-bg-color: rgba(255, 0, 102, 0.2);
+    --button-hover-bg-color: rgba(255, 0, 102, 0.4);
     --font-family: 'Montserrat', sans-serif;
 }
 
@@ -24,6 +24,7 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 main {
@@ -31,26 +32,26 @@ main {
     padding: 20px;
     width: 100%;
     max-width: 400px;
+    position: relative;
+    z-index: 1;
 }
 
 .logo-container {
     display: flex;
     justify-content: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
-.logo {
-    width: 100px;
-    height: 100px;
-    background: radial-gradient(circle at center, var(--accent-color), transparent 70%);
-    border-radius: 50%;
-    animation: pulse 4s infinite;
+#canvas {
+    width: 200px;
+    height: 200px;
 }
 
 h1 {
-    font-size: 2rem;
-    margin-bottom: 40px;
-    font-weight: 400;
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+    font-weight: 100;
+    letter-spacing: 2px;
 }
 
 form {
@@ -99,29 +100,30 @@ button {
     font-size: 1rem;
     font-family: var(--font-family);
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 button:hover {
     background-color: var(--button-hover-bg-color);
+    transform: translateY(-2px);
 }
 
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
+body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent, #000000);
+    opacity: 0.7;
+    z-index: 0;
 }
 
 @media (max-width: 480px) {
     h1 {
-        font-size: 1.5rem;
+        font-size: 2rem;
     }
 
-    .logo {
-        width: 80px;
-        height: 80px;
+    #canvas {
+        width: 150px;
+        height: 150px;
     }
 }

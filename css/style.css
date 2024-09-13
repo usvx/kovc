@@ -168,25 +168,18 @@ h1 {
   animation-delay: 4s;
 }
 
-input[type="search"] {
+input[type="text"] {
   width: 100%;
   padding: 12px;
   font-size: 1rem;
   color: var(--primary-color);
   background-color: var(--input-bg-color);
-  border: 1px solid var(--input-border-color);
-  border-radius: 8px;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
-}
-
-input[type="search"]::placeholder {
-  color: var(--input-placeholder-color);
-}
-
-input[type="search"]:focus {
-  border-color: var(--button-bg-start);
-  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
   outline: none;
+}
+
+input[type="text"]::placeholder {
+  color: var(--input-placeholder-color);
 }
 
 @keyframes shine {
@@ -256,9 +249,5 @@ input[type="search"]:focus {
 @supports (-webkit-touch-callout: none) {
   html, body, main {
     height: -webkit-fill-available;
-  }
-
-  input[type="search"] {
-    -webkit-appearance: none;
   }
 }

@@ -5,67 +5,66 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
-    let particles = [];
+    let stars = [];
+    const fps = 60;
+    const numStars = 200;
+    const starSpeed = 0.05;
 
     window.addEventListener('resize', () => {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
     });
 
-    class Particle {
-        constructor(x, y, size, color, speedX, speedY) {
-            this.x = x;
-            this.y = y;
-            this.size = size;
-            this.color = color;
-            this.speedX = speedX;
-            this.speedY = speedY;
+    class Star {
+        constructor() {
+            this.reset();
+        }
+
+        reset() {
+            this.x = Math.random() * width - width / 2;
+            this.y = Math.random() * height - height / 2;
+            this.z = Math.random() * width;
+            this.origZ = this.z;
         }
 
         update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-
-            if (this.x > width || this.x < 0) {
-                this.speedX = -this.speedX;
-            }
-            if (this.y > height || this.y < 0) {
-                this.speedY = -this.speedY;
+            this.z -= starSpeed * fps;
+            if (this.z <= 0) {
+                this.reset();
+                this.z = width;
             }
         }
 
         draw() {
+            const sx = (this.x / this.z) * width + width / 2;
+            const sy = (this.y / this.z) * height + height / 2;
+            const radius = (1 - this.z / width) * 2;
             ctx.beginPath();
-            ctx.fillStyle = this.color;
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.arc(sx, sy, radius, 0, Math.PI * 2);
             ctx.fill();
         }
     }
 
-    function initParticles() {
-        particles = [];
-        for (let i = 0; i < 100; i++) {
-            const size = Math.random() * 3 + 1;
-            const x = Math.random() * width;
-            const y = Math.random() * height;
-            const speedX = (Math.random() - 0.5) * 0.5;
-            const speedY = (Math.random() - 0.5) * 0.5;
-            const color = 'rgba(255, 204, 0, 0.5)';
-            particles.push(new Particle(x, y, size, color, speedX, speedY));
+    function initStars() {
+        stars = [];
+        for (let i = 0; i < numStars; i++) {
+            stars.push(new Star());
         }
     }
 
-    function animateParticles() {
-        ctx.clearRect(0, 0, width, height);
-        particles.forEach(particle => {
-            particle.update();
-            particle.draw();
+    function animateStars() {
+        ctx.fillStyle = 'rgba(10, 10, 10, 0.8)';
+        ctx.fillRect(0, 0, width, height);
+        stars.forEach(star => {
+            star.update();
+            star.draw();
         });
-        requestAnimationFrame(animateParticles);
+        requestAnimationFrame(animateStars);
     }
 
-    initParticles();
-    animateParticles();
+    initStars();
+    animateStars();
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();

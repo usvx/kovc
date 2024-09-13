@@ -15,6 +15,7 @@
 
 html, body {
     height: 100%;
+    width: 100%;
     overflow: hidden;
     font-family: var(--font-family);
     background-color: var(--background-color);
@@ -36,7 +37,8 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    min-height: 100vh;
+    padding: 0 20px;
 }
 
 h1 {
@@ -75,6 +77,7 @@ form {
     color: var(--foreground-color);
     font-size: 1rem;
     font-family: var(--font-family);
+    flex: 1;
 }
 
 .input-container span {
@@ -113,8 +116,32 @@ button:hover {
     }
 }
 
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 40px;
+    }
+}
+
 @media (max-width: 480px) {
     h1 {
         font-size: 2rem;
+        margin-bottom: 30px;
+    }
+
+    .input-container input,
+    .input-container span {
+        font-size: 0.9rem;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+    body {
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 }

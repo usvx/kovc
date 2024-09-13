@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Nexus Access Portal</title>
+    <title>Cipher Access Portal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
@@ -26,9 +26,9 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div id="overlay"></div>
+    <canvas id="background"></canvas>
     <main>
-        <h1>Welcome to Nexus</h1>
+        <h1>Cipher Access</h1>
         <form id="login-form">
             <div class="input-container">
                 <input type="text" name="username" placeholder="Username" required>
@@ -37,7 +37,6 @@
             <button type="submit">Enter</button>
         </form>
     </main>
-    <canvas id="background"></canvas>
     <script src="js/script.js"></script>
 </body>
 </html>

@@ -8,6 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let columns;
     let drops = [];
 
+    function getRandomCharacter() {
+        const randomChoice = Math.random();
+        if (randomChoice < 0.5) {
+            return String.fromCharCode(0x0410 + Math.random() * (0x044F - 0x0410));
+        } else {
+            return String.fromCharCode(0xAC00 + Math.random() * (0xD7A3 - 0xAC00));
+        }
+    }
+
     function resizeCanvas() {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
@@ -23,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${symbolSize}px monospace`;
 
         for (let i = 0; i < drops.length; i++) {
-            const text = String.fromCharCode(0x30A0 + Math.random() * 97);
+            const text = getRandomCharacter();
             ctx.fillText(text, i * symbolSize, drops[i] * symbolSize);
 
             if (drops[i] * symbolSize > height && Math.random() > 0.975) {

@@ -3,12 +3,8 @@
 :root {
     --background-color: #0a0a0a;
     --foreground-color: #e0e0e0;
-    --accent-color: #00aaff;
-    --input-bg-color: rgba(255, 255, 255, 0.1);
-    --button-bg-color: #1a1a1a;
-    --button-hover-bg-color: #333333;
+    --accent-color: #ffcc00;
     --font-family: 'Montserrat', sans-serif;
-    --box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
 }
 
 * {
@@ -19,71 +15,54 @@
 
 html, body {
     height: 100%;
+    overflow: hidden;
     font-family: var(--font-family);
     background-color: var(--background-color);
     color: var(--foreground-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
 }
 
-body::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, transparent, #000000);
-    opacity: 0.7;
-    z-index: 0;
+#background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 main {
-    text-align: center;
-    padding: 20px;
-    width: 100%;
-    max-width: 400px;
     position: relative;
     z-index: 1;
-}
-
-.logo-container {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    margin-bottom: 40px;
-}
-
-.logo {
-    width: 100px;
-    height: 100px;
-    background: linear-gradient(135deg, var(--accent-color), transparent);
-    border-radius: 50%;
-    box-shadow: var(--box-shadow);
-    animation: glow 2s infinite alternate;
+    height: 100%;
 }
 
 h1 {
-    font-size: 2rem;
-    margin-bottom: 40px;
-    font-weight: 400;
+    font-size: 3rem;
+    margin-bottom: 50px;
+    font-weight: 100;
     letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
 }
 
 form {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 20px;
 }
 
 .input-container {
     display: flex;
     align-items: center;
-    background-color: var(--input-bg-color);
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     overflow: hidden;
 }
 
 .input-container input {
-    flex: 1;
     padding: 12px;
     background: none;
     border: none;
@@ -94,7 +73,7 @@ form {
 
 .input-container span {
     padding: 12px;
-    background-color: var(--button-bg-color);
+    background-color: rgba(255, 255, 255, 0.2);
     color: var(--foreground-color);
     font-size: 1rem;
     font-family: var(--font-family);
@@ -106,39 +85,24 @@ input::placeholder {
 }
 
 button {
-    padding: 12px;
-    background-color: var(--button-bg-color);
+    padding: 12px 24px;
+    background-color: rgba(255, 204, 0, 0.2);
     color: var(--foreground-color);
     border: none;
     border-radius: 8px;
     font-size: 1rem;
     font-family: var(--font-family);
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 button:hover {
-    background-color: var(--button-hover-bg-color);
+    background-color: rgba(255, 204, 0, 0.4);
     transform: translateY(-2px);
-    box-shadow: var(--box-shadow);
-}
-
-@keyframes glow {
-    from {
-        box-shadow: 0 0 5px rgba(0, 170, 255, 0.2);
-    }
-    to {
-        box-shadow: 0 0 20px rgba(0, 170, 255, 0.7);
-    }
 }
 
 @media (max-width: 480px) {
     h1 {
-        font-size: 1.5rem;
-    }
-
-    .logo {
-        width: 80px;
-        height: 80px;
+        font-size: 2rem;
     }
 }

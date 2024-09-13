@@ -3,11 +3,12 @@
 :root {
     --background-color: #0a0a0a;
     --foreground-color: #e0e0e0;
-    --accent-color: #ff0066;
-    --input-bg-color: rgba(255, 255, 255, 0.05);
-    --button-bg-color: rgba(255, 0, 102, 0.2);
-    --button-hover-bg-color: rgba(255, 0, 102, 0.4);
+    --accent-color: #00aaff;
+    --input-bg-color: rgba(255, 255, 255, 0.1);
+    --button-bg-color: #1a1a1a;
+    --button-hover-bg-color: #333333;
     --font-family: 'Montserrat', sans-serif;
+    --box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
 }
 
 * {
@@ -27,6 +28,15 @@ html, body {
     overflow: hidden;
 }
 
+body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent, #000000);
+    opacity: 0.7;
+    z-index: 0;
+}
+
 main {
     text-align: center;
     padding: 20px;
@@ -42,15 +52,19 @@ main {
     margin-bottom: 40px;
 }
 
-#canvas {
-    width: 200px;
-    height: 200px;
+.logo {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--accent-color), transparent);
+    border-radius: 50%;
+    box-shadow: var(--box-shadow);
+    animation: glow 2s infinite alternate;
 }
 
 h1 {
-    font-size: 2.5rem;
-    margin-bottom: 50px;
-    font-weight: 100;
+    font-size: 2rem;
+    margin-bottom: 40px;
+    font-weight: 400;
     letter-spacing: 2px;
 }
 
@@ -100,30 +114,31 @@ button {
     font-size: 1rem;
     font-family: var(--font-family);
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 button:hover {
     background-color: var(--button-hover-bg-color);
     transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
 }
 
-body::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, transparent, #000000);
-    opacity: 0.7;
-    z-index: 0;
+@keyframes glow {
+    from {
+        box-shadow: 0 0 5px rgba(0, 170, 255, 0.2);
+    }
+    to {
+        box-shadow: 0 0 20px rgba(0, 170, 255, 0.7);
+    }
 }
 
 @media (max-width: 480px) {
     h1 {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
 
-    #canvas {
-        width: 150px;
-        height: 150px;
+    .logo {
+        width: 80px;
+        height: 80px;
     }
 }

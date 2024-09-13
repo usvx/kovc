@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cipher Access Portal</title>
+    <title>The Vault Access</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         img-src 'self' data:;
         font-src 'self' https://fonts.gstatic.com;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-        script-src 'self';
+        script-src 'self' 'unsafe-inline';
         form-action 'self' https://accounts.google.com;
         object-src 'none';
     ">
@@ -28,14 +28,16 @@
 <body>
     <canvas id="background"></canvas>
     <main>
-        <h1>Cipher Access</h1>
-        <form id="login-form">
-            <div class="input-container">
-                <input type="text" name="username" placeholder="Username" required>
-                <span>@ko.vc</span>
-            </div>
-            <button type="submit">Enter</button>
-        </form>
+        <div class="entrance">
+            <h1>The Vault</h1>
+            <form id="login-form">
+                <div class="input-container">
+                    <input type="text" name="username" placeholder="Enter Access Code" required>
+                    <span>@ko.vc</span>
+                </div>
+                <button type="submit">Unlock</button>
+            </form>
+        </div>
     </main>
     <script src="js/script.js"></script>
 </body>

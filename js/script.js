@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let drops = [];
 
     function resizeCanvas() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
+        width = canvas.width = window.innerWidth + 1;
+        height = canvas.height = window.innerHeight + 1;
         columns = Math.floor(width / symbolSize);
         drops = [];
         for (let x = 0; x < columns; x++) {

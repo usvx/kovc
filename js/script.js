@@ -5,66 +5,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let width = canvas.width = window.innerWidth;
     let height = canvas.height = window.innerHeight;
-    let stars = [];
-    const fps = 60;
-    const numStars = 200;
-    const starSpeed = 0.05;
+    const symbols = [];
+    const symbolSize = 20;
+    const columns = Math.floor(width / symbolSize);
+    const rows = Math.floor(height / symbolSize);
 
     window.addEventListener('resize', () => {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
     });
 
-    class Star {
-        constructor() {
-            this.reset();
-        }
-
-        reset() {
-            this.x = Math.random() * width - width / 2;
-            this.y = Math.random() * height - height / 2;
-            this.z = Math.random() * width;
-            this.origZ = this.z;
+    class Symbol {
+        constructor(x, y, speed) {
+            this.characters = 'アァカサタナハマヤャラワン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            this.x = x;
+            this.y = y;
+            this.speed = speed;
+            this.value = '';
         }
 
         update() {
-            this.z -= starSpeed * fps;
-            if (this.z <= 0) {
-                this.reset();
-                this.z = width;
-            }
+            this.value = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
+            this.y = (this.y + this.speed) % rows;
         }
 
         draw() {
-            const sx = (this.x / this.z) * width + width / 2;
-            const sy = (this.y / this.z) * height + height / 2;
-            const radius = (1 - this.z / width) * 2;
-            ctx.beginPath();
-            ctx.fillStyle = 'white';
-            ctx.arc(sx, sy, radius, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.fillStyle = '#00ffcc';
+            ctx.fillText(this.value, this.x * symbolSize, this.y * symbolSize);
         }
     }
 
-    function initStars() {
-        stars = [];
-        for (let i = 0; i < numStars; i++) {
-            stars.push(new Star());
+    function initMatrix() {
+        for (let i = 0; i < columns; i++) {
+            symbols[i] = new Symbol(i, Math.floor(Math.random() * rows), Math.random() * 0.5 + 0.5);
         }
     }
 
-    function animateStars() {
-        ctx.fillStyle = 'rgba(10, 10, 10, 0.8)';
+    function animateMatrix() {
+        ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
         ctx.fillRect(0, 0, width, height);
-        stars.forEach(star => {
-            star.update();
-            star.draw();
+        ctx.font = `${symbolSize}px monospace`;
+        symbols.forEach(symbol => {
+            symbol.update();
+            symbol.draw();
         });
-        requestAnimationFrame(animateStars);
+        requestAnimationFrame(animateMatrix);
     }
 
-    initStars();
-    animateStars();
+    initMatrix();
+    animateMatrix();
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();

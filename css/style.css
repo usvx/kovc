@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;400&display=swap&subset=cyrillic,korean');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400&display=swap');
 
 :root {
     --background-color: #0a0a0a;
     --foreground-color: #e0e0e0;
     --accent-color: #00ffcc;
-    --font-family: 'Noto Sans', sans-serif;
+    --font-family: 'Noto Sans KR', sans-serif;
     --glow-color: rgba(0, 255, 204, 0.7);
 }
 

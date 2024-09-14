@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let scene, camera, renderer, particles = [];
     let composer;
 
-    const hangeulChars = [...'가나다라마바사아자차카타파하'];
-    const russianChars = [...'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'];
+    const hangeulChars = [...'가각간갇갈감갑갓강개걀거겅견결경고과관광교구국군굴권귀규균그극근글금기긴길김'];
+    const russianChars = [...'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'];
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
@@ -38,13 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
         camera.position.z = 1000;
 
-        const light = new THREE.AmbientLight(0xffffff);
-        scene.add(light);
+        const ambientLight = new THREE.AmbientLight(0xffffff);
+        scene.add(ambientLight);
 
-        const particleCount = 300;
+        const particleCount = 500;
 
         for (let i = 0; i < particleCount; i++) {
-            const char = Math.random() > 0.5 ? hangeulChars[Math.floor(Math.random() * hangeulChars.length)] : russianChars[Math.floor(Math.random() * russianChars.length)];
+            const charArray = Math.random() > 0.5 ? hangeulChars : russianChars;
+            const char = charArray[Math.floor(Math.random() * charArray.length)];
 
             const texture = createTextTexture(char);
             const material = new THREE.SpriteMaterial({ map: texture, color: 0xffffff, transparent: true });
@@ -54,13 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.position.z = (Math.random() - 0.5) * 4000;
             sprite.scale.set(100, 100, 1);
 
-            sprite.speedX = (Math.random() - 0.5) * 2;
-            sprite.speedY = (Math.random() - 0.5) * 2;
-            sprite.speedZ = (Math.random() - 0.5) * 2;
+            sprite.speedX = (Math.random() - 0.5) * 4;
+            sprite.speedY = (Math.random() - 0.5) * 4;
+            sprite.speedZ = (Math.random() - 0.5) * 4;
 
             scene.add(sprite);
             particles.push(sprite);
         }
+
+        document.addEventListener('mousemove', onDocumentMouseMove, false);
 
         composer = new THREE.EffectComposer(renderer);
         const renderPass = new THREE.RenderPass(scene, camera);
@@ -80,6 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
 
         window.addEventListener('resize', onWindowResize, false);
+    }
+
+    let mouseX = 0, mouseY = 0;
+
+    function onDocumentMouseMove(event) {
+        mouseX = (event.clientX - window.innerWidth / 2) * 2;
+        mouseY = (event.clientY - window.innerHeight / 2) * 2;
     }
 
     function onWindowResize() {
@@ -102,6 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
         });
+
+        camera.position.x += (mouseX - camera.position.x) * 0.05;
+        camera.position.y += (-mouseY - camera.position.y) * 0.05;
+        camera.lookAt(scene.position);
 
         composer.render();
     }

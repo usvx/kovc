@@ -3,9 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let scene, camera, renderer, particles = [];
 
-    const hangeulChars = [...'가나다라마바사아자차카타파하'];
-    const russianChars = [...'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'];
-
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
         const size = 128;
@@ -14,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, size, size);
-        ctx.font = `${size * 0.8}px 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans Mono', sans-serif`;
+        ctx.font = `${size * 0.8}px 'Noto Sans KR', 'Noto Sans Mono', sans-serif`;
         ctx.fillStyle = '#00ffcc';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -23,6 +20,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
         return texture;
+    }
+
+    function getRandomHangul() {
+        const start = 0xAC00;
+        const end = 0xD7A3;
+        const code = Math.floor(Math.random() * (end - start + 1)) + start;
+        return String.fromCharCode(code);
+    }
+
+    function getRandomCyrillic() {
+        const start = 0x0410;
+        const end = 0x044F;
+        const code = Math.floor(Math.random() * (end - start + 1)) + start;
+        return String.fromCharCode(code);
     }
 
     function init() {
@@ -42,8 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const particleCount = 500;
 
         for (let i = 0; i < particleCount; i++) {
-            const charArray = Math.random() > 0.5 ? hangeulChars : russianChars;
-            const char = charArray[Math.floor(Math.random() * charArray.length)];
+            const char = Math.random() > 0.5 ? getRandomHangul() : getRandomCyrillic();
 
             const texture = createTextTexture(char);
             const material = new THREE.SpriteMaterial({ map: texture, transparent: true });

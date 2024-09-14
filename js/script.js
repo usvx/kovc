@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('background');
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x000000, 0.0008);
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
     camera.position.z = 1000;
     const particles = new THREE.Group();
@@ -19,43 +19,80 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function createTextTexture(char) {
-        const size = 128;
+        const size = 256;
         const canvas = document.createElement('canvas');
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
-        ctx.font = 'Bold 100px Arial';
+        ctx.font = 'Bold 200px Noto Sans';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = '#00ffcc';
-        ctx.shadowBlur = 20;
+        ctx.shadowBlur = 30;
         ctx.shadowColor = '#00ffcc';
         ctx.fillText(char, size / 2, size / 2);
         return new THREE.CanvasTexture(canvas);
     }
 
-    const particleCount = 2000;
+    const particleCount = 1500;
+    const particleGeometry = new THREE.BufferGeometry();
+    const positions = [];
+    const scales = [];
+    const textures = [];
+
     for (let i = 0; i < particleCount; i++) {
         const character = getRandomCharacter();
         const texture = createTextTexture(character);
+
         const material = new THREE.SpriteMaterial({
             map: texture,
             blending: THREE.AdditiveBlending,
             depthTest: false,
             transparent: true
         });
+
         const particle = new THREE.Sprite(material);
         particle.position.x = THREE.MathUtils.randFloatSpread(2000);
         particle.position.y = THREE.MathUtils.randFloatSpread(2000);
         particle.position.z = THREE.MathUtils.randFloatSpread(2000);
-        particle.scale.x = particle.scale.y = 20 + Math.random() * 40;
+        particle.scale.x = particle.scale.y = 30 + Math.random() * 50;
         particles.add(particle);
     }
 
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetX = 0;
+    let targetY = 0;
+    const windowHalfX = window.innerWidth / 2;
+    const windowHalfY = window.innerHeight / 2;
+
+    function onDocumentMouseMove(event) {
+        mouseX = (event.clientX - windowHalfX) * 0.05;
+        mouseY = (event.clientY - windowHalfY) * 0.05;
+    }
+
+    function onDocumentTouchMove(event) {
+        if (event.touches.length === 1) {
+            event.preventDefault();
+            mouseX = (event.touches[0].pageX - windowHalfX) * 0.05;
+            mouseY = (event.touches[0].pageY - windowHalfY) * 0.05;
+        }
+    }
+
+    document.addEventListener('mousemove', onDocumentMouseMove);
+    document.addEventListener('touchmove', onDocumentTouchMove);
+
     function animate() {
         requestAnimationFrame(animate);
+
+        targetX += (mouseX - targetX) * 0.05;
+        targetY += (mouseY - targetY) * 0.05;
+
         particles.rotation.x += 0.0005;
         particles.rotation.y += 0.001;
+        particles.rotation.y += 0.0005 * (targetX - particles.rotation.y);
+        particles.rotation.x += 0.0005 * (targetY - particles.rotation.x);
+
         renderer.render(scene, camera);
     }
 

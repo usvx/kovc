@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;400&display=swap');
+
 :root {
     --background-color: #0a0a0a;
     --foreground-color: #e0e0e0;
@@ -20,13 +22,13 @@ html, body {
     color: var(--foreground-color);
 }
 
-#container {
+#background {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
+    z-index: 0;
 }
 
 main {
@@ -49,7 +51,8 @@ main {
 h1 {
     font-size: 4rem;
     margin-bottom: 60px;
-    font-weight: 700;
+    font-weight: 100;
+    letter-spacing: 4px;
     color: var(--accent-color);
 }
 
@@ -73,6 +76,7 @@ form {
     border-radius: 50px;
     color: var(--foreground-color);
     font-size: 1rem;
+    text-align: left;
     padding-left: 20px;
     font-family: var(--font-family);
     letter-spacing: 1px;
@@ -87,6 +91,14 @@ form {
     transform: translateY(-50%);
     color: var(--foreground-color);
     font-size: 1rem;
+    font-family: var(--font-family);
+    pointer-events: none;
+}
+
+input::placeholder {
+    color: var(--foreground-color);
+    opacity: 0.5;
+    font-family: var(--font-family);
 }
 
 button {
@@ -96,6 +108,7 @@ button {
     border: 2px solid var(--accent-color);
     border-radius: 50px;
     font-size: 1rem;
+    font-family: var(--font-family);
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
     width: 200px;
@@ -133,5 +146,11 @@ button:hover {
     button {
         padding: 12px 24px;
         font-size: 0.9rem;
+    }
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+    body {
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 }

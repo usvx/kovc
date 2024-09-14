@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
 
-    // Canvas setup
     const canvasLayers = [
         document.getElementById('layer1'),
         document.getElementById('layer2'),
@@ -13,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let width, height;
     const symbolSize = 20;
     const layers = [];
-    const speeds = [1, 0.7, 0.5]; // Different speeds for layers to create depth
+    const speeds = [1, 0.7, 0.5];
 
     function getRandomCharacter() {
         const randomChoice = Math.random();

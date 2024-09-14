@@ -12,11 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const particles = new THREE.Group();
     scene.add(particles);
 
-    const font = new FontFace('Noto Sans KR', 'url(https://fonts.gstatic.com/s/notosanskr/v19/Pby6FmXiEBPT4ITbgNA5CgmOsn7P.woff2)');
-
-    font.load().then(function(loadedFont) {
-        document.fonts.add(loadedFont);
-
+    document.fonts.ready.then(() => {
         function getRandomCharacter() {
             const rand = Math.random();
             if (rand < 0.5) {

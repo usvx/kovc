@@ -1,104 +1,52 @@
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('background');
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setClearColor(0x000000, 0);
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const fontSize = 16;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = [];
+    for (let x = 0; x < columns; x++) drops[x] = canvas.height;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
-    camera.position.z = 1000;
+    const koreanChars = [];
+    for (let i = 0xAC00; i <= 0xD7A3; i++) {
+        koreanChars.push(String.fromCharCode(i));
+    }
+    const russianChars = [];
+    for (let i = 0x0410; i <= 0x044F; i++) {
+        russianChars.push(String.fromCharCode(i));
+    }
+    const chars = koreanChars.concat(russianChars);
 
-    const particles = new THREE.Group();
-    scene.add(particles);
+    function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    document.fonts.ready.then(() => {
-        function getRandomCharacter() {
-            const rand = Math.random();
-            if (rand < 0.5) {
-                return String.fromCharCode(0x0410 + Math.floor(Math.random() * (0x044F - 0x0410)));
-            } else {
-                return String.fromCharCode(0xAC00 + Math.floor(Math.random() * (0xD7A3 - 0xAC00)));
+        ctx.fillStyle = '#00ffcc';
+        ctx.font = fontSize + 'px Noto Sans KR';
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = chars[Math.floor(Math.random() * chars.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            if (drops[i] * fontSize < 0 && Math.random() > 0.975) {
+                drops[i] = canvas.height / fontSize;
             }
+
+            drops[i]--;
         }
+    }
 
-        function createTextTexture(char) {
-            const size = 256;
-            const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext('2d');
-            ctx.font = 'Bold 200px Noto Sans KR';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#00ffcc';
-            ctx.shadowBlur = 30;
-            ctx.shadowColor = '#00ffcc';
-            ctx.fillText(char, size / 2, size / 2);
-            return new THREE.CanvasTexture(canvas);
-        }
-
-        const particleCount = 1500;
-
-        for (let i = 0; i < particleCount; i++) {
-            const character = getRandomCharacter();
-            const texture = createTextTexture(character);
-            const material = new THREE.SpriteMaterial({
-                map: texture,
-                blending: THREE.AdditiveBlending,
-                depthTest: false,
-                transparent: true
-            });
-            const particle = new THREE.Sprite(material);
-            particle.position.x = (Math.random() - 0.5) * 2000;
-            particle.position.y = (Math.random() - 0.5) * 2000;
-            particle.position.z = (Math.random() - 0.5) * 2000;
-            particle.scale.x = particle.scale.y = 30 + Math.random() * 50;
-            particles.add(particle);
-        }
-
-        let mouseX = 0;
-        let mouseY = 0;
-        let targetX = 0;
-        let targetY = 0;
-        const windowHalfX = window.innerWidth / 2;
-        const windowHalfY = window.innerHeight / 2;
-
-        function onDocumentMouseMove(event) {
-            mouseX = (event.clientX - windowHalfX) * 0.05;
-            mouseY = (event.clientY - windowHalfY) * 0.05;
-        }
-
-        function onDocumentTouchMove(event) {
-            if (event.touches.length === 1) {
-                event.preventDefault();
-                mouseX = (event.touches[0].pageX - windowHalfX) * 0.05;
-                mouseY = (event.touches[0].pageY - windowHalfY) * 0.05;
-            }
-        }
-
-        document.addEventListener('mousemove', onDocumentMouseMove);
-        document.addEventListener('touchmove', onDocumentTouchMove);
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            targetX += (mouseX - targetX) * 0.05;
-            targetY += (mouseY - targetY) * 0.05;
-
-            particles.rotation.x += 0.0005 * (targetY - particles.rotation.x);
-            particles.rotation.y += 0.0005 * (targetX - particles.rotation.y);
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
-    });
+    setInterval(draw, 33);
 
     window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const columns = Math.floor(canvas.width / fontSize);
+        drops.length = 0;
+        for (let x = 0; x < columns; x++) drops[x] = canvas.height / fontSize;
     });
 
     const form = document.getElementById('login-form');
@@ -107,10 +55,4 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = form.username.value.trim();
         if (username) {
             const email = `${username}@ko.vc`;
-            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/ko.vc`;
-            window.location.href = loginUrl;
-        } else {
-            alert('Please enter your username.');
-        }
-    });
-});
+            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail

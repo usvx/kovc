@@ -38,18 +38,22 @@ main {
     position: relative;
     z-index: 1;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
     padding: 0 20px;
-    backdrop-filter: blur(5px);
 }
 
 .entrance {
     text-align: center;
     animation: fadeIn 2s ease-in-out forwards;
     opacity: 0;
+    background: rgba(10, 10, 10, 0.7);
+    border: 1px solid var(--accent-color);
+    border-radius: 20px;
+    padding: 40px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
 }
 
 h1 {

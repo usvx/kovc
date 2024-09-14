@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('background');
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setClearColor(0x000000, 0);
@@ -8,10 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
     camera.position.z = 1000;
+
     const particles = new THREE.Group();
     scene.add(particles);
 
-    document.fonts.ready.then(() => {
+    const font = new FontFace('Noto Sans KR', 'url(https://fonts.gstatic.com/s/notosanskr/v19/Pby6FmXiEBPT4ITbgNA5CgmOsn7P.woff2)');
+
+    font.load().then(function(loadedFont) {
+        document.fonts.add(loadedFont);
+
         function getRandomCharacter() {
             const rand = Math.random();
             if (rand < 0.5) {
@@ -49,9 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 transparent: true
             });
             const particle = new THREE.Sprite(material);
-            particle.position.x = THREE.MathUtils.randFloatSpread(2000);
-            particle.position.y = THREE.MathUtils.randFloatSpread(2000);
-            particle.position.z = THREE.MathUtils.randFloatSpread(2000);
+            particle.position.x = (Math.random() - 0.5) * 2000;
+            particle.position.y = (Math.random() - 0.5) * 2000;
+            particle.position.z = (Math.random() - 0.5) * 2000;
             particle.scale.x = particle.scale.y = 30 + Math.random() * 50;
             particles.add(particle);
         }

@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let columns;
     let drops = [];
 
+    document.addEventListener('mousemove', (event) => {
+        const xOffset = (event.clientX / window.innerWidth - 0.5) * 10;
+        const yOffset = (event.clientY / window.innerHeight - 0.5) * 10;
+        document.body.style.transform = `rotateX(${yOffset}deg) rotateY(${xOffset}deg)`;
+    });
+
     function getRandomCharacter() {
         const randomChoice = Math.random();
         if (randomChoice < 0.5) {

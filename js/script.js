@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const x = i * symbolSize;
             const y = drops[i] * symbolSize;
 
-            // Parallax effect based on mouse position
             const dx = (x - mouseX) * 0.05;
             const dy = (y - mouseY) * 0.05;
 
@@ -92,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
         parallaxEffect(touch.clientX, touch.clientY);
     }, { passive: true });
 
-    // For mobile devices without mouse movement
     document.addEventListener('deviceorientation', (e) => {
         const x = (e.gamma || 0) * 5 + window.innerWidth / 2;
         const y = (e.beta || 0) * 5 + window.innerHeight / 2;

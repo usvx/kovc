@@ -1,9 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;400&display=swap&subset=latin,cyrillic,korean');
+
 :root {
-    --background-gradient: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    --background-color: #0a0a0a;
     --foreground-color: #e0e0e0;
     --accent-color: #00ffcc;
-    --font-family: 'Noto Sans KR', sans-serif;
-    --glow-color: rgba(0, 255, 204, 0.7);
+    --font-family: 'Noto Sans', sans-serif;
 }
 
 * {
@@ -16,10 +17,9 @@ html, body {
     height: 100%;
     width: 100%;
     overflow: hidden;
-    background: var(--background-gradient);
     font-family: var(--font-family);
+    background-color: var(--background-color);
     color: var(--foreground-color);
-    -webkit-font-smoothing: antialiased;
 }
 
 #background {
@@ -28,15 +28,20 @@ html, body {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
-    display: block;
-    pointer-events: none;
+    z-index: 0;
+}
+
+#background canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 main {
     position: relative;
     z-index: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
@@ -47,12 +52,6 @@ main {
     text-align: center;
     animation: fadeIn 2s ease-in-out forwards;
     opacity: 0;
-    background: rgba(10, 10, 10, 0.7);
-    border: 1px solid var(--accent-color);
-    border-radius: 20px;
-    padding: 40px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
 }
 
 h1 {
@@ -61,7 +60,6 @@ h1 {
     font-weight: 100;
     letter-spacing: 4px;
     color: var(--accent-color);
-    text-shadow: 0 0 10px var(--glow-color);
 }
 
 form {
@@ -80,21 +78,15 @@ form {
     width: 100%;
     padding: 15px;
     background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--accent-color);
+    border: none;
     border-radius: 50px;
     color: var(--foreground-color);
     font-size: 1rem;
     padding-left: 20px;
     font-family: var(--font-family);
     letter-spacing: 1px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
     outline: none;
-    transition: background 0.3s ease, border 0.3s ease;
-}
-
-.input-container input:focus {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: var(--glow-color);
 }
 
 .input-container span {
@@ -104,6 +96,7 @@ form {
     transform: translateY(-50%);
     color: var(--foreground-color);
     font-size: 1rem;
+    font-family: var(--font-family);
     pointer-events: none;
 }
 
@@ -122,14 +115,13 @@ button {
     font-size: 1rem;
     font-family: var(--font-family);
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
     width: 200px;
 }
 
 button:hover {
     background-color: var(--accent-color);
     color: var(--background-color);
-    box-shadow: 0 0 15px var(--glow-color);
 }
 
 @keyframes fadeIn {
@@ -159,5 +151,11 @@ button:hover {
     button {
         padding: 12px 24px;
         font-size: 0.9rem;
+    }
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+    body {
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 }

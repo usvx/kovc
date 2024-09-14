@@ -35,22 +35,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const particleCount = 1500;
-    const particleGeometry = new THREE.BufferGeometry();
-    const positions = [];
-    const scales = [];
-    const textures = [];
 
     for (let i = 0; i < particleCount; i++) {
         const character = getRandomCharacter();
         const texture = createTextTexture(character);
-
         const material = new THREE.SpriteMaterial({
             map: texture,
             blending: THREE.AdditiveBlending,
             depthTest: false,
             transparent: true
         });
-
         const particle = new THREE.Sprite(material);
         particle.position.x = THREE.MathUtils.randFloatSpread(2000);
         particle.position.y = THREE.MathUtils.randFloatSpread(2000);

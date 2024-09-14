@@ -1,118 +1,108 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const canvas = document.getElementById('background');
-    const gl = canvas.getContext('webgl');
-
-    if (!gl) {
-        console.error('WebGL not supported');
-        return;
-    }
+    const ctx = canvas.getContext('2d');
 
     let width, height;
-    function resizeCanvas() {
+    const symbolSize = 20;
+    let layers = [];
+    const layerCount = 3;
+    const colors = ['rgba(0, 255, 204, 0.5)', 'rgba(0, 255, 204, 0.7)', 'rgba(0, 255, 204, 1)'];
+
+    class Symbol {
+        constructor(x, y, speed) {
+            this.x = x;
+            this.y = y;
+            this.speed = speed;
+            this.value = '';
+            this.switchInterval = Math.floor(Math.random() * 20 + 5);
+            this.counter = 0;
+        }
+
+        setToRandomSymbol() {
+            const charType = Math.random();
+            if (charType < 0.5) {
+                this.value = String.fromCharCode(0x0410 + Math.random() * (0x044F - 0x0410));
+            } else {
+                this.value = String.fromCharCode(0xAC00 + Math.random() * (0xD7A3 - 0xAC00));
+            }
+        }
+
+        update() {
+            if (this.counter % this.switchInterval === 0) {
+                this.setToRandomSymbol();
+            }
+            this.y = (this.y + this.speed) % height;
+            this.counter++;
+        }
+    }
+
+    class SymbolStream {
+        constructor(x, speed, opacity) {
+            this.symbols = [];
+            this.totalSymbols = Math.floor(height / symbolSize);
+            this.speed = speed;
+            this.x = x;
+            this.opacity = opacity;
+            this.generateSymbols();
+        }
+
+        generateSymbols() {
+            let y = Math.random() * -1000;
+            for (let i = 0; i < this.totalSymbols; i++) {
+                const symbol = new Symbol(this.x, y, this.speed);
+                symbol.setToRandomSymbol();
+                this.symbols.push(symbol);
+                y -= symbolSize;
+            }
+        }
+
+        update() {
+            this.symbols.forEach(symbol => symbol.update());
+        }
+    }
+
+    function init() {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
-        gl.viewport(0, 0, width, height);
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    const vertexShaderSource = `
-        attribute vec2 a_position;
-        varying vec2 v_uv;
-        void main() {
-            v_uv = a_position * 0.5 + 0.5;
-            gl_Position = vec4(a_position, 0.0, 1.0);
+        ctx.font = `${symbolSize}px 'Noto Sans', monospace`;
+        layers = [];
+        for (let i = 0; i < layerCount; i++) {
+            const streams = [];
+            const columns = Math.floor(width / symbolSize);
+            for (let j = 0; j < columns; j++) {
+                const x = j * symbolSize;
+                const speed = (Math.random() * 2 + 1) * (i + 1);
+                const opacity = (i + 1) / layerCount;
+                streams.push(new SymbolStream(x, speed, opacity));
+            }
+            layers.push(streams);
         }
-    `;
-
-    const fragmentShaderSource = `
-        precision mediump float;
-        uniform float u_time;
-        uniform vec2 u_resolution;
-        varying vec2 v_uv;
-
-        float random(vec2 st) {
-            return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
-        }
-
-        float character(vec2 uv, float shift) {
-            float x = floor(uv.x * u_resolution.x / 20.0);
-            float y = floor((uv.y + shift) * u_resolution.y / 20.0);
-            vec2 grid = vec2(x, y);
-            return step(0.9, random(grid));
-        }
-
-        void main() {
-            vec2 uv = v_uv;
-            float speed = u_time * 0.5;
-            float c = character(uv, speed);
-
-            float brightness = c * smoothstep(0.0, 0.5, fract(uv.y + speed));
-
-            gl_FragColor = vec4(0.0, brightness * 0.8, brightness * 0.6, 1.0);
-        }
-    `;
-
-    function createShader(gl, type, source) {
-        const shader = gl.createShader(type);
-        gl.shaderSource(shader, source);
-        gl.compileShader(shader);
-
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            console.error('Error compiling shader:', gl.getShaderInfoLog(shader));
-            gl.deleteShader(shader);
-            return null;
-        }
-
-        return shader;
     }
 
-    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+    function animate() {
+        ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+        ctx.fillRect(0, 0, width, height);
 
-    const program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error('Error linking program:', gl.getProgramInfoLog(program));
-        return;
+        layers.forEach((streams, index) => {
+            ctx.fillStyle = colors[index];
+            streams.forEach(stream => {
+                stream.update();
+                stream.symbols.forEach(symbol => {
+                    ctx.globalAlpha = symbol.opacity;
+                    ctx.fillText(symbol.value, symbol.x, symbol.y);
+                });
+            });
+        });
+        requestAnimationFrame(animate);
     }
 
-    const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
-    const timeUniformLocation = gl.getUniformLocation(program, 'u_time');
-    const resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
+    init();
+    animate();
 
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    const positions = [
-        -1, -1,
-         1, -1,
-        -1,  1,
-        -1,  1,
-         1, -1,
-         1,  1,
-    ];
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-
-    function render(time) {
-        time *= 0.001;
-
-        gl.useProgram(program);
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        gl.enableVertexAttribArray(positionAttributeLocation);
-        gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-
-        gl.uniform1f(timeUniformLocation, time);
-        gl.uniform2f(resolutionUniformLocation, width, height);
-
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-        requestAnimationFrame(render);
-    }
-    requestAnimationFrame(render);
+    window.addEventListener('resize', () => {
+        init();
+    });
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();

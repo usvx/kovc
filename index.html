@@ -4,10 +4,21 @@
     <meta charset="UTF-8">
     <title>Cipher Access Portal</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self';
+        style-src 'self';
+        font-src 'self';
+        img-src 'self' data:;
+        connect-src 'self';
+        object-src 'none';
+        frame-ancestors 'none';
+        upgrade-insecure-requests;
+        block-all-mixed-content;
+    ">
+    
     <link rel="stylesheet" href="css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;400&display=swap" rel="stylesheet">
 </head>
 <body>
     <canvas id="background"></canvas>
@@ -23,7 +34,7 @@
             </form>
         </div>
     </main>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/three.min.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

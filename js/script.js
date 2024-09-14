@@ -1,106 +1,82 @@
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('background');
-    const ctx = canvas.getContext('2d');
-
-    let width, height;
-    let symbolSize = 20;
-    let columns;
-    let symbols = [];
-
-    let mouseX = 0;
-    let mouseY = 0;
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.0008);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
+    camera.position.z = 1000;
+    const particles = new THREE.Group();
+    scene.add(particles);
 
     function getRandomCharacter() {
-        const randomChoice = Math.random();
-        if (randomChoice < 0.5) {
+        const rand = Math.random();
+        if (rand < 0.5) {
             return String.fromCharCode(0x0410 + Math.random() * (0x044F - 0x0410));
         } else {
             return String.fromCharCode(0xAC00 + Math.random() * (0xD7A3 - 0xAC00));
         }
     }
 
-    class Symbol {
-        constructor(x, y, z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.speed = (Math.random() * 5 + 2) * (1 + z / 5);
-            this.value = getRandomCharacter();
-            this.opacity = Math.random();
-            this.switchInterval = Math.round(Math.random() * 20 + 5);
-            this.size = symbolSize * (1 + z / 5);
-        }
-
-        update() {
-            if (frameCount % this.switchInterval === 0) {
-                this.value = getRandomCharacter();
-            }
-
-            this.y += this.speed;
-
-            if (this.y * this.size > height) {
-                this.y = 0;
-            }
-        }
-
-        draw() {
-            ctx.save();
-
-            let dx = (mouseX - width / 2) / width;
-            let dy = (mouseY - height / 2) / height;
-            let parallaxX = this.x * this.size + dx * this.z * 10;
-            let parallaxY = this.y * this.size + dy * this.z * 10;
-
-            ctx.fillStyle = `rgba(0, 255, 204, ${this.opacity})`;
-            ctx.font = `${this.size}px 'Noto Sans', monospace`;
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = '#00ffcc';
-
-            ctx.fillText(this.value, parallaxX, parallaxY);
-
-            ctx.restore();
-        }
+    function createTextTexture(char) {
+        const size = 128;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.font = 'Bold 100px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#00ffcc';
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = '#00ffcc';
+        ctx.fillText(char, size / 2, size / 2);
+        return new THREE.CanvasTexture(canvas);
     }
 
-    let frameCount = 0;
-
-    function initializeSymbols() {
-        symbols = [];
-        for (let i = 0; i < columns; i++) {
-            const x = i;
-            const y = Math.random() * -50;
-            const z = Math.random() * 5;
-            symbols.push(new Symbol(x, y, z));
-        }
-    }
-
-    function resizeCanvas() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-        columns = Math.floor(width / symbolSize);
-        initializeSymbols();
-    }
-
-    function drawMatrix() {
-        frameCount++;
-
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-        ctx.fillRect(0, 0, width, height);
-
-        symbols.forEach(symbol => {
-            symbol.update();
-            symbol.draw();
+    const particleCount = 2000;
+    for (let i = 0; i < particleCount; i++) {
+        const character = getRandomCharacter();
+        const texture = createTextTexture(character);
+        const material = new THREE.SpriteMaterial({
+            map: texture,
+            blending: THREE.AdditiveBlending,
+            depthTest: false,
+            transparent: true
         });
-
-        requestAnimationFrame(drawMatrix);
+        const particle = new THREE.Sprite(material);
+        particle.position.x = THREE.MathUtils.randFloatSpread(2000);
+        particle.position.y = THREE.MathUtils.randFloatSpread(2000);
+        particle.position.z = THREE.MathUtils.randFloatSpread(2000);
+        particle.scale.x = particle.scale.y = 20 + Math.random() * 40;
+        particles.add(particle);
     }
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    window.addEventListener('mousemove', (event) => {
-        mouseX = event.clientX;
-        mouseY = event.clientY;
+    function animate() {
+        requestAnimationFrame(animate);
+        particles.rotation.x += 0.0005;
+        particles.rotation.y += 0.001;
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    drawMatrix();
+    const form = document.getElementById('login-form');
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const username = form.username.value.trim();
+        if (username) {
+            const email = `${username}@ko.vc`;
+            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/ko.vc`;
+            window.location.href = loginUrl;
+        } else {
+            alert('Please enter your username.');
+        }
+    });
 });

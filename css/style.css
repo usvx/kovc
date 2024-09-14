@@ -18,8 +18,8 @@ html, body {
     height: 100%;
     width: 100%;
     overflow: hidden;
-    font-family: var(--font-family);
     background: var(--background-gradient);
+    font-family: var(--font-family);
     color: var(--foreground-color);
     -webkit-font-smoothing: antialiased;
 }
@@ -30,8 +30,9 @@ html, body {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
+    z-index: -1; /* Place canvas behind content */
     display: block;
+    pointer-events: none; /* Allow interactions with content */
 }
 
 main {

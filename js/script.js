@@ -11,17 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const particles = new THREE.Group();
     scene.add(particles);
 
-    const font = new FontFace('NotoSansKR', 'url(https://fonts.gstatic.com/s/notosanskr/v19/Pby6FmXiEBPT4ITbgNA5CgmOsn7P.woff2)');
-
-    font.load().then(() => {
-        document.fonts.add(font);
-
+    document.fonts.ready.then(() => {
         function getRandomCharacter() {
             const rand = Math.random();
             if (rand < 0.5) {
-                return String.fromCharCode(0x0410 + Math.random() * (0x044F - 0x0410));
+                return String.fromCharCode(0x0410 + Math.floor(Math.random() * (0x044F - 0x0410)));
             } else {
-                return String.fromCharCode(0xAC00 + Math.random() * (0xD7A3 - 0xAC00));
+                return String.fromCharCode(0xAC00 + Math.floor(Math.random() * (0xD7A3 - 0xAC00)));
             }
         }
 
@@ -31,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.width = size;
             canvas.height = size;
             const ctx = canvas.getContext('2d');
-            ctx.font = 'Bold 200px NotoSansKR';
+            ctx.font = 'Bold 200px Noto Sans KR';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = '#00ffcc';
@@ -89,10 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
             targetX += (mouseX - targetX) * 0.05;
             targetY += (mouseY - targetY) * 0.05;
 
-            particles.rotation.x += 0.0005;
-            particles.rotation.y += 0.001;
-            particles.rotation.y += 0.0005 * (targetX - particles.rotation.y);
             particles.rotation.x += 0.0005 * (targetY - particles.rotation.x);
+            particles.rotation.y += 0.0005 * (targetX - particles.rotation.y);
 
             renderer.render(scene, camera);
         }

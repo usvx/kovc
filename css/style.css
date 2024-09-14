@@ -2,8 +2,8 @@
     --background-gradient: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
     --foreground-color: #e0e0e0;
     --accent-color: #00ffcc;
+    --font-family: 'Noto Sans KR', sans-serif;
     --glow-color: rgba(0, 255, 204, 0.7);
-    --font-family: sans-serif;
 }
 
 * {
@@ -110,6 +110,7 @@ form {
 input::placeholder {
     color: var(--foreground-color);
     opacity: 0.5;
+    font-family: var(--font-family);
 }
 
 button {

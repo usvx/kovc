@@ -1,103 +1,65 @@
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('login-form');
     const canvas = document.getElementById('background');
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setClearColor(0x000000, 0);
+    const ctx = canvas.getContext('2d');
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
-    camera.position.z = 1000;
-
-    const particles = new THREE.Group();
-    scene.add(particles);
-
-    function getRandomCharacter() {
-        const rand = Math.random();
-        return rand < 0.5
-            ? String.fromCharCode(0x0410 + Math.floor(Math.random() * (0x044F - 0x0410)))
-            : String.fromCharCode(0xAC00 + Math.floor(Math.random() * (0xD7A3 - 0xAC00)));
-    }
-
-    function createTextTexture(char) {
-        const size = 256;
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        ctx.font = 'Bold 200px Noto Sans KR';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#00ffcc';
-        ctx.shadowBlur = 30;
-        ctx.shadowColor = '#00ffcc';
-        ctx.fillText(char, size / 2, size / 2);
-        return new THREE.CanvasTexture(canvas);
-    }
-
-    const particleCount = 1500;
-
-    for (let i = 0; i < particleCount; i++) {
-        const character = getRandomCharacter();
-        const texture = createTextTexture(character);
-        const material = new THREE.SpriteMaterial({
-            map: texture,
-            blending: THREE.AdditiveBlending,
-            depthTest: false,
-            transparent: true
-        });
-        const particle = new THREE.Sprite(material);
-        particle.position.x = (Math.random() - 0.5) * 2000;
-        particle.position.y = (Math.random() - 0.5) * 2000;
-        particle.position.z = (Math.random() - 0.5) * 2000;
-        particle.scale.x = particle.scale.y = 30 + Math.random() * 50;
-        particles.add(particle);
-    }
+    let width, height;
+    let symbolSize = 20;
+    let columns;
+    let drops = [];
 
     let mouseX = 0;
     let mouseY = 0;
-    let targetX = 0;
-    let targetY = 0;
-    const windowHalfX = window.innerWidth / 2;
-    const windowHalfY = window.innerHeight / 2;
 
-    function onDocumentMouseMove(event) {
-        mouseX = (event.clientX - windowHalfX) * 0.05;
-        mouseY = (event.clientY - windowHalfY) * 0.05;
-    }
-
-    function onDocumentTouchMove(event) {
-        if (event.touches.length === 1) {
-            event.preventDefault();
-            mouseX = (event.touches[0].pageX - windowHalfX) * 0.05;
-            mouseY = (event.touches[0].pageY - windowHalfY) * 0.05;
+    function getRandomCharacter() {
+        const randomChoice = Math.random();
+        if (randomChoice < 0.5) {
+            return String.fromCharCode(0x0410 + Math.random() * (0x044F - 0x0410));
+        } else {
+            return String.fromCharCode(0xAC00 + Math.random() * (0xD7A3 - 0xAC00));
         }
     }
 
-    document.addEventListener('mousemove', onDocumentMouseMove);
-    document.addEventListener('touchmove', onDocumentTouchMove);
-
-    function animate() {
-        requestAnimationFrame(animate);
-
-        targetX += (mouseX - targetX) * 0.05;
-        targetY += (mouseY - targetY) * 0.05;
-
-        particles.rotation.x += 0.0005 * (targetY - particles.rotation.x);
-        particles.rotation.y += 0.0005 * (targetX - particles.rotation.y);
-
-        renderer.render(scene, camera);
+    function resizeCanvas() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        columns = Math.floor(width / symbolSize);
+        drops = [];
+        for (let x = 0; x < columns; x++) {
+            drops[x] = Math.random() * height / symbolSize;
+        }
     }
 
-    animate();
+    function drawMatrix() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, width, height);
 
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+        ctx.fillStyle = '#00ffcc';
+        ctx.font = `${symbolSize}px 'Noto Sans', monospace`;
 
-    const form = document.getElementById('login-form');
+        for (let i = 0; i < drops.length; i++) {
+            const text = getRandomCharacter();
+            const x = i * symbolSize;
+            const y = drops[i] * symbolSize;
+
+            const dx = (x - mouseX) * 0.05;
+            const dy = (y - mouseY) * 0.05;
+
+            ctx.fillText(text, x - dx, y - dy);
+
+            if (y > height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+
+        requestAnimationFrame(drawMatrix);
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    drawMatrix();
+
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const username = form.username.value.trim();
@@ -108,5 +70,30 @@ window.addEventListener('load', () => {
         } else {
             alert('Please enter your username.');
         }
+    });
+
+    const entrance = document.querySelector('.entrance');
+
+    function parallaxEffect(x, y) {
+        const percentX = (x / window.innerWidth) - 0.5;
+        const percentY = (y / window.innerHeight) - 0.5;
+        entrance.style.transform = `translateX(${percentX * 30}px) translateY(${percentY * 30}px)`;
+        mouseX = x;
+        mouseY = y;
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        parallaxEffect(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('touchmove', (e) => {
+        const touch = e.touches[0];
+        parallaxEffect(touch.clientX, touch.clientY);
+    }, { passive: true });
+
+    document.addEventListener('deviceorientation', (e) => {
+        const x = (e.gamma || 0) * 5 + window.innerWidth / 2;
+        const y = (e.beta || 0) * 5 + window.innerHeight / 2;
+        parallaxEffect(x, y);
     });
 });

@@ -14,11 +14,9 @@ window.addEventListener('load', () => {
 
     function getRandomCharacter() {
         const rand = Math.random();
-        if (rand < 0.5) {
-            return String.fromCharCode(0x0410 + Math.floor(Math.random() * (0x044F - 0x0410)));
-        } else {
-            return String.fromCharCode(0xAC00 + Math.floor(Math.random() * (0xD7A3 - 0xAC00)));
-        }
+        return rand < 0.5
+            ? String.fromCharCode(0x0410 + Math.floor(Math.random() * (0x044F - 0x0410)))
+            : String.fromCharCode(0xAC00 + Math.floor(Math.random() * (0xD7A3 - 0xAC00)));
     }
 
     function createTextTexture(char) {
@@ -27,7 +25,7 @@ window.addEventListener('load', () => {
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
-        ctx.font = 'Bold 200px Noto Sans KR';
+        ctx.font = 'Bold 200px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = '#00ffcc';

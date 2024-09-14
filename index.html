@@ -9,7 +9,7 @@
         img-src 'self' data:;
         font-src 'self' https://fonts.gstatic.com;
         style-src 'self' https://fonts.googleapis.com;
-        script-src 'self' https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+        script-src 'self';
         form-action 'self' https://accounts.google.com;
         object-src 'none';
     ">
@@ -26,7 +26,11 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <canvas id="background"></canvas>
+    <div id="background">
+        <canvas id="layer1"></canvas>
+        <canvas id="layer2"></canvas>
+        <canvas id="layer3"></canvas>
+    </div>
     <main>
         <div class="entrance">
             <h1>Cipher Access</h1>
@@ -39,7 +43,6 @@
             </form>
         </div>
     </main>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

@@ -19,39 +19,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const vertexShaderSource = `
         attribute vec2 a_position;
-        varying vec2 v_texcoord;
+        varying vec2 v_uv;
         void main() {
-            gl_Position = vec4(a_position, 0, 1);
-            v_texcoord = a_position * 0.5 + 0.5;
+            v_uv = a_position * 0.5 + 0.5;
+            gl_Position = vec4(a_position, 0.0, 1.0);
         }
     `;
 
     const fragmentShaderSource = `
         precision mediump float;
-        varying vec2 v_texcoord;
         uniform float u_time;
         uniform vec2 u_resolution;
+        varying vec2 v_uv;
 
         float random(vec2 st) {
             return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
         }
 
-        float getCharacter(vec2 st) {
-            vec2 grid = floor(st * vec2(80.0, 40.0));
-            float rnd = random(grid + floor(u_time * 0.1));
-            return step(0.5, rnd);
+        float character(vec2 uv, float shift) {
+            float x = floor(uv.x * u_resolution.x / 20.0);
+            float y = floor((uv.y + shift) * u_resolution.y / 20.0);
+            vec2 grid = vec2(x, y);
+            return step(0.9, random(grid));
         }
 
         void main() {
-            vec2 st = gl_FragCoord.xy / u_resolution.xy;
-            float char = getCharacter(st);
+            vec2 uv = v_uv;
+            float speed = u_time * 0.5;
+            float c = character(uv, speed);
 
-            float y = mod(gl_FragCoord.y + u_time * 50.0, u_resolution.y);
-            float trail = step(y, gl_FragCoord.y) * step(gl_FragCoord.y, y + 15.0);
+            float brightness = c * smoothstep(0.0, 0.5, fract(uv.y + speed));
 
-            vec3 color = mix(vec3(0.0), vec3(0.0, 1.0, 0.8), char * trail);
-
-            gl_FragColor = vec4(color, 1.0);
+            gl_FragColor = vec4(0.0, brightness * 0.8, brightness * 0.6, 1.0);
         }
     `;
 
@@ -94,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         -1,  1,
         -1,  1,
          1, -1,
-         1,  1
+         1,  1,
     ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 

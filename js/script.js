@@ -11,11 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const particles = new THREE.Group();
     scene.add(particles);
 
-    const font = new FontFace('NotoSansKR', 'url(https://fonts.gstatic.com/s/notosanskr/v19/Pby6FmXiEBPT4ITbgNA5CgmOsn7P.woff2)');
-
-    font.load().then((loadedFont) => {
-        document.fonts.add(loadedFont);
-
+    document.fonts.ready.then(() => {
         function getRandomCharacter() {
             const rand = Math.random();
             if (rand < 0.5) {
@@ -31,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.width = size;
             canvas.height = size;
             const ctx = canvas.getContext('2d');
-            ctx.font = 'Bold 200px NotoSansKR';
+            ctx.font = 'Bold 200px Noto Sans KR';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = '#00ffcc';
@@ -113,4 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/ko.vc`;
             window.location.href = loginUrl;
         } else {
- 
+            alert('Please enter your username.');
+        }
+    });
+});

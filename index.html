@@ -8,8 +8,8 @@
         default-src 'self';
         img-src 'self' data:;
         font-src 'self' https://fonts.gstatic.com;
-        style-src 'self' https://fonts.googleapis.com;
-        script-src 'self';
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        script-src 'self' 'unsafe-inline';
         form-action 'self' https://accounts.google.com;
         object-src 'none';
     ">
@@ -22,7 +22,7 @@
     <link rel="manifest" href="favicons/site.webmanifest">
     <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#5bbad5">
     <link rel="preload" href="fonts/Montserrat-Thin.woff2" as="font" type="font/woff2" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;400&display=swap&subset=latin,cyrillic,korean" rel="stylesheet" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>

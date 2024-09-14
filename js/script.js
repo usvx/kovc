@@ -1,52 +1,78 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
-    const canvas = document.getElementById('background');
-    const ctx = canvas.getContext('2d');
 
-    let width, height;
-    let symbolSize = 20;
-    let columns;
-    let drops = [];
+    let scene, camera, renderer, letters = [];
 
-    function getRandomCharacter() {
-        const randomChoice = Math.random();
-        if (randomChoice < 0.5) {
-            return String.fromCharCode(0x0410 + Math.random() * (0x044F - 0x0410));
-        } else {
-            return String.fromCharCode(0xAC00 + Math.random() * (0xD7A3 - 0xAC00));
-        }
-    }
+    const hangeulChars = [...'가나다라마바사아자차카타파하'];
+    const russianChars = [...'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'];
 
-    function resizeCanvas() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-        columns = Math.floor(width / symbolSize);
-        drops = Array(columns).fill(1);
-    }
+    function init() {
+        const container = document.getElementById('scene-container');
+        scene = new THREE.Scene();
 
-    function drawMatrix() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-        ctx.fillRect(0, 0, width, height);
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+        camera.position.z = 200;
 
-        ctx.fillStyle = '#00ffcc';
-        ctx.font = `${symbolSize}px 'Noto Sans', monospace`;
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
 
-        for (let i = 0; i < drops.length; i++) {
-            const text = getRandomCharacter();
-            ctx.fillText(text, i * symbolSize, drops[i] * symbolSize);
+        const light = new THREE.PointLight(0xffffff, 1);
+        light.position.set(0, 0, 200);
+        scene.add(light);
 
-            if (drops[i] * symbolSize > height && Math.random() > 0.975) {
-                drops[i] = 0;
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+
+        const loader = new THREE.FontLoader();
+        loader.load('https://threejs.org/examples/fonts/gentilis_regular.typeface.json', function (font) {
+            const material = new THREE.MeshPhongMaterial({ color: 0x00ffcc, flatShading: true });
+
+            for (let i = 0; i < 50; i++) {
+                const char = Math.random() > 0.5 ? hangeulChars[Math.floor(Math.random() * hangeulChars.length)] : russianChars[Math.floor(Math.random() * russianChars.length)];
+                const textGeo = new THREE.TextGeometry(char, {
+                    font: font,
+                    size: 20,
+                    height: 5,
+                    curveSegments: 12,
+                });
+                const textMesh = new THREE.Mesh(textGeo, material);
+                textMesh.position.x = (Math.random() - 0.5) * 400;
+                textMesh.position.y = (Math.random() - 0.5) * 400;
+                textMesh.position.z = (Math.random() - 0.5) * 400;
+                textMesh.rotation.x = Math.random() * 2 * Math.PI;
+                textMesh.rotation.y = Math.random() * 2 * Math.PI;
+                textMesh.rotation.z = Math.random() * 2 * Math.PI;
+                scene.add(textMesh);
+                letters.push(textMesh);
             }
-            drops[i]++;
-        }
 
-        requestAnimationFrame(drawMatrix);
+            animate();
+        });
+
+        window.addEventListener('resize', onWindowResize, false);
     }
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    drawMatrix();
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        letters.forEach(letter => {
+            letter.rotation.x += 0.005;
+            letter.rotation.y += 0.005;
+            letter.rotation.z += 0.005;
+        });
+
+        renderer.render(scene, camera);
+    }
+
+    init();
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();

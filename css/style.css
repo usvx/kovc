@@ -18,6 +18,19 @@ html, body {
     background-color: var(--background-color);
     color: var(--foreground-color);
     perspective: var(--perspective-depth);
+    animation: subtleRotation 180s infinite linear;
+}
+
+@keyframes subtleRotation {
+    0% {
+        transform: rotateX(0deg) rotateY(0deg);
+    }
+    50% {
+        transform: rotateX(5deg) rotateY(5deg);
+    }
+    100% {
+        transform: rotateX(0deg) rotateY(0deg);
+    }
 }
 
 #background {
@@ -29,6 +42,18 @@ html, body {
     z-index: 0;
     transform: scale(var(--3d-scale));
     filter: blur(var(--blur-intensity));
+    animation: breatheBackground 20s ease-in-out infinite alternate;
+}
+
+@keyframes breatheBackground {
+    0% {
+        transform: scale(1.1);
+        filter: blur(2px);
+    }
+    100% {
+        transform: scale(1.05);
+        filter: blur(3px);
+    }
 }
 
 main {
@@ -41,11 +66,21 @@ main {
     min-height: 100vh;
     padding: 0 20px;
     transform: translateZ(50px);
+    animation: mainFloat 15s ease-in-out infinite alternate;
+}
+
+@keyframes mainFloat {
+    0% {
+        transform: translateY(0) translateZ(50px);
+    }
+    100% {
+        transform: translateY(-30px) translateZ(50px);
+    }
 }
 
 .entrance {
     text-align: center;
-    animation: fadeIn 2s ease-in-out forwards, float 6s ease-in-out infinite;
+    animation: fadeIn 2s ease-in-out forwards, pulse 6s ease-in-out infinite alternate;
     opacity: 0;
 }
 
@@ -56,7 +91,16 @@ h1 {
     letter-spacing: 4px;
     color: var(--accent-color);
     text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.6);
-    transform: rotateX(15deg);
+    animation: textPulse 12s infinite ease-in-out alternate;
+}
+
+@keyframes textPulse {
+    0% {
+        text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.6);
+    }
+    100% {
+        text-shadow: 4px 8px 12px rgba(0, 0, 0, 0.9);
+    }
 }
 
 form {
@@ -128,12 +172,12 @@ button:hover {
     }
 }
 
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0);
+@keyframes pulse {
+    0% {
+        transform: scale(1);
     }
-    50% {
-        transform: translateY(-20px);
+    100% {
+        transform: scale(1.05);
     }
 }
 

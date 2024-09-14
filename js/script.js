@@ -1,110 +1,53 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.getElementById('background');
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
-    camera.position.z = 1000;
-    const particles = new THREE.Group();
-    scene.add(particles);
-
-    const font = new FontFace('NotoSansKR', 'url(https://fonts.gstatic.com/s/notosanskr/v19/Pby6FmXiEBPT4ITbgNA5CgmOsn7P.woff2)');
-
-    font.load().then(() => {
-        document.fonts.add(font);
-
-        function getRandomCharacter() {
-            const rand = Math.random();
-            if (rand < 0.5) {
-                return String.fromCharCode(0x0410 + Math.random() * (0x044F - 0x0410));
-            } else {
-                return String.fromCharCode(0xAC00 + Math.random() * (0xD7A3 - 0xAC00));
-            }
-        }
-
-        function createTextTexture(char) {
-            const size = 256;
-            const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext('2d');
-            ctx.font = 'Bold 200px NotoSansKR';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#00ffcc';
-            ctx.shadowBlur = 30;
-            ctx.shadowColor = '#00ffcc';
-            ctx.fillText(char, size / 2, size / 2);
-            return new THREE.CanvasTexture(canvas);
-        }
-
-        const particleCount = 1500;
-
-        for (let i = 0; i < particleCount; i++) {
-            const character = getRandomCharacter();
-            const texture = createTextTexture(character);
-            const material = new THREE.SpriteMaterial({
-                map: texture,
-                blending: THREE.AdditiveBlending,
-                depthTest: false,
-                transparent: true
-            });
-            const particle = new THREE.Sprite(material);
-            particle.position.x = THREE.MathUtils.randFloatSpread(2000);
-            particle.position.y = THREE.MathUtils.randFloatSpread(2000);
-            particle.position.z = THREE.MathUtils.randFloatSpread(2000);
-            particle.scale.x = particle.scale.y = 30 + Math.random() * 50;
-            particles.add(particle);
-        }
-
-        let mouseX = 0;
-        let mouseY = 0;
-        let targetX = 0;
-        let targetY = 0;
-        const windowHalfX = window.innerWidth / 2;
-        const windowHalfY = window.innerHeight / 2;
-
-        function onDocumentMouseMove(event) {
-            mouseX = (event.clientX - windowHalfX) * 0.05;
-            mouseY = (event.clientY - windowHalfY) * 0.05;
-        }
-
-        function onDocumentTouchMove(event) {
-            if (event.touches.length === 1) {
-                event.preventDefault();
-                mouseX = (event.touches[0].pageX - windowHalfX) * 0.05;
-                mouseY = (event.touches[0].pageY - windowHalfY) * 0.05;
-            }
-        }
-
-        document.addEventListener('mousemove', onDocumentMouseMove);
-        document.addEventListener('touchmove', onDocumentTouchMove);
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            targetX += (mouseX - targetX) * 0.05;
-            targetY += (mouseY - targetY) * 0.05;
-
-            particles.rotation.x += 0.0005;
-            particles.rotation.y += 0.001;
-            particles.rotation.y += 0.0005 * (targetX - particles.rotation.y);
-            particles.rotation.x += 0.0005 * (targetY - particles.rotation.x);
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
-    });
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
     const form = document.getElementById('login-form');
+    const canvas = document.getElementById('background');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let symbolSize = 20;
+    let columns;
+    let drops = [];
+
+    function getRandomCharacter() {
+        const randomChoice = Math.random();
+        if (randomChoice < 0.5) {
+            return String.fromCharCode(0x0410 + Math.random() * (0x044F - 0x0410));
+        } else {
+            return String.fromCharCode(0xAC00 + Math.random() * (0xD7A3 - 0xAC00));
+        }
+    }
+
+    function resizeCanvas() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        columns = Math.floor(width / symbolSize);
+        drops = Array(columns).fill(1);
+    }
+
+    function drawMatrix() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.fillStyle = '#00ffcc';
+        ctx.font = `${symbolSize}px 'Noto Sans', monospace`;
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = getRandomCharacter();
+            ctx.fillText(text, i * symbolSize, drops[i] * symbolSize);
+
+            if (drops[i] * symbolSize > height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+
+        requestAnimationFrame(drawMatrix);
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    drawMatrix();
+
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const username = form.username.value.trim();

@@ -47,6 +47,7 @@ main {
     text-align: center;
     animation: fadeIn 2s ease-in-out forwards;
     opacity: 0;
+    transform-style: preserve-3d;
 }
 
 h1 {

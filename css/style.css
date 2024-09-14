@@ -2,8 +2,8 @@
     --background-gradient: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
     --foreground-color: #e0e0e0;
     --accent-color: #00ffcc;
-    --font-family: 'Noto Sans KR', sans-serif;
     --glow-color: rgba(0, 255, 204, 0.7);
+    --font-family: sans-serif;
 }
 
 * {
@@ -104,14 +104,12 @@ form {
     transform: translateY(-50%);
     color: var(--foreground-color);
     font-size: 1rem;
-    font-family: var(--font-family);
     pointer-events: none;
 }
 
 input::placeholder {
     color: var(--foreground-color);
     opacity: 0.5;
-    font-family: var(--font-family);
 }
 
 button {
@@ -160,11 +158,5 @@ button:hover {
     button {
         padding: 12px 24px;
         font-size: 0.9rem;
-    }
-}
-
-@supports (padding: env(safe-area-inset-top)) {
-    body {
-        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 }

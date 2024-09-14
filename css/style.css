@@ -1,13 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;400&display=swap');
-
 :root {
     --background-color: #0a0a0a;
     --foreground-color: #e0e0e0;
     --accent-color: #00ffcc;
     --font-family: 'Noto Sans', sans-serif;
-    --perspective-depth: 1000px;
-    --blur-intensity: 2px;
-    --3d-scale: 1.1;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 html, body {
@@ -17,43 +18,15 @@ html, body {
     font-family: var(--font-family);
     background-color: var(--background-color);
     color: var(--foreground-color);
-    perspective: var(--perspective-depth);
-    animation: subtleRotation 180s infinite linear;
 }
 
-@keyframes subtleRotation {
-    0% {
-        transform: rotateX(0deg) rotateY(0deg);
-    }
-    50% {
-        transform: rotateX(5deg) rotateY(5deg);
-    }
-    100% {
-        transform: rotateX(0deg) rotateY(0deg);
-    }
-}
-
-#background {
+#container {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
-    transform: scale(var(--3d-scale));
-    filter: blur(var(--blur-intensity));
-    animation: breatheBackground 20s ease-in-out infinite alternate;
-}
-
-@keyframes breatheBackground {
-    0% {
-        transform: scale(1.1);
-        filter: blur(2px);
-    }
-    100% {
-        transform: scale(1.05);
-        filter: blur(3px);
-    }
+    z-index: -1;
 }
 
 main {
@@ -65,42 +38,19 @@ main {
     justify-content: center;
     min-height: 100vh;
     padding: 0 20px;
-    transform: translateZ(50px);
-    animation: mainFloat 15s ease-in-out infinite alternate;
-}
-
-@keyframes mainFloat {
-    0% {
-        transform: translateY(0) translateZ(50px);
-    }
-    100% {
-        transform: translateY(-30px) translateZ(50px);
-    }
 }
 
 .entrance {
     text-align: center;
-    animation: fadeIn 2s ease-in-out forwards, pulse 6s ease-in-out infinite alternate;
+    animation: fadeIn 2s ease-in-out forwards;
     opacity: 0;
 }
 
 h1 {
     font-size: 4rem;
     margin-bottom: 60px;
-    font-weight: 100;
-    letter-spacing: 4px;
+    font-weight: 700;
     color: var(--accent-color);
-    text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.6);
-    animation: textPulse 12s infinite ease-in-out alternate;
-}
-
-@keyframes textPulse {
-    0% {
-        text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.6);
-    }
-    100% {
-        text-shadow: 4px 8px 12px rgba(0, 0, 0, 0.9);
-    }
 }
 
 form {
@@ -123,7 +73,6 @@ form {
     border-radius: 50px;
     color: var(--foreground-color);
     font-size: 1rem;
-    text-align: left;
     padding-left: 20px;
     font-family: var(--font-family);
     letter-spacing: 1px;
@@ -138,14 +87,6 @@ form {
     transform: translateY(-50%);
     color: var(--foreground-color);
     font-size: 1rem;
-    font-family: var(--font-family);
-    pointer-events: none;
-}
-
-input::placeholder {
-    color: var(--foreground-color);
-    opacity: 0.5;
-    font-family: var(--font-family);
 }
 
 button {
@@ -155,7 +96,6 @@ button {
     border: 2px solid var(--accent-color);
     border-radius: 50px;
     font-size: 1rem;
-    font-family: var(--font-family);
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
     width: 200px;
@@ -169,15 +109,6 @@ button:hover {
 @keyframes fadeIn {
     to {
         opacity: 1;
-    }
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    100% {
-        transform: scale(1.05);
     }
 }
 
@@ -202,11 +133,5 @@ button:hover {
     button {
         padding: 12px 24px;
         font-size: 0.9rem;
-    }
-}
-
-@supports (padding: env(safe-area-inset-top)) {
-    body {
-        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 }

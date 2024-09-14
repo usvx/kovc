@@ -1,15 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
-    const canvas = document.getElementById('background');
-    const ctx = canvas.getContext('2d');
+
+    // Canvas setup
+    const canvasLayers = [
+        document.getElementById('layer1'),
+        document.getElementById('layer2'),
+        document.getElementById('layer3')
+    ];
+
+    const contexts = canvasLayers.map(canvas => canvas.getContext('2d'));
 
     let width, height;
-    let symbolSize = 20;
-    let columns;
-    let drops = [];
-
-    let mouseX = 0;
-    let mouseY = 0;
+    const symbolSize = 20;
+    const layers = [];
+    const speeds = [1, 0.7, 0.5]; // Different speeds for layers to create depth
 
     function getRandomCharacter() {
         const randomChoice = Math.random();
@@ -21,37 +25,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resizeCanvas() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-        columns = Math.floor(width / symbolSize);
-        drops = [];
-        for (let x = 0; x < columns; x++) {
-            drops[x] = Math.random() * height / symbolSize;
+        width = window.innerWidth;
+        height = window.innerHeight;
+
+        canvasLayers.forEach(canvas => {
+            canvas.width = width;
+            canvas.height = height;
+        });
+
+        layers.length = 0;
+        for (let i = 0; i < canvasLayers.length; i++) {
+            const columns = Math.floor(width / symbolSize);
+            const drops = [];
+            for (let x = 0; x < columns; x++) {
+                drops[x] = Math.random() * height / symbolSize;
+            }
+            layers.push(drops);
         }
     }
 
     function drawMatrix() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, width, height);
+        contexts.forEach((ctx, index) => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
 
-        ctx.fillStyle = '#00ffcc';
-        ctx.font = `${symbolSize}px 'Noto Sans', monospace`;
+            ctx.fillStyle = '#00ffcc';
+            ctx.font = `${symbolSize}px 'Noto Sans', monospace`;
 
-        for (let i = 0; i < drops.length; i++) {
-            const text = getRandomCharacter();
-            const x = i * symbolSize;
-            const y = drops[i] * symbolSize;
+            const drops = layers[index];
+            const speed = speeds[index];
 
-            const dx = (x - mouseX) * 0.05;
-            const dy = (y - mouseY) * 0.05;
+            for (let i = 0; i < drops.length; i++) {
+                const text = getRandomCharacter();
+                const x = i * symbolSize;
+                const y = drops[i] * symbolSize;
 
-            ctx.fillText(text, x - dx, y - dy);
+                ctx.fillText(text, x, y);
 
-            if (y > height && Math.random() > 0.975) {
-                drops[i] = 0;
+                if (y > height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i] += speed;
             }
-            drops[i]++;
-        }
+        });
 
         requestAnimationFrame(drawMatrix);
     }
@@ -70,30 +86,5 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             alert('Please enter your username.');
         }
-    });
-
-    const entrance = document.querySelector('.entrance');
-
-    function parallaxEffect(x, y) {
-        const percentX = (x / window.innerWidth) - 0.5;
-        const percentY = (y / window.innerHeight) - 0.5;
-        entrance.style.transform = `translateX(${percentX * 30}px) translateY(${percentY * 30}px)`;
-        mouseX = x;
-        mouseY = y;
-    }
-
-    document.addEventListener('mousemove', (e) => {
-        parallaxEffect(e.clientX, e.clientY);
-    });
-
-    document.addEventListener('touchmove', (e) => {
-        const touch = e.touches[0];
-        parallaxEffect(touch.clientX, touch.clientY);
-    }, { passive: true });
-
-    document.addEventListener('deviceorientation', (e) => {
-        const x = (e.gamma || 0) * 5 + window.innerWidth / 2;
-        const y = (e.beta || 0) * 5 + window.innerHeight / 2;
-        parallaxEffect(x, y);
     });
 });

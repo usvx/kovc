@@ -30,9 +30,9 @@ html, body {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1; /* Place canvas behind content */
+    z-index: -1;
     display: block;
-    pointer-events: none; /* Allow interactions with content */
+    pointer-events: none;
 }
 
 main {

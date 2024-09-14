@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('login-form');
     const canvas = document.getElementById('background');
     const ctx = canvas.getContext('2d');
 
@@ -7,12 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let symbolSize = 20;
     let columns;
     let drops = [];
-
-    document.addEventListener('mousemove', (event) => {
-        const xOffset = (event.clientX / window.innerWidth - 0.5) * 10;
-        const yOffset = (event.clientY / window.innerHeight - 0.5) * 10;
-        document.body.style.transform = `rotateX(${yOffset}deg) rotateY(${xOffset}deg)`;
-    });
 
     function getRandomCharacter() {
         const randomChoice = Math.random();
@@ -53,16 +46,4 @@ document.addEventListener('DOMContentLoaded', () => {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
     drawMatrix();
-
-    form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const username = form.username.value.trim();
-        if (username) {
-            const email = `${username}@ko.vc`;
-            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/ko.vc`;
-            window.location.href = loginUrl;
-        } else {
-            alert('Please enter your username.');
-        }
-    });
 });

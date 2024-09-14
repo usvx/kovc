@@ -2,9 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
 
     let scene, camera, renderer, particles = [];
-    let composer;
 
-    const hangeulChars = [...'가각간갇갈감갑갓강개걀거겅견결경고과관광교구국군굴권귀규균그극근글금기긴길김'];
+    const hangeulChars = [...'가나다라마바사아자차카타파하'];
     const russianChars = [...'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'];
 
     function createTextTexture(char) {
@@ -15,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, size, size);
-
         ctx.font = `${size * 0.8}px 'Noto Sans KR', 'Noto Sans SC', 'Noto Sans Mono', sans-serif`;
         ctx.fillStyle = '#00ffcc';
         ctx.textAlign = 'center';
@@ -48,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const char = charArray[Math.floor(Math.random() * charArray.length)];
 
             const texture = createTextTexture(char);
-            const material = new THREE.SpriteMaterial({ map: texture, color: 0xffffff, transparent: true });
+            const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
             const sprite = new THREE.Sprite(material);
             sprite.position.x = (Math.random() - 0.5) * 4000;
             sprite.position.y = (Math.random() - 0.5) * 4000;
@@ -65,21 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
 
-        composer = new THREE.EffectComposer(renderer);
-        const renderPass = new THREE.RenderPass(scene, camera);
-        composer.addPass(renderPass);
-
-        const bokehPass = new THREE.BokehPass(scene, camera, {
-            focus: 1000.0,
-            aperture: 5 * 0.00001,
-            maxblur: 1.0,
-
-            width: window.innerWidth,
-            height: window.innerHeight
-        });
-        bokehPass.renderToScreen = true;
-        composer.addPass(bokehPass);
-
         animate();
 
         window.addEventListener('resize', onWindowResize, false);
@@ -88,8 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let mouseX = 0, mouseY = 0;
 
     function onDocumentMouseMove(event) {
-        mouseX = (event.clientX - window.innerWidth / 2) * 2;
-        mouseY = (event.clientY - window.innerHeight / 2) * 2;
+        mouseX = (event.clientX - window.innerWidth / 2) * 0.5;
+        mouseY = (event.clientY - window.innerHeight / 2) * 0.5;
     }
 
     function onWindowResize() {
@@ -97,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.updateProjectionMatrix();
 
         renderer.setSize(window.innerWidth, window.innerHeight);
-        composer.setSize(window.innerWidth, window.innerHeight);
     }
 
     function animate() {
@@ -117,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.position.y += (-mouseY - camera.position.y) * 0.05;
         camera.lookAt(scene.position);
 
-        composer.render();
+        renderer.render(scene, camera);
     }
 
     init();

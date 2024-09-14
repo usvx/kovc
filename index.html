@@ -10,9 +10,8 @@
         font-src 'self' https://fonts.gstatic.com;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         script-src 'self' 'unsafe-inline';
-        form-action 'self' https://accounts.google.com;
+        form-action 'self';
         object-src 'none';
-        frame-ancestors 'none';
         upgrade-insecure-requests;
     ">
     <meta name="referrer" content="no-referrer">
@@ -25,23 +24,25 @@
     <link rel="manifest" href="favicons/site.webmanifest">
     <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#5bbad5">
     
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <title>Cipher Access Portal</title>
 </head>
 <body>
-    <canvas id="background"></canvas>
-    <main aria-labelledby="cipher-access-title">
+    <div id="container"></div>
+    <main>
         <div class="entrance">
-            <h1 id="cipher-access-title">Cipher Access</h1>
-            <form id="login-form" aria-label="Login Form">
+            <h1>Cipher Access</h1>
+            <form id="login-form">
                 <div class="input-container">
-                    <input type="text" name="username" placeholder="Username" aria-required="true" required>
-                    <span aria-hidden="true">@ko.vc</span>
+                    <input type="text" name="username" placeholder="Username" required>
+                    <span>@ko.vc</span>
                 </div>
                 <button type="submit">Enter</button>
             </form>
         </div>
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

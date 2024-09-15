@@ -96,14 +96,15 @@ form {
 .input-container {
     position: relative;
     width: 100%;
+    display: flex;
 }
 
 .input-container input {
-    width: 100%;
+    flex: 1;
     padding: 15px;
     background: rgba(255, 255, 255, 0.05);
     border: none;
-    border-radius: 10px;
+    border-radius: 10px 0 0 10px;
     color: var(--foreground-color);
     font-size: 1rem;
     padding-left: 20px;
@@ -116,36 +117,43 @@ form {
     background: rgba(255, 255, 255, 0.1);
 }
 
+.custom-select {
+    position: relative;
+    width: 140px;
+}
+
+.custom-select::after {
+    content: '▼';
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    color: var(--accent-color);
+    pointer-events: none;
+}
+
+.custom-select select {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent-color);
+    border: none;
+    border-radius: 0 10px 10px 0;
+    font-size: 1rem;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
+.custom-select select:focus {
+    background: rgba(255, 255, 255, 0.1);
+}
+
 input::placeholder {
     color: var(--foreground-color);
     opacity: 0.5;
-}
-
-.domain-options {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    width: 100%;
-}
-
-.domain-options input[type="radio"] {
-    display: none;
-}
-
-.domain-options label {
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--accent-color);
-    border: 1px solid var(--accent-color);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background 0.3s ease, color 0.3s ease;
-    font-size: 1rem;
-}
-
-.domain-options input[type="radio"]:checked + label {
-    background: var(--accent-color);
-    color: var(--background-color);
 }
 
 button {
@@ -201,8 +209,9 @@ button:hover {
         margin-bottom: 20px;
     }
     .input-container input,
-    .domain-options label {
+    .custom-select select {
         font-size: 0.9rem;
+        padding: 12px;
     }
     button {
         padding: 12px 24px;

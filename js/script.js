@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, size, size);
-        ctx.font = `${size * 0.7}px 'Noto Sans', sans-serif`;
+        ctx.font = `${size * 0.7}px 'IBM Plex Sans', sans-serif`;
         ctx.fillStyle = '#00ffcc';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';

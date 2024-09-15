@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, size, size);
-        ctx.font = `${size * 0.8}px 'Noto Sans KR', 'Noto Sans Mono', sans-serif`;
+        ctx.font = `${size * 0.7}px 'Noto Sans KR', sans-serif`;
         ctx.fillStyle = '#00ffcc';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -47,10 +47,14 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
         camera.position.z = 1000;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff);
+        const ambientLight = new THREE.AmbientLight(0x404040);
         scene.add(ambientLight);
 
-        const particleCount = 500;
+        const pointLight = new THREE.PointLight(0x00ffcc, 1);
+        pointLight.position.set(0, 0, 1000);
+        scene.add(pointLight);
+
+        const particleCount = 700;
 
         for (let i = 0; i < particleCount; i++) {
             const char = Math.random() > 0.5 ? getRandomHangul() : getRandomCyrillic();
@@ -61,11 +65,11 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.position.x = (Math.random() - 0.5) * 4000;
             sprite.position.y = (Math.random() - 0.5) * 4000;
             sprite.position.z = (Math.random() - 0.5) * 4000;
-            sprite.scale.set(100, 100, 1);
+            sprite.scale.set(80, 80, 1);
 
-            sprite.speedX = (Math.random() - 0.5) * 4;
-            sprite.speedY = (Math.random() - 0.5) * 4;
-            sprite.speedZ = (Math.random() - 0.5) * 4;
+            sprite.speedX = (Math.random() - 0.5) * 2;
+            sprite.speedY = (Math.random() - 0.5) * 2;
+            sprite.speedZ = (Math.random() - 0.5) * 2;
 
             scene.add(sprite);
             particles.push(sprite);
@@ -105,8 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
         });
 
-        camera.position.x += (mouseX - camera.position.x) * 0.05;
-        camera.position.y += (-mouseY - camera.position.y) * 0.05;
+        camera.position.x += (mouseX - camera.position.x) * 0.02;
+        camera.position.y += (-mouseY - camera.position.y) * 0.02;
         camera.lookAt(scene.position);
 
         renderer.render(scene, camera);

@@ -1,9 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
 
-    let scene, camera, renderer, particles = [], raycaster, mouse = new THREE.Vector2();
-    let isUserInteracting = false, lon = 0, lat = 0, phi = 0, theta = 0;
-    let touchX, touchY;
+    let scene, camera, renderer, particles = [];
+    let mouseX = 0, mouseY = 0;
+    let windowHalfX = window.innerWidth / 2;
+    let windowHalfY = window.innerHeight / 2;
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
@@ -47,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scene = new THREE.Scene();
 
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
+        camera.position.z = 1000;
 
         const ambientLight = new THREE.AmbientLight(0x404040);
         scene.add(ambientLight);
@@ -76,80 +78,31 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        raycaster = new THREE.Raycaster();
-
         document.addEventListener('mousemove', onDocumentMouseMove, false);
-        document.addEventListener('mousedown', onDocumentMouseDown, false);
-        document.addEventListener('mouseup', onDocumentMouseUp, false);
-        document.addEventListener('wheel', onDocumentMouseWheel, false);
-
-        document.addEventListener('touchstart', onDocumentTouchStart, false);
         document.addEventListener('touchmove', onDocumentTouchMove, false);
-        document.addEventListener('touchend', onDocumentTouchEnd, false);
 
         animate();
 
         window.addEventListener('resize', onWindowResize, false);
     }
 
-    function onDocumentMouseDown(event) {
-        event.preventDefault();
-        isUserInteracting = true;
-        lon = event.clientX;
-        lat = event.clientY;
-    }
-
     function onDocumentMouseMove(event) {
-        if (isUserInteracting) {
-            const deltaX = event.clientX - lon;
-            const deltaY = event.clientY - lat;
-            lon = event.clientX;
-            lat = event.clientY;
-
-            particles.forEach(p => {
-                p.position.x += deltaX * 0.5;
-                p.position.y -= deltaY * 0.5;
-            });
-        }
-    }
-
-    function onDocumentMouseUp(event) {
-        isUserInteracting = false;
-    }
-
-    function onDocumentMouseWheel(event) {
-        camera.position.z += event.deltaY * 0.5;
-    }
-
-    function onDocumentTouchStart(event) {
-        if (event.touches.length == 1) {
-            event.preventDefault();
-            isUserInteracting = true;
-            touchX = event.touches[0].pageX;
-            touchY = event.touches[0].pageY;
-        }
+        mouseX = (event.clientX - windowHalfX) * 0.1;
+        mouseY = (event.clientY - windowHalfY) * 0.1;
     }
 
     function onDocumentTouchMove(event) {
-        if (isUserInteracting && event.touches.length == 1) {
+        if (event.touches.length == 1) {
             event.preventDefault();
-            const deltaX = event.touches[0].pageX - touchX;
-            const deltaY = event.touches[0].pageY - touchY;
-            touchX = event.touches[0].pageX;
-            touchY = event.touches[0].pageY;
-
-            particles.forEach(p => {
-                p.position.x += deltaX * 0.5;
-                p.position.y -= deltaY * 0.5;
-            });
+            mouseX = (event.touches[0].pageX - windowHalfX) * 0.1;
+            mouseY = (event.touches[0].pageY - windowHalfY) * 0.1;
         }
     }
 
-    function onDocumentTouchEnd(event) {
-        isUserInteracting = false;
-    }
-
     function onWindowResize() {
+        windowHalfX = window.innerWidth / 2;
+        windowHalfY = window.innerHeight / 2;
+
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
 
@@ -169,6 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
         });
 
+        camera.position.x += (mouseX - camera.position.x) * 0.05;
+        camera.position.y += (-mouseY - camera.position.y) * 0.05;
         camera.lookAt(scene.position);
 
         renderer.render(scene, camera);

@@ -135,8 +135,6 @@ form {
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--accent-color);
     padding-right: 40px;
 }
 

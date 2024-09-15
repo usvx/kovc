@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let scene, camera, renderer, particles = [];
     let mouseX = 0, mouseY = 0;
+    let targetX = 0, targetY = 0;
     let windowHalfX = window.innerWidth / 2;
     let windowHalfY = window.innerHeight / 2;
 
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
-        document.addEventListener('touchmove', onDocumentTouchMove, false);
+        document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
 
         animate();
 
@@ -87,15 +88,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function onDocumentMouseMove(event) {
-        mouseX = (event.clientX - windowHalfX) * 0.1;
-        mouseY = (event.clientY - windowHalfY) * 0.1;
+        mouseX = (event.clientX - windowHalfX);
+        mouseY = (event.clientY - windowHalfY);
     }
 
     function onDocumentTouchMove(event) {
         if (event.touches.length == 1) {
             event.preventDefault();
-            mouseX = (event.touches[0].pageX - windowHalfX) * 0.1;
-            mouseY = (event.touches[0].pageY - windowHalfY) * 0.1;
+            mouseX = (event.touches[0].pageX - windowHalfX);
+            mouseY = (event.touches[0].pageY - windowHalfY);
         }
     }
 
@@ -122,8 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
         });
 
-        camera.position.x += (mouseX - camera.position.x) * 0.05;
-        camera.position.y += (-mouseY - camera.position.y) * 0.05;
+        targetX = mouseX * 0.05;
+        targetY = mouseY * 0.05;
+
+        camera.position.x += (targetX - camera.position.x) * 0.1;
+        camera.position.y += (-targetY - camera.position.y) * 0.1;
         camera.lookAt(scene.position);
 
         renderer.render(scene, camera);

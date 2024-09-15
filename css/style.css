@@ -1,22 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700&display=swap&subset=latin,cyrillic,korean');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;700&display=swap&subset=latin,cyrillic,korean');
 
 :root {
     --background-color: #0a0a0a;
     --foreground-color: #e0e0e0;
     --accent-color: #00ffcc;
-    --font-family: 'Noto Sans', sans-serif;
+    --font-family: 'IBM Plex Sans', sans-serif;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: var(--font-family);
 }
 
 html, body {
     height: 100%;
     width: 100%;
-    font-family: var(--font-family);
     background-color: var(--background-color);
     color: var(--foreground-color);
     overflow: hidden;
@@ -63,7 +63,6 @@ h1 {
     font-weight: 700;
     letter-spacing: 4px;
     color: var(--accent-color);
-    font-family: var(--font-family);
 }
 
 form {
@@ -87,7 +86,6 @@ form {
     color: var(--foreground-color);
     font-size: 1rem;
     padding-left: 20px;
-    font-family: var(--font-family);
     letter-spacing: 1px;
     outline: none;
     transition: background 0.3s ease;
@@ -104,14 +102,12 @@ form {
     transform: translateY(-50%);
     color: var(--accent-color);
     font-size: 1rem;
-    font-family: var(--font-family);
     pointer-events: none;
 }
 
 input::placeholder {
     color: var(--foreground-color);
     opacity: 0.5;
-    font-family: var(--font-family);
 }
 
 button {
@@ -121,7 +117,6 @@ button {
     border: none;
     border-radius: 50px;
     font-size: 1rem;
-    font-family: var(--font-family);
     cursor: pointer;
     transition: transform 0.3s ease;
     width: 100%;

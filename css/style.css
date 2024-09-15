@@ -21,8 +21,29 @@ html, body {
     color: var(--foreground-color);
     overflow: hidden;
     -webkit-user-select: none;
-    -ms-user-select: none;
     user-select: none;
+}
+
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--background-color);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader {
+    border: 5px solid rgba(0, 255, 204, 0.2);
+    border-top: 5px solid var(--accent-color);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
 }
 
 canvas#background {
@@ -40,7 +61,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
     background: transparent;
 }
 
@@ -48,13 +69,13 @@ main {
     position: relative;
     width: 350px;
     text-align: center;
-    animation: fadeIn 2s ease-in-out forwards;
     opacity: 0;
     background: rgba(10, 10, 10, 0.85);
     padding: 40px;
     border-radius: 20px;
     border: 2px solid var(--accent-color);
     transform: translateZ(0);
+    animation: fadeInUp 1s ease forwards;
 }
 
 h1 {
@@ -126,9 +147,20 @@ button:hover {
     transform: scale(1.05);
 }
 
-@keyframes fadeIn {
+@keyframes fadeInUp {
     to {
         opacity: 1;
+        transform: translateY(0);
+    }
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
 }
 

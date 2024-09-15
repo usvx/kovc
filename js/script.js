@@ -109,9 +109,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
 
-        animate();
-
         window.addEventListener('resize', onWindowResize, false);
+
+        animate();
     }
 
     function onDocumentMouseMove(event) {
@@ -168,13 +168,13 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.render(scene, camera);
     }
 
+    init();
+
     window.onload = () => {
         setTimeout(() => {
             preloader.style.display = 'none';
         }, 500);
     };
-
-    init();
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();

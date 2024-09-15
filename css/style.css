@@ -96,14 +96,15 @@ form {
 .input-container {
     position: relative;
     width: 100%;
+    display: flex;
 }
 
 .input-container input {
-    width: 100%;
+    flex: 1;
     padding: 15px;
     background: rgba(255, 255, 255, 0.05);
     border: none;
-    border-radius: 10px;
+    border-radius: 10px 0 0 10px;
     color: var(--foreground-color);
     font-size: 1rem;
     padding-left: 20px;
@@ -116,14 +117,30 @@ form {
     background: rgba(255, 255, 255, 0.1);
 }
 
-.input-container span {
-    position: absolute;
-    top: 50%;
-    right: 20px;
-    transform: translateY(-50%);
+.input-container .domain-select {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-left: 1px solid var(--accent-color);
+    border-radius: 0 10px 10px 0;
     color: var(--accent-color);
     font-size: 1rem;
-    pointer-events: none;
+    outline: none;
+    overflow: hidden;
+}
+
+.input-container .domain-select select {
+    background: transparent;
+    color: var(--accent-color);
+    border: none;
+    padding: 15px 20px;
+    font-size: 1rem;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.input-container .domain-select select::-ms-expand {
+    display: none;
 }
 
 input::placeholder {
@@ -184,7 +201,7 @@ button:hover {
         margin-bottom: 20px;
     }
     .input-container input,
-    .input-container span {
+    .input-container .domain-select select {
         font-size: 0.9rem;
     }
     button {

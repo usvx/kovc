@@ -18,16 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ctx.clearRect(0, 0, size, size);
 
-        const gradient = ctx.createLinearGradient(0, 0, size, size);
-        gradient.addColorStop(0, '#00ffcc');
-        gradient.addColorStop(1, '#0066ff');
-
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
-        ctx.fillStyle = gradient;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(char, size / 2, size / 2);
 
+        ctx.fillStyle = '#00ffcc';
         ctx.shadowColor = '#00ffcc';
         ctx.shadowBlur = 20;
         ctx.fillText(char, size / 2, size / 2);
@@ -149,8 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
 
-            p.rotation += p.rotationSpeed;
-            p.material.rotation = p.rotation;
+            p.material.rotation += p.rotationSpeed;
 
             if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
             if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;

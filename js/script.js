@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
 
-    let scene, camera, renderer, particles = [];
+    let scene, camera, renderer;
+    let particles = [];
+    let shapes = [];
     let mouseX = 0, mouseY = 0;
     let targetX = 0, targetY = 0;
     let windowHalfX = window.innerWidth / 2;
@@ -75,6 +77,29 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
+        // Add geometric shapes
+        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry];
+        for (let i = 0; i < 50; i++) {
+            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
+            const geometry = new GeometryClass(50, 0);
+            const material = new THREE.MeshStandardMaterial({
+                color: 0x00ffcc,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.5,
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.x = (Math.random() - 0.5) * 4000;
+            mesh.position.y = (Math.random() - 0.5) * 4000;
+            mesh.position.z = (Math.random() - 0.5) * 4000;
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+
+            scene.add(mesh);
+            shapes.push(mesh);
+        }
+
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
 
@@ -117,6 +142,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
             if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
+        });
+
+        shapes.forEach(s => {
+            s.rotation.x += s.rotationSpeedX;
+            s.rotation.y += s.rotationSpeedY;
+            s.rotation.z += s.rotationSpeedZ;
         });
 
         targetX = mouseX * 0.05;

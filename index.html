@@ -32,12 +32,13 @@
             <form id="login-form">
                 <div class="input-container">
                     <input type="text" name="username" placeholder="Username" required>
-                </div>
-                <div class="domain-options">
-                    <input type="radio" id="domain-ko" name="domain" value="@ko.vc" checked>
-                    <label for="domain-ko">@ko.vc</label>
-                    <input type="radio" id="domain-yv" name="domain" value="@yv.is">
-                    <label for="domain-yv">@yv.is</label>
+                    <div class="custom-select">
+                        <select name="domain" required>
+                            <option value="" disabled selected>Select Domain</option>
+                            <option value="@ko.vc">@ko.vc</option>
+                            <option value="@yv.is">@yv.is</option>
+                        </select>
+                    </div>
                 </div>
                 <button type="submit">Enter</button>
             </form>
@@ -66,12 +67,13 @@
                 <form action="https://accounts.google.com/AccountChooser" method="get">
                     <div class="input-container">
                         <input type="text" name="Email" placeholder="Username" required>
-                    </div>
-                    <div class="domain-options">
-                        <input type="radio" id="domain-ko" name="domain" value="@ko.vc" checked>
-                        <label for="domain-ko">@ko.vc</label>
-                        <input type="radio" id="domain-yv" name="domain" value="@yv.is">
-                        <label for="domain-yv">@yv.is</label>
+                        <div class="custom-select">
+                            <select name="domain" required>
+                                <option value="" disabled selected>Select Domain</option>
+                                <option value="@ko.vc">@ko.vc</option>
+                                <option value="@yv.is">@yv.is</option>
+                            </select>
+                        </div>
                     </div>
                     <input type="hidden" name="continue" value="https://mail.google.com/a/">
                     <button type="submit">Enter</button>

@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const username = form.username.value.trim();
-        const domain = form.domain.value.trim();
+        const domain = form.querySelector('input[name="domain"]:checked').value.trim();
         if (username && domain) {
             const email = `${username}${domain}`;
             const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;

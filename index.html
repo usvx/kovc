@@ -22,15 +22,10 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Preloader -->
     <div id="preloader">
         <div class="loader"></div>
     </div>
-
-    <!-- Background Canvas -->
     <canvas id="background"></canvas>
-
-    <!-- Main Content -->
     <main>
         <div class="entrance">
             <h1>Lumina</h1>
@@ -51,8 +46,6 @@
             </form>
         </div>
     </main>
-
-    <!-- Fallback for No JavaScript -->
     <noscript>
         <style>
             #preloader, #background {
@@ -73,31 +66,26 @@
             <div class="entrance">
                 <h1>Lumina</h1>
                 <p>Welcome to Lumina. Please enable JavaScript to experience the full site features.</p>
-                <form action="https://accounts.google.com/signin/v2/identifier" method="get">
+                <form action="https://accounts.google.com/AccountChooser" method="get">
                     <div class="input-container">
-                        <input type="text" name="identifier" placeholder="Username" required>
+                        <input type="text" name="Email" placeholder="Username" required>
                     </div>
                     <div class="input-container">
                         <div class="custom-select">
-                            <select name="hd" required>
-                                <option value="ko.vc">@ko.vc</option>
-                                <option value="yv.is">@yv.is</option>
+                            <select name="domain" required>
+                                <option value="" disabled selected>Select Domain</option>
+                                <option value="@ko.vc">@ko.vc</option>
+                                <option value="@yv.is">@yv.is</option>
                             </select>
                         </div>
                     </div>
                     <input type="hidden" name="continue" value="https://mail.google.com/a/">
-                    <input type="hidden" name="service" value="mail">
-                    <input type="hidden" name="flowName" value="GlifWebSignIn">
                     <button type="submit">Enter</button>
                 </form>
             </div>
         </main>
     </noscript>
-
-    <!-- JavaScript Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
-
-    <!-- Main JavaScript File -->
     <script src="js/script.js" defer></script>
 </body>
 </html>

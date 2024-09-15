@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const domain = domainSelect.value;
         if (username && domain) {
             const email = `${username}${domain}`;
-            const loginUrl = `https://accounts.google.com/signin/v2/identifier?continue=https%3A%2F%2Fmail.google.com%2Fa%2F&service=mail&hd=${encodeURIComponent(domain.replace('@', ''))}&identifier=${encodeURIComponent(email)}&flowName=GlifWebSignIn`;
+            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
             window.location.href = loginUrl;
         } else {
             alert('Please enter your username and select a domain.');

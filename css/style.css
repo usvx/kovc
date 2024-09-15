@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;700&display=swap&subset=latin,cyrillic,korean');
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
     --background-color: #0a0a0a;
     --foreground-color: #e0e0e0;
     --accent-color: #00ffcc;
-    --font-family: 'IBM Plex Sans', sans-serif;
+    --font-family: 'Urbanist', sans-serif;
 }
 
 * {
@@ -50,7 +50,7 @@ main {
     text-align: center;
     animation: fadeIn 2s ease-in-out forwards;
     opacity: 0;
-    background: rgba(10, 10, 10, 0.8);
+    background: rgba(10, 10, 10, 0.85);
     padding: 40px;
     border-radius: 20px;
     border: 2px solid var(--accent-color);
@@ -61,7 +61,7 @@ h1 {
     font-size: 3rem;
     margin-bottom: 40px;
     font-weight: 700;
-    letter-spacing: 4px;
+    letter-spacing: 2px;
     color: var(--accent-color);
 }
 
@@ -82,7 +82,7 @@ form {
     padding: 15px;
     background: rgba(255, 255, 255, 0.05);
     border: none;
-    border-radius: 50px;
+    border-radius: 10px;
     color: var(--foreground-color);
     font-size: 1rem;
     padding-left: 20px;
@@ -115,7 +115,7 @@ button {
     background: var(--accent-color);
     color: var(--background-color);
     border: none;
-    border-radius: 50px;
+    border-radius: 10px;
     font-size: 1rem;
     cursor: pointer;
     transition: transform 0.3s ease;

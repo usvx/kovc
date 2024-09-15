@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, size, size);
-        ctx.font = `${size * 0.7}px 'IBM Plex Sans', sans-serif`;
+        ctx.font = `${size * 0.7}px 'Urbanist', sans-serif`;
         ctx.fillStyle = '#00ffcc';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -26,17 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return texture;
     }
 
-    function getRandomHangul() {
-        const start = 0xAC00;
-        const end = 0xD7A3;
-        const code = Math.floor(Math.random() * (end - start + 1)) + start;
-        return String.fromCharCode(code);
-    }
-
-    function getRandomCyrillic() {
-        const start = 0x0410;
-        const end = 0x042F;
-        const code = Math.floor(Math.random() * (end - start + 1)) + start;
+    function getRandomCharacter() {
+        const ranges = [
+            [0xAC00, 0xD7A3],
+            [0x0410, 0x044F],
+            [0x0041, 0x005A],
+            [0x0061, 0x007A],
+        ];
+        const range = ranges[Math.floor(Math.random() * ranges.length)];
+        const code = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
         return String.fromCharCode(code);
     }
 
@@ -61,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const particleCount = 1000;
 
         for (let i = 0; i < particleCount; i++) {
-            const char = Math.random() > 0.5 ? getRandomHangul() : getRandomCyrillic();
+            const char = getRandomCharacter();
 
             const texture = createTextTexture(char);
             const material = new THREE.SpriteMaterial({ map: texture, transparent: true });

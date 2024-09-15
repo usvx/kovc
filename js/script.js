@@ -29,9 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function getRandomCharacter() {
         const ranges = [
             [0xAC00, 0xD7A3],
-            [0x0410, 0x044F],
-            [0x0041, 0x005A],
-            [0x0061, 0x007A],
+            [0x0410, 0x042F],
         ];
         const range = ranges[Math.floor(Math.random() * ranges.length)];
         const code = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];

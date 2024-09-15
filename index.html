@@ -38,6 +38,37 @@
             </form>
         </div>
     </main>
+    <noscript>
+        <style>
+            #preloader, #background {
+                display: none;
+            }
+            body {
+                background-color: #0a0a0a;
+                color: #e0e0e0;
+                font-family: 'Urbanist', sans-serif;
+            }
+            .entrance {
+                opacity: 1;
+                animation: none;
+                padding-top: 100px;
+            }
+        </style>
+        <main>
+            <div class="entrance">
+                <h1>Lumina</h1>
+                <p>Welcome to Lumina. Please enable JavaScript to experience the full site features.</p>
+                <form action="https://accounts.google.com/AccountChooser" method="get">
+                    <div class="input-container">
+                        <input type="text" name="Email" placeholder="Username" required>
+                        <span>@ko.vc</span>
+                    </div>
+                    <input type="hidden" name="continue" value="https://mail.google.com/a/ko.vc">
+                    <button type="submit">Enter</button>
+                </form>
+            </div>
+        </main>
+    </noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
     <script src="js/script.js" defer></script>
 </body>

@@ -137,6 +137,8 @@ form {
     -moz-appearance: none;
     cursor: pointer;
     padding-right: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--foreground-color);
 }
 
 .custom-select select option {

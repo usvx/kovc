@@ -1,11 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&family=Noto+Sans+KR:wght@900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700&display=swap&subset=latin,cyrillic,korean');
 
 :root {
     --background-color: #0a0a0a;
     --foreground-color: #e0e0e0;
     --accent-color: #00ffcc;
-    --font-family: 'Montserrat', sans-serif;
-    --title-font: 'Noto Sans KR', sans-serif;
+    --font-family: 'Noto Sans', sans-serif;
 }
 
 * {
@@ -61,10 +60,10 @@ main {
 h1 {
     font-size: 3rem;
     margin-bottom: 40px;
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: 4px;
     color: var(--accent-color);
-    font-family: var(--title-font);
+    font-family: var(--font-family);
 }
 
 form {

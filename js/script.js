@@ -11,16 +11,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
-        const size = 128;
+        const size = 256;
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, size, size);
-        ctx.font = `${size * 0.7}px 'Urbanist', sans-serif`;
-        ctx.fillStyle = '#00ffcc';
+
+        const gradient = ctx.createLinearGradient(0, 0, size, size);
+        gradient.addColorStop(0, '#00ffcc');
+        gradient.addColorStop(1, '#0066ff');
+
+        ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
+        ctx.fillStyle = gradient;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
+        ctx.fillText(char, size / 2, size / 2);
+
+        ctx.shadowColor = '#00ffcc';
+        ctx.shadowBlur = 20;
         ctx.fillText(char, size / 2, size / 2);
 
         const texture = new THREE.Texture(canvas);
@@ -56,22 +65,24 @@ document.addEventListener('DOMContentLoaded', () => {
         pointLight.position.set(0, 0, 1000);
         scene.add(pointLight);
 
-        const particleCount = 1000;
+        const particleCount = 800;
 
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
 
             const texture = createTextTexture(char);
-            const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+            const material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
             const sprite = new THREE.Sprite(material);
             sprite.position.x = (Math.random() - 0.5) * 4000;
             sprite.position.y = (Math.random() - 0.5) * 4000;
             sprite.position.z = (Math.random() - 0.5) * 4000;
-            sprite.scale.set(80, 80, 1);
+            sprite.scale.set(100, 100, 1);
 
-            sprite.speedX = (Math.random() - 0.5) * 2;
-            sprite.speedY = (Math.random() - 0.5) * 2;
-            sprite.speedZ = (Math.random() - 0.5) * 2;
+            sprite.speedX = (Math.random() - 0.5) * 1;
+            sprite.speedY = (Math.random() - 0.5) * 1;
+            sprite.speedZ = (Math.random() - 0.5) * 1;
+
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.1;
 
             scene.add(sprite);
             particles.push(sprite);
@@ -85,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 color: 0x00ffcc,
                 wireframe: true,
                 transparent: true,
-                opacity: 0.5,
+                opacity: 0.3,
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.x = (Math.random() - 0.5) * 4000;
@@ -137,6 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.x += p.speedX;
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
+
+            p.rotation += p.rotationSpeed;
+            p.material.rotation = p.rotation;
 
             if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
             if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;

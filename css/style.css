@@ -21,6 +21,9 @@ html, body {
     background-color: var(--background-color);
     color: var(--foreground-color);
     overflow: hidden;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 canvas#background {

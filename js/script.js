@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
+    const preloader = document.getElementById('preloader');
 
     let scene, camera, renderer;
     let particles = [];
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pointLight.position.set(0, 0, 1000);
         scene.add(pointLight);
 
-        const particleCount = 800;
+        const particleCount = 500;
 
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
@@ -71,35 +72,35 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.position.x = (Math.random() - 0.5) * 4000;
             sprite.position.y = (Math.random() - 0.5) * 4000;
             sprite.position.z = (Math.random() - 0.5) * 4000;
-            sprite.scale.set(100, 100, 1);
+            sprite.scale.set(80, 80, 1);
 
-            sprite.speedX = (Math.random() - 0.5) * 1;
-            sprite.speedY = (Math.random() - 0.5) * 1;
-            sprite.speedZ = (Math.random() - 0.5) * 1;
+            sprite.speedX = (Math.random() - 0.5) * 0.5;
+            sprite.speedY = (Math.random() - 0.5) * 0.5;
+            sprite.speedZ = (Math.random() - 0.5) * 0.5;
 
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.1;
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.05;
 
             scene.add(sprite);
             particles.push(sprite);
         }
 
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry];
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 30; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(50, 0);
             const material = new THREE.MeshStandardMaterial({
                 color: 0x00ffcc,
                 wireframe: true,
                 transparent: true,
-                opacity: 0.3,
+                opacity: 0.2,
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.x = (Math.random() - 0.5) * 4000;
             mesh.position.y = (Math.random() - 0.5) * 4000;
             mesh.position.z = (Math.random() - 0.5) * 4000;
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.01;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.01;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.01;
 
             scene.add(mesh);
             shapes.push(mesh);
@@ -166,6 +167,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderer.render(scene, camera);
     }
+
+    window.onload = () => {
+        setTimeout(() => {
+            preloader.style.display = 'none';
+        }, 500);
+    };
 
     init();
 

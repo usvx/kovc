@@ -107,6 +107,7 @@ form {
     border: none;
     border-radius: 10px;
     font-size: 1rem;
+    line-height: 1.5;
     outline: none;
     transition: background 0.3s ease;
 }

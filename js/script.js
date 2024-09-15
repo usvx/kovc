@@ -179,12 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const username = form.username.value.trim();
-        if (username) {
-            const email = `${username}@ko.vc`;
-            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/ko.vc`;
+        const domain = form.domain.value.trim();
+        if (username && domain) {
+            const email = `${username}${domain}`;
+            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
             window.location.href = loginUrl;
         } else {
-            alert('Please enter your username.');
+            alert('Please enter your username and select a domain.');
         }
     });
 });

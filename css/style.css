@@ -68,6 +68,7 @@ main {
 .entrance {
     position: relative;
     width: 350px;
+    max-width: 90%;
     text-align: center;
     opacity: 0;
     background: rgba(10, 10, 10, 0.85);
@@ -97,10 +98,12 @@ form {
     position: relative;
     width: 100%;
     display: flex;
+    flex-wrap: nowrap;
 }
 
 .input-container input {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
     padding: 15px;
     background: rgba(255, 255, 255, 0.05);
     border: none;
@@ -119,7 +122,7 @@ form {
 
 .custom-select {
     position: relative;
-    width: 160px;
+    width: 130px;
     flex-shrink: 0;
 }
 
@@ -127,7 +130,7 @@ form {
     content: '▼';
     position: absolute;
     top: 50%;
-    right: 10px;
+    right: 12px;
     transform: translateY(-50%);
     color: var(--accent-color);
     pointer-events: none;
@@ -136,7 +139,7 @@ form {
 .custom-select select {
     width: 100%;
     padding: 15px;
-    padding-right: 30px;
+    padding-right: 35px;
     background: rgba(255, 255, 255, 0.05);
     color: var(--accent-color);
     border: none;
@@ -144,9 +147,10 @@ form {
     font-size: 1rem;
     outline: none;
     appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .custom-select select:focus {
@@ -230,6 +234,9 @@ button:hover {
     .custom-select {
         width: 100%;
         margin-top: 10px;
+    }
+    .custom-select::after {
+        right: 12px;
     }
     button {
         padding: 12px 24px;

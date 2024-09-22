@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ctx.clearRect(0, 0, size, size);
 
-        ctx.font = ${size * 0.6}px 'Urbanist', sans-serif;
+        ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
@@ -182,8 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const domainSelect = form.querySelector('select[name="domain"]');
         const domain = domainSelect.value;
         if (username && domain) {
-            const email = ${username}${domain};
-            const loginUrl = https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/;
+            const email = `${username}${domain}`;
+            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
             window.location.href = loginUrl;
         } else {
             alert('Please enter your username and select a domain.');

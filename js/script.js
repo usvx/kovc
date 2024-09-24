@@ -2,173 +2,150 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
 
-    let scene, camera, renderer;
-    let particles = [];
-    let shapes = [];
-    let mouseX = 0, mouseY = 0;
-    let targetX = 0, targetY = 0;
-    let windowHalfX = window.innerWidth / 2;
-    let windowHalfY = window.innerHeight / 2;
-
-    function createTextTexture(char) {
-        const canvas = document.createElement('canvas');
-        const size = 256;
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
-
-        ctx.clearRect(0, 0, size, size);
-
-        ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        ctx.fillStyle = '#00ffcc';
-        ctx.shadowColor = '#00ffcc';
-        ctx.shadowBlur = 20;
-        ctx.fillText(char, size / 2, size / 2);
-
-        const texture = new THREE.Texture(canvas);
-        texture.needsUpdate = true;
-        return texture;
-    }
-
-    function getRandomCharacter() {
-        const ranges = [
-            [0xAC00, 0xD7A3],
-            [0x0410, 0x042F],
-        ];
-        const range = ranges[Math.floor(Math.random() * ranges.length)];
-        const code = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
-        return String.fromCharCode(code);
-    }
-
-    function init() {
-        const canvas = document.getElementById('background');
-        renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-
-        scene = new THREE.Scene();
-
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
-        camera.position.z = 1000;
-
-        const ambientLight = new THREE.AmbientLight(0x404040);
-        scene.add(ambientLight);
-
-        const pointLight = new THREE.PointLight(0x00ffcc, 1);
-        pointLight.position.set(0, 0, 1000);
-        scene.add(pointLight);
-
-        const particleCount = 500;
-
-        for (let i = 0; i < particleCount; i++) {
-            const char = getRandomCharacter();
-
-            const texture = createTextTexture(char);
-            const material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
-            const sprite = new THREE.Sprite(material);
-            sprite.position.x = (Math.random() - 0.5) * 4000;
-            sprite.position.y = (Math.random() - 0.5) * 4000;
-            sprite.position.z = (Math.random() - 0.5) * 4000;
-            sprite.scale.set(80, 80, 1);
-
-            sprite.speedX = (Math.random() - 0.5) * 0.5;
-            sprite.speedY = (Math.random() - 0.5) * 0.5;
-            sprite.speedZ = (Math.random() - 0.5) * 0.5;
-
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.05;
-
-            scene.add(sprite);
-            particles.push(sprite);
+    class BackgroundAnimation {
+        constructor() {
+            this.mouseX = 0;
+            this.mouseY = 0;
+            this.targetX = 0;
+            this.targetY = 0;
+            this.windowHalfX = window.innerWidth / 2;
+            this.windowHalfY = window.innerHeight / 2;
+            this.animate = this.animate.bind(this);
+            this.init();
         }
 
-        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry];
-        for (let i = 0; i < 30; i++) {
-            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(50, 0);
-            const material = new THREE.MeshStandardMaterial({
-                color: 0x00ffcc,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.2,
+        init() {
+            this.canvas = document.getElementById('background');
+            this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.renderer.setPixelRatio(window.devicePixelRatio);
+
+            this.scene = new THREE.Scene();
+
+            this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
+            this.camera.position.z = 1000;
+
+            this.scene.add(new THREE.AmbientLight(0x404040));
+
+            const pointLight = new THREE.PointLight(0x00ffcc, 1);
+            pointLight.position.set(0, 0, 1000);
+            this.scene.add(pointLight);
+
+            this.initParticles();
+            this.initShapes();
+            this.initPostProcessing();
+
+            document.addEventListener('mousemove', this.onDocumentMouseMove.bind(this), false);
+            document.addEventListener('touchmove', this.onDocumentTouchMove.bind(this), { passive: false });
+            window.addEventListener('resize', this.onWindowResize.bind(this), false);
+
+            this.clock = new THREE.Clock();
+            this.animate();
+        }
+
+        initParticles() {
+            const particleCount = 10000;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const color = new THREE.Color();
+
+            for (let i = 0; i < particleCount; i++) {
+                const x = (Math.random() - 0.5) * 4000;
+                const y = (Math.random() - 0.5) * 4000;
+                const z = (Math.random() - 0.5) * 4000;
+
+                positions[i * 3] = x;
+                positions[i * 3 + 1] = y;
+                positions[i * 3 + 2] = z;
+
+                color.setHSL((x / 4000) + 0.5, 0.7, 0.5);
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+            }
+
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({ size: 15, vertexColors: true, blending: THREE.AdditiveBlending, transparent: true });
+
+            this.particleSystem = new THREE.Points(geometry, material);
+
+            this.scene.add(this.particleSystem);
+        }
+
+        initShapes() {
+            const geometryTypes = [new THREE.TetrahedronGeometry(50, 0), new THREE.OctahedronGeometry(50, 0), new THREE.IcosahedronGeometry(50, 0)];
+            const material = new THREE.MeshStandardMaterial({ color: 0x00ffcc, wireframe: true, transparent: true, opacity: 0.2 });
+            this.shapes = [];
+
+            for (let i = 0; i < 30; i++) {
+                const geometryType = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
+                const mesh = new THREE.Mesh(geometryType, material.clone());
+                mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+                mesh.rotationSpeedX = (Math.random() - 0.5) * 0.01;
+                mesh.rotationSpeedY = (Math.random() - 0.5) * 0.01;
+                mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.01;
+                this.scene.add(mesh);
+                this.shapes.push(mesh);
+            }
+        }
+
+        initPostProcessing() {
+            this.composer = new THREE.EffectComposer(this.renderer);
+            this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
+
+            const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+            bloomPass.threshold = 0;
+            bloomPass.strength = 1.5;
+            bloomPass.radius = 0;
+            this.composer.addPass(bloomPass);
+        }
+
+        onDocumentMouseMove(event) {
+            this.mouseX = (event.clientX - this.windowHalfX);
+            this.mouseY = (event.clientY - this.windowHalfY);
+        }
+
+        onDocumentTouchMove(event) {
+            if (event.touches.length == 1) {
+                event.preventDefault();
+                this.mouseX = (event.touches[0].pageX - this.windowHalfX);
+                this.mouseY = (event.touches[0].pageY - this.windowHalfY);
+            }
+        }
+
+        onWindowResize() {
+            this.windowHalfX = window.innerWidth / 2;
+            this.windowHalfY = window.innerHeight / 2;
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.composer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        animate() {
+            requestAnimationFrame(this.animate);
+            const delta = this.clock.getDelta();
+            this.particleSystem.rotation.y += delta * 0.05;
+
+            this.shapes.forEach(shape => {
+                shape.rotation.x += shape.rotationSpeedX;
+                shape.rotation.y += shape.rotationSpeedY;
+                shape.rotation.z += shape.rotationSpeedZ;
             });
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.x = (Math.random() - 0.5) * 4000;
-            mesh.position.y = (Math.random() - 0.5) * 4000;
-            mesh.position.z = (Math.random() - 0.5) * 4000;
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.01;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.01;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.01;
 
-            scene.add(mesh);
-            shapes.push(mesh);
-        }
-
-        document.addEventListener('mousemove', onDocumentMouseMove, false);
-        document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
-
-        window.addEventListener('resize', onWindowResize, false);
-
-        animate();
-    }
-
-    function onDocumentMouseMove(event) {
-        mouseX = (event.clientX - windowHalfX);
-        mouseY = (event.clientY - windowHalfY);
-    }
-
-    function onDocumentTouchMove(event) {
-        if (event.touches.length == 1) {
-            event.preventDefault();
-            mouseX = (event.touches[0].pageX - windowHalfX);
-            mouseY = (event.touches[0].pageY - windowHalfY);
+            this.targetX = this.mouseX * 0.05;
+            this.targetY = this.mouseY * 0.05;
+            this.camera.position.x += (this.targetX - this.camera.position.x) * 0.1;
+            this.camera.position.y += (-this.targetY - this.camera.position.y) * 0.1;
+            this.camera.lookAt(this.scene.position);
+            this.composer.render();
         }
     }
 
-    function onWindowResize() {
-        windowHalfX = window.innerWidth / 2;
-        windowHalfY = window.innerHeight / 2;
-
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    function animate() {
-        requestAnimationFrame(animate);
-
-        particles.forEach(p => {
-            p.position.x += p.speedX;
-            p.position.y += p.speedY;
-            p.position.z += p.speedZ;
-
-            p.material.rotation += p.rotationSpeed;
-
-            if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
-            if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
-            if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
-        });
-
-        shapes.forEach(s => {
-            s.rotation.x += s.rotationSpeedX;
-            s.rotation.y += s.rotationSpeedY;
-            s.rotation.z += s.rotationSpeedZ;
-        });
-
-        targetX = mouseX * 0.05;
-        targetY = mouseY * 0.05;
-
-        camera.position.x += (targetX - camera.position.x) * 0.1;
-        camera.position.y += (-targetY - camera.position.y) * 0.1;
-        camera.lookAt(scene.position);
-
-        renderer.render(scene, camera);
-    }
-
-    init();
+    const backgroundAnimation = new BackgroundAnimation();
 
     window.onload = () => {
         setTimeout(() => {

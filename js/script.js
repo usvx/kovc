@@ -68,7 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-            const material = new THREE.PointsMaterial({ size: 15, vertexColors: true, blending: THREE.AdditiveBlending, transparent: true });
+            const material = new THREE.PointsMaterial({
+                size: 15,
+                vertexColors: true,
+                blending: THREE.AdditiveBlending,
+                transparent: true
+            });
 
             this.particleSystem = new THREE.Points(geometry, material);
 
@@ -76,14 +81,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         initShapes() {
-            const geometryTypes = [new THREE.TetrahedronGeometry(50, 0), new THREE.OctahedronGeometry(50, 0), new THREE.IcosahedronGeometry(50, 0)];
-            const material = new THREE.MeshStandardMaterial({ color: 0x00ffcc, wireframe: true, transparent: true, opacity: 0.2 });
+            const geometryTypes = [
+                new THREE.TetrahedronGeometry(50, 0),
+                new THREE.OctahedronGeometry(50, 0),
+                new THREE.IcosahedronGeometry(50, 0)
+            ];
+            const material = new THREE.MeshStandardMaterial({
+                color: 0x00ffcc,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.2
+            });
             this.shapes = [];
 
             for (let i = 0; i < 30; i++) {
                 const geometryType = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
                 const mesh = new THREE.Mesh(geometryType, material.clone());
-                mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+                mesh.position.set(
+                    (Math.random() - 0.5) * 4000,
+                    (Math.random() - 0.5) * 4000,
+                    (Math.random() - 0.5) * 4000
+                );
                 mesh.rotationSpeedX = (Math.random() - 0.5) * 0.01;
                 mesh.rotationSpeedY = (Math.random() - 0.5) * 0.01;
                 mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.01;
@@ -96,7 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
             this.composer = new THREE.EffectComposer(this.renderer);
             this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
 
-            const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+            const bloomPass = new THREE.UnrealBloomPass(
+                new THREE.Vector2(window.innerWidth, window.innerHeight),
+                1.5, 0.4, 0.85
+            );
             bloomPass.threshold = 0;
             bloomPass.strength = 1.5;
             bloomPass.radius = 0;
@@ -109,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         onDocumentTouchMove(event) {
-            if (event.touches.length == 1) {
+            if (event.touches.length === 1) {
                 event.preventDefault();
                 this.mouseX = (event.touches[0].pageX - this.windowHalfX);
                 this.mouseY = (event.touches[0].pageY - this.windowHalfY);

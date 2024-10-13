@@ -5,10 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let scene, camera, renderer;
     let particles = [];
     let shapes = [];
-    let mouseX = 0, mouseY = 0;
-    let targetX = 0, targetY = 0;
-    let windowHalfX = window.innerWidth / 2;
-    let windowHalfY = window.innerHeight / 2;
+    let sceneGroup;
+    let isUserInteracting = false,
+        onPointerDownMouseX = 0,
+        onPointerDownMouseY = 0,
+        lon = 0,
+        lat = 0,
+        onPointerDownLon = 0,
+        onPointerDownLat = 0;
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
@@ -34,13 +38,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getRandomCharacter() {
-        const ranges = [
-            [0xAC00, 0xD7A3],
-            [0x0410, 0x042F],
-        ];
-        const range = ranges[Math.floor(Math.random() * ranges.length)];
-        const code = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
-        return String.fromCharCode(code);
+        const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
+        const hangeulMedials = [0x1161, 0x1165, 0x1166, 0x1167, 0x1169, 0x116E, 0x1172, 0x1173, 0x1175];
+        const hangeulFinals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA];
+
+        const initial = hangeulInitials[Math.floor(Math.random() * hangeulInitials.length)];
+        const medial = hangeulMedials[Math.floor(Math.random() * hangeulMedials.length)];
+        const final = hangeulFinals[Math.floor(Math.random() * hangeulFinals.length)];
+
+        const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
+        const hangeulChar = String.fromCharCode(syllableCode);
+
+        const cyrillicLetters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
+        const isHangeul = Math.random() < 0.5;
+        if (isHangeul) {
+            return hangeulChar;
+        } else {
+            return cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
+        }
     }
 
     function init() {
@@ -61,6 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
         pointLight.position.set(0, 0, 1000);
         scene.add(pointLight);
 
+        sceneGroup = new THREE.Group();
+        scene.add(sceneGroup);
+
         const particleCount = 500;
 
         for (let i = 0; i < particleCount; i++) {
@@ -80,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             sprite.rotationSpeed = (Math.random() - 0.5) * 0.05;
 
-            scene.add(sprite);
+            sceneGroup.add(sprite);
             particles.push(sprite);
         }
 
@@ -102,35 +120,76 @@ document.addEventListener('DOMContentLoaded', () => {
             mesh.rotationSpeedY = (Math.random() - 0.5) * 0.01;
             mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.01;
 
-            scene.add(mesh);
+            sceneGroup.add(mesh);
             shapes.push(mesh);
         }
 
+        document.addEventListener('mousedown', onDocumentMouseDown, false);
         document.addEventListener('mousemove', onDocumentMouseMove, false);
+        document.addEventListener('mouseup', onDocumentMouseUp, false);
+
+        document.addEventListener('touchstart', onDocumentTouchStart, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
+        document.addEventListener('touchend', onDocumentTouchEnd, false);
 
         window.addEventListener('resize', onWindowResize, false);
 
         animate();
     }
 
-    function onDocumentMouseMove(event) {
-        mouseX = (event.clientX - windowHalfX);
-        mouseY = (event.clientY - windowHalfY);
+    function onDocumentMouseDown(event) {
+        isUserInteracting = true;
+        onPointerDownMouseX = event.clientX;
+        onPointerDownMouseY = event.clientY;
+
+        onPointerDownLon = lon;
+        onPointerDownLat = lat;
     }
 
-    function onDocumentTouchMove(event) {
-        if (event.touches.length == 1) {
-            event.preventDefault();
-            mouseX = (event.touches[0].pageX - windowHalfX);
-            mouseY = (event.touches[0].pageY - windowHalfY);
+    function onDocumentMouseMove(event) {
+        if (isUserInteracting) {
+            const movementX = event.clientX - onPointerDownMouseX;
+            const movementY = event.clientY - onPointerDownMouseY;
+
+            lon = (movementX * 0.1) + onPointerDownLon;
+            lat = (movementY * 0.1) + onPointerDownLat;
         }
     }
 
-    function onWindowResize() {
-        windowHalfX = window.innerWidth / 2;
-        windowHalfY = window.innerHeight / 2;
+    function onDocumentMouseUp(event) {
+        isUserInteracting = false;
+    }
 
+    function onDocumentTouchStart(event) {
+        if (event.touches.length == 1) {
+            event.preventDefault();
+            isUserInteracting = true;
+
+            onPointerDownMouseX = event.touches[0].pageX;
+            onPointerDownMouseY = event.touches[0].pageY;
+
+            onPointerDownLon = lon;
+            onPointerDownLat = lat;
+        }
+    }
+
+    function onDocumentTouchMove(event) {
+        if (isUserInteracting && event.touches.length == 1) {
+            event.preventDefault();
+
+            const movementX = event.touches[0].pageX - onPointerDownMouseX;
+            const movementY = event.touches[0].pageY - onPointerDownMouseY;
+
+            lon = (movementX * 0.1) + onPointerDownLon;
+            lat = (movementY * 0.1) + onPointerDownLat;
+        }
+    }
+
+    function onDocumentTouchEnd(event) {
+        isUserInteracting = false;
+    }
+
+    function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
 
@@ -158,12 +217,12 @@ document.addEventListener('DOMContentLoaded', () => {
             s.rotation.z += s.rotationSpeedZ;
         });
 
-        targetX = mouseX * 0.05;
-        targetY = mouseY * 0.05;
+        lat = Math.max(-85, Math.min(85, lat));
+        const phi = THREE.MathUtils.degToRad(90 - lat);
+        const theta = THREE.MathUtils.degToRad(lon);
 
-        camera.position.x += (targetX - camera.position.x) * 0.1;
-        camera.position.y += (-targetY - camera.position.y) * 0.1;
-        camera.lookAt(scene.position);
+        sceneGroup.rotation.y = theta;
+        sceneGroup.rotation.x = phi - Math.PI / 2;
 
         renderer.render(scene, camera);
     }

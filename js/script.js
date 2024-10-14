@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         geometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(new Float32Array(colors), 3));
 
         const textureLoader = new THREE.TextureLoader();
-        const particleTexture = textureLoader.load('path_to_your_texture.png');
+        const particleTexture = textureLoader.load('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABNElEQVR4Ae3UsUoDQRCF4S8A00AHUAg3oBN0ADcAHUACZB0AQzgACbAKnwL8cTE/vvAvC8dfuHc53p9D5f8rkJuEOMKIj8gMI8B+R4v2kkVGa5wFzgHiIvjKxl4XscKk4s4Oo9RLrPXp/GhmTihOcYHnFvbPobcMBpP2ZnAPjFRFsGjiW9qgD3QGpxc2mHzAt4lAojPrbt8JlcKHioe+7eFwJrfExOUkiRsO1PecxE3Ah1Iw0af5+E47nyO+Hzb31iFI4VkzKRIn6tY70X5hO4/uHx4OMUz+PX9zvCkSBnYn+HQ9Hp5jxUScZxDVdD+MA+LMbtOAKlAZ4VzmPbDAAAAAElFTkSuQmCC');
 
         const material = new THREE.ShaderMaterial({
             uniforms: {

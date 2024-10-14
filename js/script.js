@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('touchmove', onTouchMove, { passive: false });
 
         animate();
-        handlePreloader();
     }
 
     function createParticles() {
@@ -74,45 +73,46 @@ document.addEventListener('DOMContentLoaded', () => {
         geometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(new Float32Array(colors), 3));
 
         const textureLoader = new THREE.TextureLoader();
-        const particleTexture = textureLoader.load('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABNElEQVR4Ae3UsUoDQRCF4S8A00AHUAg3oBN0ADcAHUACZB0AQzgACbAKnwL8cTE/vvAvC8dfuHc53p9D5f8rkJuEOMKIj8gMI8B+R4v2kkVGa5wFzgHiIvjKxl4XscKk4s4Oo9RLrPXp/GhmTihOcYHnFvbPobcMBpP2ZnAPjFRFsGjiW9qgD3QGpxc2mHzAt4lAojPrbt8JlcKHioe+7eFwJrfExOUkiRsO1PecxE3Ah1Iw0af5+E47nyO+Hzb31iFI4VkzKRIn6tY70X5hO4/uHx4OMUz+PX9zvCkSBnYn+HQ9Hp5jxUScZxDVdD+MA+LMbtOAKlAZ4VzmPbDAAAAAElFTkSuQmCC');
+        const particleTexture = textureLoader.load('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABNElEQVR4Ae3UsUoDQRCF4S8A00AHUAg3oBN0ADcAHUACZB0AQzgACbAKnwL8cTE/vvAvC8dfuHc53p9D5f8rkJuEOMKIj8gMI8B+R4v2kkVGa5wFzgHiIvjKxl4XscKk4s4Oo9RLrPXp/GhmTihOcYHnFvbPobcMBpP2ZnAPjFRFsGjiW9qgD3QGpxc2mHzAt4lAojPrbt8JlcKHioe+7eFwJrfExOUkiRsO1PecxE3Ah1Iw0af5+E47nyO+Hzb31iFI4VkzKRIn6tY70X5hO4/uHx4OMUz+PX9zvCkSBnYn+HQ9Hp5jxUScZxDVdD+MA+LMbtOAKlAZ4VzmPbDAAAAAElFTkSuQmCC', () => {
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    color: { value: new THREE.Color(0x00ffcc) },
+                    pointTexture: { value: particleTexture }
+                },
+                vertexShader: `
+                    attribute vec3 instanceOffset;
+                    attribute float instanceScale;
+                    attribute vec3 instanceColor;
+                    varying vec3 vColor;
+                    varying vec2 vUv;
+                    void main() {
+                        vColor = instanceColor;
+                        vUv = uv;
+                        vec4 mvPosition = modelViewMatrix * vec4(instanceOffset + position * instanceScale, 1.0);
+                        gl_PointSize = 10.0 * (300.0 / -mvPosition.z);
+                        gl_Position = projectionMatrix * mvPosition;
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 color;
+                    uniform sampler2D pointTexture;
+                    varying vec3 vColor;
+                    varying vec2 vUv;
+                    void main() {
+                        vec4 texColor = texture2D(pointTexture, vUv);
+                        gl_FragColor = vec4(color * vColor, 1.0) * texColor;
+                        if (gl_FragColor.a < 0.1) discard;
+                    }
+                `,
+                blending: THREE.AdditiveBlending,
+                depthTest: false,
+                transparent: true
+            });
 
-        const material = new THREE.ShaderMaterial({
-            uniforms: {
-                color: { value: new THREE.Color(0x00ffcc) },
-                pointTexture: { value: particleTexture }
-            },
-            vertexShader: `
-                attribute vec3 instanceOffset;
-                attribute float instanceScale;
-                attribute vec3 instanceColor;
-                varying vec3 vColor;
-                varying vec2 vUv;
-                void main() {
-                    vColor = instanceColor;
-                    vUv = uv;
-                    vec4 mvPosition = modelViewMatrix * vec4(instanceOffset + position * instanceScale, 1.0);
-                    gl_PointSize = 10.0 * (300.0 / -mvPosition.z);
-                    gl_Position = projectionMatrix * mvPosition;
-                }
-            `,
-            fragmentShader: `
-                uniform vec3 color;
-                uniform sampler2D pointTexture;
-                varying vec3 vColor;
-                varying vec2 vUv;
-                void main() {
-                    vec4 texColor = texture2D(pointTexture, vUv);
-                    gl_FragColor = vec4(color * vColor, 1.0) * texColor;
-                    if (gl_FragColor.a < 0.1) discard;
-                }
-            `,
-            blending: THREE.AdditiveBlending,
-            depthTest: false,
-            transparent: true
+            particleMesh = new THREE.InstancedMesh(geometry, material, PARTICLE_COUNT);
+            scene.add(particleMesh);
+            hidePreloader();
         });
-
-        particleMesh = new THREE.InstancedMesh(geometry, material, PARTICLE_COUNT);
-        scene.add(particleMesh);
     }
 
     function setupPostProcessing() {
@@ -169,24 +169,24 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(animate);
         const delta = clock.getDelta();
 
-        particleMesh.rotation.y += delta * 0.05;
+        if (particleMesh) {
+            particleMesh.rotation.y += delta * 0.05;
+        }
 
         camera.position.x += (mouse.x * 100 - camera.position.x) * 0.05;
         camera.position.y += (mouse.y * 100 - camera.position.y) * 0.05;
         camera.lookAt(scene.position);
 
-        composer.render(delta);
+        if (composer) {
+            composer.render(delta);
+        }
     }
 
-    function handlePreloader() {
-        window.onload = () => {
-            setTimeout(() => {
-                preloader.classList.add('fade-out');
-                preloader.addEventListener('transitionend', () => {
-                    preloader.style.display = 'none';
-                });
-            }, 500);
-        };
+    function hidePreloader() {
+        preloader.classList.add('fade-out');
+        preloader.addEventListener('transitionend', () => {
+            preloader.style.display = 'none';
+        });
     }
 
     form.addEventListener('submit', async (event) => {

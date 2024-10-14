@@ -28,12 +28,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const geometry = new THREE.PlaneBufferGeometry(2, 2);
 
+        const vertexShader = `
+            void main() {
+                gl_Position = vec4(position, 1.0);
+            }
+        `;
+
         const fragmentShader = `
+            precision mediump float;
             uniform float time;
             uniform vec2 resolution;
             uniform vec2 mouse;
-
-            #define PI 3.14159265359
 
             void main() {
                 vec2 uv = gl_FragCoord.xy / resolution.xy;
@@ -54,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const material = new THREE.ShaderMaterial({
             uniforms: uniforms,
+            vertexShader: vertexShader,
             fragmentShader: fragmentShader,
         });
 

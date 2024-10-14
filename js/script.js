@@ -3,75 +3,120 @@ document.addEventListener('DOMContentLoaded', () => {
     const preloader = document.getElementById('preloader');
 
     let scene, camera, renderer;
-    let uniforms;
+    let particles = [];
     let clock = new THREE.Clock();
     let composer;
     let mouse = new THREE.Vector2();
     let target = new THREE.Vector2();
+    let windowHalfX = window.innerWidth / 2;
+    let windowHalfY = window.innerHeight / 2;
+
+    function createTextTexture(char) {
+        const canvas = document.createElement('canvas');
+        const size = 128;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.font = `${size * 0.8}px 'Urbanist', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = 'rgba(0, 255, 204, 1)';
+        ctx.shadowColor = 'rgba(0, 255, 204, 0.5)';
+        ctx.shadowBlur = 20;
+        ctx.fillText(char, size / 2, size / 2);
+        return new THREE.CanvasTexture(canvas);
+    }
+
+    function getRandomCharacter() {
+        const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
+        const hangeulMedials = [0x1161, 0x1165, 0x1166, 0x1167, 0x1169, 0x116E, 0x1172, 0x1173, 0x1175];
+        const hangeulFinals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA];
+        const initial = hangeulInitials[Math.floor(Math.random() * hangeulInitials.length)];
+        const medial = hangeulMedials[Math.floor(Math.random() * hangeulMedials.length)];
+        const final = hangeulFinals[Math.floor(Math.random() * hangeulFinals.length)];
+        const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
+        const hangeulChar = String.fromCharCode(syllableCode);
+        const cyrillicLetters = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЭЮЯ';
+        const isHangeul = Math.random() < 0.5;
+        if (isHangeul) {
+            return hangeulChar;
+        } else {
+            return cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
+        }
+    }
 
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.outputEncoding = THREE.sRGBEncoding;
 
         scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000);
+        camera.position.z = 500;
 
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000);
-        camera.position.z = 400;
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0x00ffcc, 1);
+        camera.add(pointLight);
+        scene.add(camera);
 
-        uniforms = {
-            time: { value: 1.0 },
-            resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-            mouse: { value: new THREE.Vector2() },
-        };
+        const particleCount = 1500;
+        const geometry = new THREE.BufferGeometry();
+        const positions = [];
+        const velocities = [];
+        const sizes = [];
+        const textures = [];
 
-        const geometry = new THREE.PlaneBufferGeometry(2, 2);
+        for (let i = 0; i < particleCount; i++) {
+            positions.push((Math.random() - 0.5) * 2000);
+            positions.push((Math.random() - 0.5) * 2000);
+            positions.push((Math.random() - 0.5) * 2000);
 
-        const vertexShader = `
-            void main() {
-                gl_Position = vec4(position, 1.0);
-            }
-        `;
+            velocities.push((Math.random() - 0.5) * 0.2);
+            velocities.push((Math.random() - 0.5) * 0.2);
+            velocities.push((Math.random() - 0.5) * 0.2);
 
-        const fragmentShader = `
-            precision mediump float;
-            uniform float time;
-            uniform vec2 resolution;
-            uniform vec2 mouse;
+            sizes.push(Math.random() * 50 + 20);
 
-            void main() {
-                vec2 uv = gl_FragCoord.xy / resolution.xy;
-                vec2 pos = uv * 2.0 - 1.0;
-                pos.x *= resolution.x / resolution.y;
+            const char = getRandomCharacter();
+            const texture = createTextTexture(char);
+            textures.push(texture);
+        }
 
-                float len = length(pos - mouse);
-                float angle = atan(pos.y - mouse.y, pos.x - mouse.x);
-                float wave = sin(len * 10.0 - time * 5.0 + angle * 5.0);
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+        geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
 
-                float color = smoothstep(0.0, 0.1, wave);
+        const materials = textures.map(texture => new THREE.PointsMaterial({
+            size: 50,
+            map: texture,
+            blending: THREE.AdditiveBlending,
+            depthTest: false,
+            transparent: true,
+        }));
 
-                vec3 col = mix(vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.8), color);
+        const particles = new THREE.Group();
+        for (let i = 0; i < particleCount; i++) {
+            const particleGeometry = new THREE.BufferGeometry();
+            particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions.slice(i * 3, i * 3 + 3), 3));
+            particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities.slice(i * 3, i * 3 + 3), 3));
+            particleGeometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes.slice(i, i + 1), 1));
 
-                gl_FragColor = vec4(col, 1.0);
-            }
-        `;
+            const particle = new THREE.Points(particleGeometry, materials[i]);
+            particles.add(particle);
+        }
 
-        const material = new THREE.ShaderMaterial({
-            uniforms: uniforms,
-            vertexShader: vertexShader,
-            fragmentShader: fragmentShader,
-        });
-
-        const mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
+        scene.add(particles);
 
         const renderPass = new POSTPROCESSING.RenderPass(scene, camera);
-        const bloomPass = new POSTPROCESSING.BloomEffect({ intensity: 1.5 });
-        const smaaPass = new POSTPROCESSING.SMAAEffect();
+        const bloomPass = new POSTPROCESSING.EffectPass(camera, new POSTPROCESSING.BloomEffect({ intensity: 1.2 }));
+        const smaaPass = new POSTPROCESSING.EffectPass(camera, new POSTPROCESSING.SMAAEffect());
         composer = new POSTPROCESSING.EffectComposer(renderer);
         composer.addPass(renderPass);
-        composer.addPass(new POSTPROCESSING.EffectPass(camera, bloomPass, smaaPass));
+        composer.addPass(bloomPass);
+        composer.addPass(smaaPass);
 
         document.addEventListener('mousemove', onMouseMove, false);
         document.addEventListener('touchmove', onTouchMove, { passive: false });
@@ -81,34 +126,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function onMouseMove(event) {
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        target.x = event.clientX / window.innerWidth;
-        target.y = 1 - event.clientY / window.innerHeight;
+        mouse.x = (event.clientX - windowHalfX) / 100;
+        mouse.y = (event.clientY - windowHalfY) / 100;
     }
 
     function onTouchMove(event) {
         if (event.touches.length == 1) {
             event.preventDefault();
-            mouse.x = (event.touches[0].pageX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.touches[0].pageY / window.innerHeight) * 2 + 1;
-            target.x = event.touches[0].pageX / window.innerWidth;
-            target.y = 1 - event.touches[0].pageY / window.innerHeight;
+            mouse.x = (event.touches[0].pageX - windowHalfX) / 100;
+            mouse.y = (event.touches[0].pageY - windowHalfY) / 100;
         }
     }
 
     function onWindowResize() {
+        windowHalfX = window.innerWidth / 2;
+        windowHalfY = window.innerHeight / 2;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
         composer.setSize(window.innerWidth, window.innerHeight);
-        uniforms.resolution.value.x = window.innerWidth;
-        uniforms.resolution.value.y = window.innerHeight;
     }
 
     function animate() {
         requestAnimationFrame(animate);
-        uniforms.time.value += clock.getDelta();
-        uniforms.mouse.value.lerp(target, 0.1);
-        composer.render();
+        const delta = clock.getDelta();
+
+        scene.children[2].children.forEach(particle => {
+            const positions = particle.geometry.attributes.position.array;
+            const velocities = particle.geometry.attributes.velocity.array;
+            positions[0] += velocities[0] * delta * 60;
+            positions[1] += velocities[1] * delta * 60;
+            positions[2] += velocities[2] * delta * 60;
+
+            if (positions[0] > 1000 || positions[0] < -1000) velocities[0] *= -1;
+            if (positions[1] > 1000 || positions[1] < -1000) velocities[1] *= -1;
+            if (positions[2] > 1000 || positions[2] < -1000) velocities[2] *= -1;
+
+            particle.geometry.attributes.position.needsUpdate = true;
+        });
+
+        camera.position.x += (mouse.x * 50 - camera.position.x) * 0.05;
+        camera.position.y += (-mouse.y * 50 - camera.position.y) * 0.05;
+        camera.lookAt(scene.position);
+
+        composer.render(delta);
     }
 
     init();

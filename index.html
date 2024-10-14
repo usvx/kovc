@@ -8,8 +8,8 @@
         default-src 'self';
         script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
         style-src 'self' https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com;
         img-src 'self' data:;
-        font-src 'self' https://fonts.gstatic.com data:;
         connect-src 'self';
         frame-ancestors 'none';
     ">
@@ -49,44 +49,6 @@
         </div>
     </main>
     <noscript>
-        <style>
-            #preloader, #background {
-                display: none;
-            }
-            body {
-                background-color: #0a0a0a;
-                color: #e0e0e0;
-                font-family: 'Urbanist', sans-serif;
-            }
-            .entrance {
-                opacity: 1;
-                animation: none;
-                padding-top: 100px;
-            }
-        </style>
-        <main>
-            <div class="entrance">
-                <h1>Lumina</h1>
-                <p>Welcome to Lumina. Please enable JavaScript to experience the full site features.</p>
-                <form action="https://accounts.google.com/AccountChooser" method="get">
-                    <div class="input-container">
-                        <input type="text" name="Email" placeholder="Username" required>
-                    </div>
-                    <div class="input-container">
-                        <div class="custom-select">
-                            <select name="domain" required>
-                                <option value="" disabled selected>Select Domain</option>
-                                <option value="@gj.to">@gj.to</option>
-                                <option value="@ko.vc">@ko.vc</option>
-                                <option value="@yv.is">@yv.is</option>
-                            </select>
-                        </div>
-                    </div>
-                    <input type="hidden" name="continue" value="https://mail.google.com/a/">
-                    <button type="submit">Enter</button>
-                </form>
-            </div>
-        </main>
     </noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/postprocessing@6.23.3/build/postprocessing.min.js" crossorigin="anonymous" defer></script>

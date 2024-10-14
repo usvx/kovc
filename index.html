@@ -7,18 +7,19 @@
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' https://cdnjs.cloudflare.com;
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        style-src 'self' https://fonts.googleapis.com;
         img-src 'self' data:;
         font-src 'self' https://fonts.gstatic.com data:;
         connect-src 'self';
         frame-ancestors 'none';
     ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="no-referrer">
     <link rel="icon" href="favicons/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
-    <link rel="manifest" href="favicons/site.webmanifest">
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean" rel="stylesheet" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -37,6 +38,7 @@
                     <div class="custom-select">
                         <select name="domain" required>
                             <option value="" disabled selected>Select Domain</option>
+                            <option value="@gj.to">@gj.to</option>
                             <option value="@ko.vc">@ko.vc</option>
                             <option value="@yv.is">@yv.is</option>
                         </select>
@@ -74,6 +76,7 @@
                         <div class="custom-select">
                             <select name="domain" required>
                                 <option value="" disabled selected>Select Domain</option>
+                                <option value="@gj.to">@gj.to</option>
                                 <option value="@ko.vc">@ko.vc</option>
                                 <option value="@yv.is">@yv.is</option>
                             </select>
@@ -85,7 +88,8 @@
             </div>
         </main>
     </noscript>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/postprocessing@6.23.3/build/postprocessing.min.js" crossorigin="anonymous" defer></script>
     <script src="js/script.js" defer></script>
 </body>
 </html>

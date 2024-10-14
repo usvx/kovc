@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let scene, camera, renderer;
     let particles = [];
-    let shapes = [];
     let sceneGroup;
     let clock = new THREE.Clock();
     let composer;
@@ -14,21 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
-        const size = 256;
+        const size = 64;
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, size, size);
-        ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
+        ctx.font = `${size * 0.8}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = '#00ffcc';
-        ctx.shadowColor = '#00ffcc';
-        ctx.shadowBlur = 20;
         ctx.fillText(char, size / 2, size / 2);
-        const texture = new THREE.Texture(canvas);
-        texture.needsUpdate = true;
-        return texture;
+        return new THREE.CanvasTexture(canvas);
     }
 
     function getRandomCharacter() {
@@ -40,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const final = hangeulFinals[Math.floor(Math.random() * hangeulFinals.length)];
         const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
         const hangeulChar = String.fromCharCode(syllableCode);
-        const cyrillicLetters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
+        const cyrillicLetters = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЭЮЯ';
         const isHangeul = Math.random() < 0.5;
         if (isHangeul) {
             return hangeulChar;
@@ -52,77 +47,55 @@ document.addEventListener('DOMContentLoaded', () => {
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
         camera.position.z = 1000;
-        const ambientLight = new THREE.AmbientLight(0x404040);
-        scene.add(ambientLight);
-        const pointLight = new THREE.PointLight(0x00ffcc, 1);
-        pointLight.position.set(0, 0, 1000);
-        scene.add(pointLight);
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
+
         const particleCount = 1000;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
-            const material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
+            const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
             const sprite = new THREE.Sprite(material);
-            sprite.position.x = (Math.random() - 0.5) * 8000;
-            sprite.position.y = (Math.random() - 0.5) * 8000;
-            sprite.position.z = (Math.random() - 0.5) * 8000;
+            sprite.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
             sprite.scale.set(80, 80, 1);
-            sprite.speedX = (Math.random() - 0.5) * 2;
-            sprite.speedY = (Math.random() - 0.5) * 2;
-            sprite.speedZ = (Math.random() - 0.5) * 2;
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.2;
+            sprite.userData.velocity = new THREE.Vector3(
+                (Math.random() - 0.5) * 0.5,
+                (Math.random() - 0.5) * 0.5,
+                (Math.random() - 0.5) * 0.5
+            );
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
-        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
-        for (let i = 0; i < 70; i++) {
-            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(50, 0);
-            const material = new THREE.MeshStandardMaterial({
-                color: 0x00ffcc,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.4,
-            });
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.x = (Math.random() - 0.5) * 8000;
-            mesh.position.y = (Math.random() - 0.5) * 8000;
-            mesh.position.z = (Math.random() - 0.5) * 8000;
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.04;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.04;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.04;
-            sceneGroup.add(mesh);
-            shapes.push(mesh);
-        }
+
         const renderPass = new POSTPROCESSING.RenderPass(scene, camera);
-        const bloomPass = new POSTPROCESSING.BloomEffect({ luminanceThreshold: 0.5, luminanceSmoothing: 0.1, intensity: 1.5 });
-        const effectPass = new POSTPROCESSING.EffectPass(camera, bloomPass);
+        const bloomPass = new POSTPROCESSING.BloomEffect({ luminanceThreshold: 0.1, luminanceSmoothing: 0.9, intensity: 2.0 });
+        const smaaPass = new POSTPROCESSING.SMAAEffect();
         composer = new POSTPROCESSING.EffectComposer(renderer);
         composer.addPass(renderPass);
-        composer.addPass(effectPass);
+        composer.addPass(new POSTPROCESSING.EffectPass(camera, bloomPass, smaaPass));
+
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
+
         animate();
     }
 
     function onDocumentMouseMove(event) {
-        mouseX = (event.clientX - windowHalfX) / windowHalfX;
-        mouseY = (event.clientY - windowHalfY) / windowHalfY;
+        mouseX = (event.clientX - windowHalfX) / 10;
+        mouseY = (event.clientY - windowHalfY) / 10;
     }
 
     function onDocumentTouchMove(event) {
         if (event.touches.length == 1) {
             event.preventDefault();
-            mouseX = (event.touches[0].pageX - windowHalfX) / windowHalfX;
-            mouseY = (event.touches[0].pageY - windowHalfY) / windowHalfY;
+            mouseX = (event.touches[0].pageX - windowHalfX) / 10;
+            mouseY = (event.touches[0].pageY - windowHalfY) / 10;
         }
     }
 
@@ -138,26 +111,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function animate() {
         requestAnimationFrame(animate);
         const delta = clock.getDelta();
-        particles.forEach(p => {
-            p.position.x += p.speedX * delta * 60;
-            p.position.y += p.speedY * delta * 60;
-            p.position.z += p.speedZ * delta * 60;
-            p.material.rotation += p.rotationSpeed * delta * 60;
-            if (p.position.x > 4000 || p.position.x < -4000) p.speedX *= -1;
-            if (p.position.y > 4000 || p.position.y < -4000) p.speedY *= -1;
-            if (p.position.z > 4000 || p.position.z < -4000) p.speedZ *= -1;
+        particles.forEach(sprite => {
+            sprite.position.addScaledVector(sprite.userData.velocity, delta * 60);
+            if (sprite.position.x > 2000 || sprite.position.x < -2000) sprite.userData.velocity.x *= -1;
+            if (sprite.position.y > 2000 || sprite.position.y < -2000) sprite.userData.velocity.y *= -1;
+            if (sprite.position.z > 2000 || sprite.position.z < -2000) sprite.userData.velocity.z *= -1;
         });
-        shapes.forEach(s => {
-            s.rotation.x += s.rotationSpeedX * delta * 60;
-            s.rotation.y += s.rotationSpeedY * delta * 60;
-            s.rotation.z += s.rotationSpeedZ * delta * 60;
-        });
-        sceneGroup.rotation.y += 0.002;
-        sceneGroup.rotation.x += 0.001;
-        const targetRotationY = mouseX * 0.2;
-        const targetRotationX = mouseY * 0.2;
-        sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
-        sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
+        sceneGroup.rotation.y += 0.001;
+        sceneGroup.rotation.x += 0.0005;
+        camera.position.x += (mouseX - camera.position.x) * 0.05;
+        camera.position.y += (-mouseY - camera.position.y) * 0.05;
+        camera.lookAt(scene.position);
         composer.render(delta);
     }
 

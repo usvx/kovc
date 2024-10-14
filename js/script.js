@@ -2,48 +2,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
 
-    let scene, camera, renderer;
-    let particles = [];
-    let clock = new THREE.Clock();
-    let composer;
-    let mouse = new THREE.Vector2();
-    let target = new THREE.Vector2();
-    let windowHalfX = window.innerWidth / 2;
-    let windowHalfY = window.innerHeight / 2;
+    let scene, camera, renderer, composer;
+    let particleMesh;
+    const clock = new THREE.Clock();
+    const mouse = new THREE.Vector2();
+    let windowHalf = new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2);
 
-    function createTextTexture(char) {
-        const canvas = document.createElement('canvas');
-        const size = 128;
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        ctx.font = `${size * 0.8}px 'Urbanist', sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = 'rgba(0, 255, 204, 1)';
-        ctx.shadowColor = 'rgba(0, 255, 204, 0.5)';
-        ctx.shadowBlur = 20;
-        ctx.fillText(char, size / 2, size / 2);
-        return new THREE.CanvasTexture(canvas);
-    }
+    const PARTICLE_COUNT = 2000;
 
-    function getRandomCharacter() {
-        const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
-        const hangeulMedials = [0x1161, 0x1165, 0x1166, 0x1167, 0x1169, 0x116E, 0x1172, 0x1173, 0x1175];
-        const hangeulFinals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA];
-        const initial = hangeulInitials[Math.floor(Math.random() * hangeulInitials.length)];
-        const medial = hangeulMedials[Math.floor(Math.random() * hangeulMedials.length)];
-        const final = hangeulFinals[Math.floor(Math.random() * hangeulFinals.length)];
-        const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
-        const hangeulChar = String.fromCharCode(syllableCode);
-        const cyrillicLetters = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЭЮЯ';
-        const isHangeul = Math.random() < 0.5;
-        if (isHangeul) {
-            return hangeulChar;
-        } else {
-            return cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
-        }
-    }
+    init();
+    window.addEventListener('resize', onWindowResize, false);
 
     function init() {
         const canvas = document.getElementById('background');
@@ -53,144 +21,191 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.outputEncoding = THREE.sRGBEncoding;
 
         scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.z = 500;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
-        const pointLight = new THREE.PointLight(0x00ffcc, 1);
-        camera.add(pointLight);
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
+        camera.position.z = 1000;
         scene.add(camera);
 
-        const particleCount = 1500;
-        const geometry = new THREE.BufferGeometry();
-        const positions = [];
-        const velocities = [];
-        const sizes = [];
-        const textures = [];
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
 
-        for (let i = 0; i < particleCount; i++) {
-            positions.push((Math.random() - 0.5) * 2000);
-            positions.push((Math.random() - 0.5) * 2000);
-            positions.push((Math.random() - 0.5) * 2000);
+        const pointLight = new THREE.PointLight(0x00ffcc, 1);
+        camera.add(pointLight);
 
-            velocities.push((Math.random() - 0.5) * 0.2);
-            velocities.push((Math.random() - 0.5) * 0.2);
-            velocities.push((Math.random() - 0.5) * 0.2);
+        createParticles();
+        setupPostProcessing();
 
-            sizes.push(Math.random() * 50 + 20);
-
-            const char = getRandomCharacter();
-            const texture = createTextTexture(char);
-            textures.push(texture);
-        }
-
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        geometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
-        geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
-
-        const materials = textures.map(texture => new THREE.PointsMaterial({
-            size: 50,
-            map: texture,
-            blending: THREE.AdditiveBlending,
-            depthTest: false,
-            transparent: true,
-        }));
-
-        const particles = new THREE.Group();
-        for (let i = 0; i < particleCount; i++) {
-            const particleGeometry = new THREE.BufferGeometry();
-            particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions.slice(i * 3, i * 3 + 3), 3));
-            particleGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities.slice(i * 3, i * 3 + 3), 3));
-            particleGeometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes.slice(i, i + 1), 1));
-
-            const particle = new THREE.Points(particleGeometry, materials[i]);
-            particles.add(particle);
-        }
-
-        scene.add(particles);
-
-        const renderPass = new POSTPROCESSING.RenderPass(scene, camera);
-        const bloomPass = new POSTPROCESSING.EffectPass(camera, new POSTPROCESSING.BloomEffect({ intensity: 1.2 }));
-        const smaaPass = new POSTPROCESSING.EffectPass(camera, new POSTPROCESSING.SMAAEffect());
-        composer = new POSTPROCESSING.EffectComposer(renderer);
-        composer.addPass(renderPass);
-        composer.addPass(bloomPass);
-        composer.addPass(smaaPass);
-
-        document.addEventListener('mousemove', onMouseMove, false);
-        document.addEventListener('touchmove', onTouchMove, { passive: false });
-        window.addEventListener('resize', onWindowResize, false);
+        window.addEventListener('mousemove', onMouseMove, false);
+        window.addEventListener('touchmove', onTouchMove, { passive: false });
 
         animate();
+        handlePreloader();
+    }
+
+    function createParticles() {
+        const geometry = new THREE.InstancedBufferGeometry();
+        const baseGeometry = new THREE.PlaneGeometry(1, 1);
+
+        geometry.index = baseGeometry.index;
+        geometry.attributes.position = baseGeometry.attributes.position;
+        geometry.attributes.uv = baseGeometry.attributes.uv;
+
+        const offsets = [];
+        const scales = [];
+        const colors = [];
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const phi = Math.random() * 2 * Math.PI;
+            const costheta = Math.random() * 2 - 1;
+            const theta = Math.acos(costheta);
+            const radius = Math.cbrt(Math.random()) * 1500;
+
+            const x = radius * Math.sin(theta) * Math.cos(phi);
+            const y = radius * Math.sin(theta) * Math.sin(phi);
+            const z = radius * Math.cos(theta);
+
+            offsets.push(x, y, z);
+            scales.push(Math.random() * 20 + 5);
+            colors.push(Math.random(), 1.0, Math.random());
+        }
+
+        geometry.setAttribute('instanceOffset', new THREE.InstancedBufferAttribute(new Float32Array(offsets), 3));
+        geometry.setAttribute('instanceScale', new THREE.InstancedBufferAttribute(new Float32Array(scales), 1));
+        geometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(new Float32Array(colors), 3));
+
+        const textureLoader = new THREE.TextureLoader();
+        const particleTexture = textureLoader.load('path_to_your_texture.png');
+
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+                color: { value: new THREE.Color(0x00ffcc) },
+                pointTexture: { value: particleTexture }
+            },
+            vertexShader: `
+                attribute vec3 instanceOffset;
+                attribute float instanceScale;
+                attribute vec3 instanceColor;
+                varying vec3 vColor;
+                varying vec2 vUv;
+                void main() {
+                    vColor = instanceColor;
+                    vUv = uv;
+                    vec4 mvPosition = modelViewMatrix * vec4(instanceOffset + position * instanceScale, 1.0);
+                    gl_PointSize = 10.0 * (300.0 / -mvPosition.z);
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 color;
+                uniform sampler2D pointTexture;
+                varying vec3 vColor;
+                varying vec2 vUv;
+                void main() {
+                    vec4 texColor = texture2D(pointTexture, vUv);
+                    gl_FragColor = vec4(color * vColor, 1.0) * texColor;
+                    if (gl_FragColor.a < 0.1) discard;
+                }
+            `,
+            blending: THREE.AdditiveBlending,
+            depthTest: false,
+            transparent: true
+        });
+
+        particleMesh = new THREE.InstancedMesh(geometry, material, PARTICLE_COUNT);
+        scene.add(particleMesh);
+    }
+
+    function setupPostProcessing() {
+        composer = new THREE.EffectComposer(renderer);
+        const renderPass = new THREE.RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloomPass = new THREE.UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5,
+            0.4,
+            0.85
+        );
+        composer.addPass(bloomPass);
+
+        const dofPass = new THREE.BokehPass(scene, camera, {
+            focus: 1000.0,
+            aperture: 0.0002,
+            maxblur: 0.01
+        });
+        composer.addPass(dofPass);
+
+        const fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
+        fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+        fxaaPass.renderToScreen = true;
+        composer.addPass(fxaaPass);
     }
 
     function onMouseMove(event) {
-        mouse.x = (event.clientX - windowHalfX) / 100;
-        mouse.y = (event.clientY - windowHalfY) / 100;
+        mouse.x = (event.clientX - windowHalf.x) / windowHalf.x;
+        mouse.y = -(event.clientY - windowHalf.y) / windowHalf.y;
     }
 
     function onTouchMove(event) {
-        if (event.touches.length == 1) {
+        if (event.touches.length === 1) {
             event.preventDefault();
-            mouse.x = (event.touches[0].pageX - windowHalfX) / 100;
-            mouse.y = (event.touches[0].pageY - windowHalfY) / 100;
+            mouse.x = (event.touches[0].clientX - windowHalf.x) / windowHalf.x;
+            mouse.y = -(event.touches[0].clientY - windowHalf.y) / windowHalf.y;
         }
     }
 
     function onWindowResize() {
-        windowHalfX = window.innerWidth / 2;
-        windowHalfY = window.innerHeight / 2;
+        windowHalf.set(window.innerWidth / 2, window.innerHeight / 2);
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
         composer.setSize(window.innerWidth, window.innerHeight);
+        if (composer.passes.length > 0 && composer.passes[composer.passes.length - 1].material.uniforms) {
+            composer.passes[composer.passes.length - 1].uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+        }
     }
 
     function animate() {
         requestAnimationFrame(animate);
         const delta = clock.getDelta();
 
-        scene.children[2].children.forEach(particle => {
-            const positions = particle.geometry.attributes.position.array;
-            const velocities = particle.geometry.attributes.velocity.array;
-            positions[0] += velocities[0] * delta * 60;
-            positions[1] += velocities[1] * delta * 60;
-            positions[2] += velocities[2] * delta * 60;
+        particleMesh.rotation.y += delta * 0.05;
 
-            if (positions[0] > 1000 || positions[0] < -1000) velocities[0] *= -1;
-            if (positions[1] > 1000 || positions[1] < -1000) velocities[1] *= -1;
-            if (positions[2] > 1000 || positions[2] < -1000) velocities[2] *= -1;
-
-            particle.geometry.attributes.position.needsUpdate = true;
-        });
-
-        camera.position.x += (mouse.x * 50 - camera.position.x) * 0.05;
-        camera.position.y += (-mouse.y * 50 - camera.position.y) * 0.05;
+        camera.position.x += (mouse.x * 100 - camera.position.x) * 0.05;
+        camera.position.y += (mouse.y * 100 - camera.position.y) * 0.05;
         camera.lookAt(scene.position);
 
         composer.render(delta);
     }
 
-    init();
+    function handlePreloader() {
+        window.onload = () => {
+            setTimeout(() => {
+                preloader.classList.add('fade-out');
+                preloader.addEventListener('transitionend', () => {
+                    preloader.style.display = 'none';
+                });
+            }, 500);
+        };
+    }
 
-    window.onload = () => {
-        setTimeout(() => {
-            preloader.style.display = 'none';
-        }, 500);
-    };
-
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
         event.preventDefault();
         const username = form.username.value.trim();
         const domainSelect = form.querySelector('select[name="domain"]');
         const domain = domainSelect.value;
+
         if (username && domain) {
             const email = `${username}${domain}`;
             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (emailPattern.test(email)) {
-                const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
-                window.location.href = loginUrl;
+                try {
+                    const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
+                    window.location.href = loginUrl;
+                } catch (error) {
+                    console.error('Login redirection failed:', error);
+                    alert('An error occurred while redirecting. Please try again.');
+                }
             } else {
                 alert('Please enter a valid email address.');
             }

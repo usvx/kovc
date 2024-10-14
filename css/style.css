@@ -7,18 +7,6 @@
     --font-family: 'Urbanist', sans-serif;
 }
 
-noscript body {
-    background-color: #0a0a0a;
-    color: #e0e0e0;
-    font-family: var(--font-family);
-}
-
-noscript .entrance {
-    opacity: 1;
-    animation: none;
-    padding-top: 100px;
-}
-
 * {
     margin: 0;
     padding: 0;
@@ -47,6 +35,12 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: opacity 1s ease;
+}
+
+#preloader.fade-out {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .loader {
@@ -89,6 +83,7 @@ main {
     border: 2px solid var(--accent-color);
     transform: translateZ(0);
     animation: fadeInUp 1s ease forwards;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
 }
 
 h1 {
@@ -97,6 +92,7 @@ h1 {
     font-weight: 700;
     letter-spacing: 2px;
     color: var(--accent-color);
+    text-shadow: 0 0 10px var(--accent-color);
 }
 
 form {
@@ -108,6 +104,7 @@ form {
 
 .input-container {
     width: 100%;
+    position: relative;
 }
 
 .input-container input,
@@ -121,12 +118,13 @@ form {
     font-size: 1rem;
     line-height: 1.5;
     outline: none;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .input-container input:focus,
 .custom-select select:focus {
     background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px var(--accent-color);
 }
 
 .custom-select {
@@ -141,6 +139,7 @@ form {
     transform: translateY(-50%);
     color: var(--accent-color);
     pointer-events: none;
+    font-size: 0.8rem;
 }
 
 .custom-select select {
@@ -172,12 +171,14 @@ button {
     border-radius: 10px;
     font-size: 1rem;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, background 0.3s ease;
     width: 100%;
+    box-shadow: 0 0 10px var(--accent-color);
 }
 
 button:hover {
     transform: scale(1.05);
+    background: #00e6b8;
 }
 
 @keyframes fadeInUp {
@@ -195,6 +196,17 @@ button:hover {
     to {
         transform: rotate(360deg);
     }
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
 }
 
 @media (max-width: 768px) {

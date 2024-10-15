@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com 'unsafe-eval';
+        script-src 'self' https://cdnjs.cloudflare.com;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         img-src 'self' data:;
         font-src 'self' https://fonts.gstatic.com data:;
@@ -29,17 +29,14 @@
     <main>
         <div class="entrance">
             <h1>Lumina</h1>
-            <form id="login-form" aria-labelledby="login-form-title">
+            <form id="login-form">
                 <div class="input-container">
-                    <label for="username" class="visually-hidden">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Username" required aria-required="true">
+                    <input type="text" name="username" placeholder="Username" required>
                 </div>
                 <div class="input-container">
-                    <label for="domain" class="visually-hidden">Domain</label>
                     <div class="custom-select">
-                        <select id="domain" name="domain" required aria-required="true">
+                        <select name="domain" required>
                             <option value="" disabled selected>Select Domain</option>
-                            <option value="@gj.to">@gj.to</option>
                             <option value="@ko.vc">@ko.vc</option>
                             <option value="@yv.is">@yv.is</option>
                         </select>
@@ -77,7 +74,6 @@
                         <div class="custom-select">
                             <select name="domain" required>
                                 <option value="" disabled selected>Select Domain</option>
-                                <option value="@gj.to">@gj.to</option>
                                 <option value="@ko.vc">@ko.vc</option>
                                 <option value="@yv.is">@yv.is</option>
                             </select>
@@ -89,13 +85,7 @@
             </div>
         </main>
     </noscript>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/postprocessing/EffectComposer.js" crossorigin="anonymous" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/postprocessing/RenderPass.js" crossorigin="anonymous" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/postprocessing/UnrealBloomPass.js" crossorigin="anonymous" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/postprocessing/BokehPass.js" crossorigin="anonymous" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/shaders/FXAAShader.js" crossorigin="anonymous" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/postprocessing/ShaderPass.js" crossorigin="anonymous" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
     <script src="js/script.js" defer></script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
-    --background-color: #000000;
-    --foreground-color: #39FF14;
+    --background-color: #0e0e2e;
+    --foreground-color: #e0e0e0;
     --accent-color: #39FF14;
     --secondary-accent: #00FF00;
     --font-family: 'Urbanist', sans-serif;
@@ -12,6 +12,12 @@
     --button-hover: #00FF00;
     --input-focus: #39FF14;
     --loader-color: rgba(57, 255, 20, 0.2);
+    --h1-font-size: clamp(2.5rem, 5vw, 4rem);
+    --form-width: clamp(300px, 90%, 450px);
+    --form-padding: clamp(35px, 5vw, 60px);
+    --input-font-size: clamp(1rem, 2vw, 1.2rem);
+    --button-font-size: clamp(1rem, 2vw, 1.2rem);
+    --button-padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
 }
 
 * {
@@ -82,12 +88,12 @@ main {
 
 .entrance {
     position: relative;
-    width: 450px;
+    width: var(--form-width);
     max-width: 90%;
     text-align: center;
     opacity: 0;
     background: rgba(0, 0, 0, 0.85);
-    padding: 60px;
+    padding: var(--form-padding);
     border-radius: 25px;
     border: 2px solid var(--accent-color);
     transform: translateZ(0);
@@ -97,7 +103,7 @@ main {
 }
 
 h1 {
-    font-size: 4rem;
+    font-size: var(--h1-font-size);
     margin-bottom: 50px;
     font-weight: 700;
     letter-spacing: 2px;
@@ -134,7 +140,7 @@ form {
     color: var(--foreground-color);
     border: none;
     border-radius: 12px;
-    font-size: 1.1rem;
+    font-size: var(--input-font-size);
     line-height: 1.6;
     outline: none;
     transition: background 0.3s ease, box-shadow 0.3s ease;
@@ -185,12 +191,12 @@ form {
 }
 
 button {
-    padding: 18px 35px;
+    padding: var(--button-padding);
     background: var(--accent-color);
     color: var(--background-color);
     border: none;
     border-radius: 12px;
-    font-size: 1.1rem;
+    font-size: var(--button-font-size);
     cursor: pointer;
     transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
@@ -217,47 +223,5 @@ button:hover {
 @keyframes spin {
     to {
         transform: rotate(360deg);
-    }
-}
-
-@media (max-width: 1024px) {
-    .entrance {
-        width: 400px;
-        padding: 50px;
-    }
-    h1 {
-        font-size: 3.5rem;
-        margin-bottom: 40px;
-    }
-}
-
-@media (max-width: 768px) {
-    .entrance {
-        width: 350px;
-        padding: 45px;
-    }
-    h1 {
-        font-size: 3rem;
-        margin-bottom: 35px;
-    }
-}
-
-@media (max-width: 480px) {
-    .entrance {
-        width: 300px;
-        padding: 35px;
-    }
-    h1 {
-        font-size: 2.5rem;
-        margin-bottom: 25px;
-    }
-    input,
-    .custom-select select,
-    button {
-        font-size: 1rem;
-        padding: 14px;
-    }
-    button {
-        padding: 14px 28px;
     }
 }

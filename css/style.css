@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
-    --background-color: #0e0e2e;
-    --foreground-color: #e0e0e0;
-    --accent-color: #8e2de2;
-    --secondary-accent: #4a00e0;
+    --background-color: #000000;
+    --foreground-color: #00FFFF;
+    --accent-color: #FF00FF;
+    --secondary-accent: #00FF00;
     --font-family: 'Urbanist', sans-serif;
-    --gradient-start: #0f2027;
-    --gradient-mid: #203a43;
-    --gradient-end: #2c5364;
-    --button-hover: #f27121;
-    --input-focus: #8e2de2;
-    --loader-color: rgba(142, 45, 226, 0.2);
+    --gradient-start: #000000;
+    --gradient-mid: #1a1a1a;
+    --gradient-end: #333333;
+    --button-hover: #FF00FF;
+    --input-focus: #00FFFF;
+    --loader-color: rgba(255, 0, 255, 0.2);
 }
 
 * {
@@ -86,14 +86,14 @@ main {
     max-width: 90%;
     text-align: center;
     opacity: 0;
-    background: rgba(14, 14, 46, 0.85);
+    background: rgba(0, 0, 0, 0.85);
     padding: 60px;
     border-radius: 25px;
     border: 2px solid var(--accent-color);
     transform: translateZ(0);
     animation: fadeInUp 1.5s ease forwards;
     backdrop-filter: blur(15px);
-    box-shadow: 0 0 20px rgba(142, 45, 226, 0.5);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
 }
 
 h1 {
@@ -138,7 +138,7 @@ form {
     line-height: 1.6;
     outline: none;
     transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 0 15px rgba(142, 45, 226, 0.3);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
 }
 
 .input-container input::placeholder,
@@ -194,13 +194,13 @@ button {
     cursor: pointer;
     transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
-    box-shadow: 0 0 15px rgba(142, 45, 226, 0.5);
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
 }
 
 button:hover {
     transform: scale(1.05);
     background: var(--secondary-accent);
-    box-shadow: 0 0 25px rgba(142, 45, 226, 0.7);
+    box-shadow: 0 0 25px rgba(255, 0, 255, 0.7);
 }
 
 @keyframes fadeInUp {

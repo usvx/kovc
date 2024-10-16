@@ -1,12 +1,7 @@
-import * as THREE from 'https://unpkg.com/three@0.152.2/build/three.module.js';
-import { EffectComposer } from 'https://unpkg.com/three@0.152.2/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'https://unpkg.com/three@0.152.2/examples/jsm/postprocessing/RenderPass.js';
-
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
-
-    let scene, camera, renderer, composer;
+    let scene, camera, renderer;
     let particles = [];
     let shapes = [];
     let sceneGroup;
@@ -14,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let windowHalfX = window.innerWidth / 2;
     let windowHalfY = window.innerHeight / 2;
     let isMobile = /Mobi|Android/i.test(navigator.userAgent);
-
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
         const size = isMobile ? 128 : 256;
@@ -33,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
         texture.needsUpdate = true;
         return texture;
     }
-
     function getRandomCharacter() {
         const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
         const hangeulMedials = [0x1161, 0x1165, 0x1166, 0x1167, 0x1169, 0x116E, 0x1172, 0x1173, 0x1175];
@@ -51,27 +44,21 @@ document.addEventListener('DOMContentLoaded', () => {
             return cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
         }
     }
-
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         scene = new THREE.Scene();
-
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1000 : 1500;
-
         const ambientLight = new THREE.AmbientLight(0x404040, 2);
         scene.add(ambientLight);
-
         const directionalLight = new THREE.DirectionalLight(0x8e2de2, 1);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(directionalLight);
-
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
-
         const particleCount = isMobile ? 400 : 800;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
@@ -89,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
-
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
         const shapeCount = isMobile ? 30 : 60;
         for (let i = 0; i < shapeCount; i++) {
@@ -113,22 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
-
-        composer = new EffectComposer(renderer);
-        const renderPass = new RenderPass(scene, camera);
-        composer.addPass(renderPass);
-
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
         animate();
     }
-
     function onDocumentMouseMove(event) {
         mouseX = (event.clientX - windowHalfX) / windowHalfX;
         mouseY = (event.clientY - windowHalfY) / windowHalfY;
     }
-
     function onDocumentTouchMove(event) {
         if (event.touches.length === 1) {
             event.preventDefault();
@@ -136,16 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
             mouseY = (event.touches[0].pageY - windowHalfY) / windowHalfY;
         }
     }
-
     function onWindowResize() {
         windowHalfX = window.innerWidth / 2;
         windowHalfY = window.innerHeight / 2;
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        composer.setSize(window.innerWidth, window.innerHeight);
     }
-
     function animate() {
         requestAnimationFrame(animate);
         particles.forEach(p => {
@@ -168,17 +144,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
-        composer.render();
+        renderer.render(scene, camera);
     }
-
     init();
-
     window.onload = () => {
         setTimeout(() => {
             preloader.style.display = 'none';
         }, 1000);
     };
-
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const username = form.username.value.trim();

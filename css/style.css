@@ -105,7 +105,7 @@ main {
     max-width: 100%;
     text-align: center;
     opacity: 0;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.6);
     padding: var(--form-padding);
     border-radius: 25px;
     border: 2px solid var(--accent-color);
@@ -246,15 +246,6 @@ button:focus {
 @keyframes spin {
     to {
         transform: rotate(360deg);
-    }
-}
-
-@keyframes glow {
-    from {
-        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent);
-    }
-    to {
-        text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
     }
 }
 

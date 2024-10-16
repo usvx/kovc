@@ -1,10 +1,13 @@
 import * as THREE from 'https://unpkg.com/three@0.152.2/build/three.module.js';
+import { EffectComposer } from 'https://unpkg.com/three@0.152.2/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://unpkg.com/three@0.152.2/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://unpkg.com/three@0.152.2/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
 
-    let scene, camera, renderer;
+    let scene, camera, renderer, composer;
     let particles = [];
     let shapes = [];
     let sceneGroup;
@@ -22,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#00ffcc';
+        ctx.fillStyle = '#ffffff';
         ctx.shadowColor = '#00ffcc';
         ctx.shadowBlur = 20;
         ctx.fillText(char, size / 2, size / 2);
@@ -57,14 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
         camera.position.z = 1000;
+
         const ambientLight = new THREE.AmbientLight(0x404040);
         scene.add(ambientLight);
         const pointLight = new THREE.PointLight(0x00ffcc, 1);
         pointLight.position.set(0, 0, 1000);
         scene.add(pointLight);
+
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
-        const particleCount = 500;
+
+        const particleCount = 600;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
@@ -74,22 +80,23 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.position.y = (Math.random() - 0.5) * 4000;
             sprite.position.z = (Math.random() - 0.5) * 4000;
             sprite.scale.set(80, 80, 1);
-            sprite.speedX = (Math.random() - 0.5) * 0.5;
-            sprite.speedY = (Math.random() - 0.5) * 0.5;
-            sprite.speedZ = (Math.random() - 0.5) * 0.5;
+            sprite.speedX = (Math.random() - 0.5) * 1;
+            sprite.speedY = (Math.random() - 0.5) * 1;
+            sprite.speedZ = (Math.random() - 0.5) * 1;
             sprite.rotationSpeed = (Math.random() - 0.5) * 0.05;
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
-        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry];
-        for (let i = 0; i < 30; i++) {
+
+        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
+        for (let i = 0; i < 50; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(50, 0);
             const material = new THREE.MeshStandardMaterial({
                 color: 0x00ffcc,
                 wireframe: true,
                 transparent: true,
-                opacity: 0.2,
+                opacity: 0.3,
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.x = (Math.random() - 0.5) * 4000;
@@ -101,6 +108,19 @@ document.addEventListener('DOMContentLoaded', () => {
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
+
+        composer = new EffectComposer(renderer);
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5,
+            0.4,
+            0.85
+        );
+        composer.addPass(bloomPass);
+
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
@@ -126,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
     }
 
     function animate() {
@@ -150,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
-        renderer.render(scene, camera);
+        composer.render();
     }
 
     init();

@@ -13,7 +13,7 @@
     --input-focus: #39FF14;
     --loader-color: rgba(57, 255, 20, 0.2);
     --h1-font-size: clamp(2rem, 5vw, 3rem);
-    --form-width: clamp(250px, 90%, 400px);
+    --form-width: clamp(250px, 80%, 400px);
     --form-padding: clamp(25px, 5vw, 50px);
     --input-font-size: clamp(0.9rem, 2vw, 1rem);
     --button-font-size: clamp(0.9rem, 2vw, 1rem);
@@ -42,19 +42,11 @@
 html, body {
     height: 100%;
     width: 100%;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
-    background-size: 400% 400%;
+    background: var(--background-color);
     color: var(--foreground-color);
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
-    animation: gradientAnimation 20s ease infinite;
-}
-
-@keyframes gradientAnimation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
 }
 
 #preloader {
@@ -96,12 +88,13 @@ main {
     justify-content: center;
     min-height: 100vh;
     background: transparent;
+    padding: 0 10px;
 }
 
 .entrance {
     position: relative;
     width: var(--form-width);
-    max-width: 90%;
+    max-width: 100%;
     text-align: center;
     opacity: 0;
     background: rgba(0, 0, 0, 0.85);
@@ -112,6 +105,7 @@ main {
     animation: fadeInUp 1.5s ease forwards;
     backdrop-filter: blur(15px);
     box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+    margin: 20px;
 }
 
 h1 {
@@ -250,14 +244,14 @@ button:focus {
 @media (max-width: 375px) {
     :root {
         --h1-font-size: clamp(1.8rem, 5vw, 2.5rem);
-        --form-width: clamp(220px, 90%, 350px);
+        --form-width: calc(100% - 40px);
         --form-padding: clamp(20px, 5vw, 40px);
         --input-font-size: clamp(0.8rem, 2vw, 0.9rem);
         --button-font-size: clamp(0.8rem, 2vw, 0.9rem);
         --button-padding: clamp(10px, 3vw, 14px) clamp(20px, 5vw, 25px);
     }
     .entrance {
-        padding: var(--form-padding);
+        margin: 20px;
     }
     h1 {
         margin-bottom: 40px;

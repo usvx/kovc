@@ -2,13 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
 
-    let scene, camera, renderer, composer;
+    let scene, camera, renderer;
     let particles = [];
     let shapes = [];
     let sceneGroup;
-    let mouseX = 0, mouseY = 0;
-    let windowHalfX = window.innerWidth / 2;
-    let windowHalfY = window.innerHeight / 2;
+    let composer;
+    let mouse = new THREE.Vector2();
+    let raycaster = new THREE.Raycaster();
+    let INTERSECTED;
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
@@ -68,20 +69,19 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const particleCount = 1000;
+        const particleCount = 500;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
             const material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
             const sprite = new THREE.Sprite(material);
-            sprite.position.x = (Math.random() - 0.5) * 8000;
-            sprite.position.y = (Math.random() - 0.5) * 8000;
-            sprite.position.z = (Math.random() - 0.5) * 8000;
+            sprite.position.x = (Math.random() - 0.5) * 4000;
+            sprite.position.y = (Math.random() - 0.5) * 4000;
+            sprite.position.z = (Math.random() - 0.5) * 4000;
             sprite.scale.set(80, 80, 1);
-            sprite.speedX = (Math.random() - 0.5) * 1;
-            sprite.speedY = (Math.random() - 0.5) * 1;
-            sprite.speedZ = (Math.random() - 0.5) * 1;
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.05;
+            sprite.speedX = (Math.random() - 0.5) * 2;
+            sprite.speedY = (Math.random() - 0.5) * 2;
+            sprite.speedZ = (Math.random() - 0.5) * 2;
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
         for (let i = 0; i < 50; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(100, 0);
+            const geometry = new GeometryClass(50, 0);
             const material = new THREE.MeshStandardMaterial({
                 color: 0x00ffcc,
                 wireframe: true,
@@ -97,42 +97,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 opacity: 0.2,
             });
             const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.x = (Math.random() - 0.5) * 8000;
-            mesh.position.y = (Math.random() - 0.5) * 8000;
-            mesh.position.z = (Math.random() - 0.5) * 8000;
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.01;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.01;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.01;
+            mesh.position.x = (Math.random() - 0.5) * 4000;
+            mesh.position.y = (Math.random() - 0.5) * 4000;
+            mesh.position.z = (Math.random() - 0.5) * 4000;
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
 
+        const renderPass = new THREE.RenderPass(scene, camera);
+        const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        composer = new THREE.EffectComposer(renderer);
+        composer.addPass(renderPass);
+        composer.addPass(bloomPass);
+
         document.addEventListener('mousemove', onDocumentMouseMove, false);
-        document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
 
         animate();
     }
 
     function onDocumentMouseMove(event) {
-        mouseX = (event.clientX - windowHalfX) / windowHalfX;
-        mouseY = (event.clientY - windowHalfY) / windowHalfY;
-    }
-
-    function onDocumentTouchMove(event) {
-        if (event.touches.length == 1) {
-            event.preventDefault();
-            mouseX = (event.touches[0].pageX - windowHalfX) / windowHalfX;
-            mouseY = (event.touches[0].pageY - windowHalfY) / windowHalfY;
-        }
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     }
 
     function onWindowResize() {
-        windowHalfX = window.innerWidth / 2;
-        windowHalfY = window.innerHeight / 2;
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
     }
 
     function animate() {
@@ -142,11 +138,9 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.x += p.speedX;
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
-            p.material.rotation += p.rotationSpeed;
-
-            if (p.position.x > 4000 || p.position.x < -4000) p.speedX *= -1;
-            if (p.position.y > 4000 || p.position.y < -4000) p.speedY *= -1;
-            if (p.position.z > 4000 || p.position.z < -4000) p.speedZ *= -1;
+            if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
+            if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
+            if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
         });
 
         shapes.forEach(s => {
@@ -155,15 +149,25 @@ document.addEventListener('DOMContentLoaded', () => {
             s.rotation.z += s.rotationSpeedZ;
         });
 
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(sceneGroup.children);
+
+        if (intersects.length > 0) {
+            if (INTERSECTED != intersects[0].object) {
+                INTERSECTED = intersects[0].object;
+                gsap.to(INTERSECTED.scale, { x: 120, y: 120, duration: 0.5 });
+            }
+        } else {
+            if (INTERSECTED) {
+                gsap.to(INTERSECTED.scale, { x: 80, y: 80, duration: 0.5 });
+                INTERSECTED = null;
+            }
+        }
+
         sceneGroup.rotation.y += 0.001;
         sceneGroup.rotation.x += 0.0005;
 
-        const targetRotationY = mouseX * 0.05;
-        const targetRotationX = mouseY * 0.05;
-        sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
-        sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
-
-        renderer.render(scene, camera);
+        composer.render();
     }
 
     init();

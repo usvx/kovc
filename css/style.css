@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
-    --background-color: #1a1a40;
+    --background-color: #0a0a0a;
     --foreground-color: #ffffff;
-    --accent-color: #00BFFF;
-    --secondary-accent: #FF69B4;
+    --accent-color: #1E90FF;
+    --secondary-accent: #FF1493;
     --font-family: 'Urbanist', sans-serif;
-    --gradient-start: #0a0a2a;
-    --gradient-mid: #14145b;
-    --gradient-end: #1a1a6a;
-    --button-hover: #00FF7F;
-    --input-focus: #00BFFF;
-    --loader-color: rgba(0, 191, 255, 0.2);
+    --gradient-start: #0a0a0a;
+    --gradient-mid: #141414;
+    --gradient-end: #1c1c1c;
+    --button-hover: #1E90FF;
+    --input-focus: #1E90FF;
+    --loader-color: rgba(30, 144, 255, 0.2);
     --h1-font-size: clamp(2rem, 5vw, 3rem);
     --form-width: clamp(250px, 80%, 400px);
     --form-padding: clamp(25px, 5vw, 50px);
@@ -112,7 +112,7 @@ main {
     transform: translateZ(0);
     animation: fadeInUp 1.5s ease forwards;
     backdrop-filter: blur(15px);
-    box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
+    box-shadow: 0 0 20px rgba(30, 144, 255, 0.5);
     margin: 20px;
 }
 
@@ -158,7 +158,7 @@ form {
     line-height: 1.6;
     outline: none;
     transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
+    box-shadow: 0 0 15px rgba(30, 144, 255, 0.3);
 }
 
 .input-container input::placeholder,
@@ -214,14 +214,14 @@ button {
     cursor: pointer;
     transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
-    box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
+    box-shadow: 0 0 15px rgba(30, 144, 255, 0.5);
 }
 
 button:hover,
 button:focus {
     transform: scale(1.05);
     background: var(--secondary-accent);
-    box-shadow: 0 0 25px rgba(0, 191, 255, 0.7);
+    box-shadow: 0 0 25px rgba(30, 144, 255, 0.7);
     outline: none;
 }
 

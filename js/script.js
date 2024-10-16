@@ -1,9 +1,6 @@
 import * as THREE from 'https://unpkg.com/three@0.152.2/build/three.module.js';
 import { EffectComposer } from 'https://unpkg.com/three@0.152.2/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'https://unpkg.com/three@0.152.2/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'https://unpkg.com/three@0.152.2/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from 'https://unpkg.com/three@0.152.2/examples/jsm/postprocessing/ShaderPass.js';
-import { FXAAShader } from 'https://unpkg.com/three@0.152.2/examples/jsm/shaders/FXAAShader.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -121,21 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
 
-        const bloomPass = new UnrealBloomPass(
-            new THREE.Vector2(window.innerWidth, window.innerHeight),
-            isMobile ? 1.0 : 1.5, // strength
-            0.4, // radius
-            0.85 // threshold
-        );
-        bloomPass.threshold = 0;
-        bloomPass.strength = isMobile ? 1.0 : 1.5;
-        bloomPass.radius = 0;
-        composer.addPass(bloomPass);
-
-        const fxaaPass = new ShaderPass(FXAAShader);
-        fxaaPass.material.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
-        composer.addPass(fxaaPass);
-
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
@@ -162,11 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
         composer.setSize(window.innerWidth, window.innerHeight);
-        composer.passes.forEach(pass => {
-            if (pass instanceof ShaderPass && pass.material.uniforms['resolution']) {
-                pass.material.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
-            }
-        });
     }
 
     function animate() {

@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#00FFFF';
-        ctx.shadowColor = '#FF00FF';
+        ctx.fillStyle = '#39FF14';
+        ctx.shadowColor = '#00FF00';
         ctx.shadowBlur = isMobile ? 15 : 25;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
@@ -52,9 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1000 : 1500;
-        const ambientLight = new THREE.AmbientLight(0x00FFFF, 2);
+        const ambientLight = new THREE.AmbientLight(0x39FF14, 2);
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xFF00FF, 1);
+        const directionalLight = new THREE.DirectionalLight(0x00FF00, 1);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(directionalLight);
         sceneGroup = new THREE.Group();
@@ -68,10 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.position.x = (Math.random() - 0.5) * 5000;
             sprite.position.y = (Math.random() - 0.5) * 5000;
             sprite.position.z = (Math.random() - 0.5) * 5000;
-            sprite.scale.set(isMobile ? 60 : 100, isMobile ? 60 : 100, 1);
-            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1 : 2);
-            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1 : 2);
-            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 1 : 2);
+            sprite.scale.set(isMobile ? 80 : 150, isMobile ? 80 : 150, 1);
+            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 2 : 4);
+            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 2 : 4);
+            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 2 : 4);
             sprite.rotationSpeed = (Math.random() - 0.5) * 0.1;
             sceneGroup.add(sprite);
             particles.push(sprite);
@@ -82,11 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(isMobile ? 60 : 80, 1);
             const material = new THREE.MeshStandardMaterial({
-                color: 0xFF00FF,
+                color: 0x39FF14,
                 wireframe: true,
                 transparent: true,
                 opacity: 0.4,
-                emissive: 0xFF00FF,
+                emissive: 0x39FF14,
                 emissiveIntensity: 0.5
             });
             const mesh = new THREE.Mesh(geometry, material);
@@ -138,8 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;
         });
-        sceneGroup.rotation.y += 0.0015;
-        sceneGroup.rotation.x += 0.001;
+        sceneGroup.rotation.y += 0.0025;
+        sceneGroup.rotation.x += 0.002;
         const targetRotationY = mouseX * 0.05;
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;

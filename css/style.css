@@ -5,6 +5,9 @@
     --foreground-color: #e0e0e0;
     --accent-color: #00ffcc;
     --font-family: 'Urbanist', sans-serif;
+    --gradient-start: #1a2a6c;
+    --gradient-mid: #b21f1f;
+    --gradient-end: #fdbb2d;
 }
 
 * {
@@ -17,11 +20,19 @@
 html, body {
     height: 100%;
     width: 100%;
-    background-color: var(--background-color);
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
+    background-size: 400% 400%;
     color: var(--foreground-color);
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
+    animation: gradientAnimation 15s ease infinite;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 #preloader {
@@ -67,24 +78,26 @@ main {
 
 .entrance {
     position: relative;
-    width: 350px;
+    width: 400px;
     max-width: 90%;
     text-align: center;
     opacity: 0;
     background: rgba(10, 10, 10, 0.85);
-    padding: 40px;
+    padding: 50px;
     border-radius: 20px;
     border: 2px solid var(--accent-color);
     transform: translateZ(0);
     animation: fadeInUp 1s ease forwards;
+    backdrop-filter: blur(10px);
 }
 
 h1 {
-    font-size: 3rem;
+    font-size: 3.5rem;
     margin-bottom: 40px;
     font-weight: 700;
     letter-spacing: 2px;
     color: var(--accent-color);
+    text-shadow: 0 0 10px var(--accent-color);
 }
 
 form {
@@ -109,12 +122,14 @@ form {
     font-size: 1rem;
     line-height: 1.5;
     outline: none;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
 }
 
 .input-container input:focus,
 .custom-select select:focus {
     background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
 }
 
 .custom-select {
@@ -160,13 +175,15 @@ button {
     border-radius: 10px;
     font-size: 1rem;
     cursor: pointer;
-    transition: transform 0.3s ease, background 0.3s ease;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
 }
 
 button:hover {
     transform: scale(1.05);
     background: #00e6b3;
+    box-shadow: 0 0 20px rgba(0, 230, 179, 0.7);
 }
 
 @keyframes fadeInUp {
@@ -188,21 +205,21 @@ button:hover {
 
 @media (max-width: 768px) {
     .entrance {
-        width: 300px;
+        width: 350px;
     }
     h1 {
-        font-size: 2.5rem;
+        font-size: 3rem;
         margin-bottom: 30px;
     }
 }
 
 @media (max-width: 480px) {
     .entrance {
-        width: 260px;
+        width: 300px;
         padding: 30px;
     }
     h1 {
-        font-size: 2rem;
+        font-size: 2.5rem;
         margin-bottom: 20px;
     }
     input,

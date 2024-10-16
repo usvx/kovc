@@ -13,11 +13,11 @@
     --input-focus: #00FFD1;
     --loader-color: rgba(0, 255, 209, 0.2);
     --h1-font-size: clamp(2rem, 5vw, 3rem);
-    --form-width: clamp(250px, 80%, 400px);
-    --form-padding: clamp(25px, 5vw, 50px);
-    --input-font-size: clamp(0.9rem, 2vw, 1rem);
-    --button-font-size: clamp(0.9rem, 2vw, 1rem);
-    --button-padding: clamp(12px, 3vw, 16px) clamp(24px, 5vw, 30px);
+    --form-width: clamp(250px, 80%, 450px);
+    --form-padding: clamp(35px, 5vw, 60px);
+    --input-font-size: clamp(1rem, 2vw, 1.1rem);
+    --button-font-size: clamp(1rem, 2vw, 1.1rem);
+    --button-padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
 }
 
 * {
@@ -249,22 +249,53 @@ button:focus {
     }
 }
 
-@media (max-width: 375px) {
-    :root {
-        --h1-font-size: clamp(1.8rem, 5vw, 2.5rem);
-        --form-width: calc(100% - 40px);
-        --form-padding: clamp(20px, 5vw, 40px);
-        --input-font-size: clamp(0.8rem, 2vw, 0.9rem);
-        --button-font-size: clamp(0.8rem, 2vw, 0.9rem);
-        --button-padding: clamp(10px, 3vw, 14px) clamp(20px, 5vw, 25px);
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent);
     }
+    to {
+        text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
+    }
+}
+
+@media (max-width: 1024px) {
     .entrance {
-        margin: 20px;
+        width: 400px;
+        padding: 50px;
     }
     h1 {
+        font-size: 3.5rem;
         margin-bottom: 40px;
     }
-    form {
-        gap: 25px;
+}
+
+@media (max-width: 768px) {
+    .entrance {
+        width: 350px;
+        padding: 45px;
+    }
+    h1 {
+        font-size: 3rem;
+        margin-bottom: 35px;
+    }
+}
+
+@media (max-width: 480px) {
+    .entrance {
+        width: 300px;
+        padding: 35px;
+    }
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 25px;
+    }
+    input,
+    .custom-select select,
+    button {
+        font-size: 1rem;
+        padding: 14px;
+    }
+    button {
+        padding: 14px 28px;
     }
 }

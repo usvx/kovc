@@ -22,7 +22,6 @@ html, body {
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
-    perspective: 1000px;
 }
 
 #preloader {
@@ -64,7 +63,6 @@ main {
     justify-content: center;
     min-height: 100vh;
     background: transparent;
-    perspective: 1000px;
 }
 
 .entrance {
@@ -77,9 +75,7 @@ main {
     padding: 40px;
     border-radius: 20px;
     border: 2px solid var(--accent-color);
-    transform: translateZ(0) rotateY(0deg);
-    animation: fadeIn 1.5s ease forwards, rotate 10s linear infinite;
-    backdrop-filter: blur(10px);
+    animation: fadeInUp 1s ease forwards;
 }
 
 h1 {
@@ -88,7 +84,7 @@ h1 {
     font-weight: 700;
     letter-spacing: 2px;
     color: var(--accent-color);
-    text-shadow: 0 0 10px var(--accent-color);
+    animation: neonGlow 2s infinite alternate;
 }
 
 form {
@@ -100,6 +96,7 @@ form {
 
 .input-container {
     width: 100%;
+    position: relative;
 }
 
 .input-container input,
@@ -113,13 +110,8 @@ form {
     font-size: 1rem;
     line-height: 1.5;
     outline: none;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition: background 0.3s ease;
     backdrop-filter: blur(5px);
-}
-
-.input-container input:hover,
-.custom-select select:hover {
-    transform: translateY(-3px);
 }
 
 .input-container input:focus,
@@ -172,37 +164,37 @@ button {
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
-    backdrop-filter: blur(5px);
+    box-shadow: 0 0 10px var(--accent-color);
 }
 
 button:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 15px var(--accent-color);
+    box-shadow: 0 0 20px var(--accent-color);
 }
 
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-        transform: translateY(50px) rotateY(0deg);
-    }
-    100% {
+@keyframes fadeInUp {
+    to {
         opacity: 1;
-        transform: translateY(0) rotateY(360deg);
+        transform: translateY(0);
     }
-}
-
-@keyframes rotate {
-    0% {
-        transform: rotateY(0deg);
-    }
-    100% {
-        transform: rotateY(360deg);
+    from {
+        opacity: 0;
+        transform: translateY(50px);
     }
 }
 
 @keyframes spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+@keyframes neonGlow {
+    from {
+        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color), 0 0 30px var(--accent-color);
+    }
+    to {
+        text-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--accent-color), 0 0 40px var(--accent-color);
     }
 }
 

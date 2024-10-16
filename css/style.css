@@ -1,13 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
-    --background-color: #0a0a0a;
+    --background-color: #0e0e2e;
     --foreground-color: #e0e0e0;
-    --accent-color: #00ffcc;
+    --accent-color: #8e2de2;
+    --secondary-accent: #4a00e0;
     --font-family: 'Urbanist', sans-serif;
-    --gradient-start: #1a2a6c;
-    --gradient-mid: #b21f1f;
-    --gradient-end: #fdbb2d;
+    --gradient-start: #0f2027;
+    --gradient-mid: #203a43;
+    --gradient-end: #2c5364;
+    --button-hover: #f27121;
+    --input-focus: #8e2de2;
+    --loader-color: rgba(142, 45, 226, 0.2);
 }
 
 * {
@@ -26,7 +30,7 @@ html, body {
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
-    animation: gradientAnimation 15s ease infinite;
+    animation: gradientAnimation 20s ease infinite;
 }
 
 @keyframes gradientAnimation {
@@ -49,7 +53,7 @@ html, body {
 }
 
 .loader {
-    border: 5px solid rgba(0, 255, 204, 0.2);
+    border: 5px solid var(--loader-color);
     border-top: 5px solid var(--accent-color);
     border-radius: 50%;
     width: 60px;
@@ -78,33 +82,44 @@ main {
 
 .entrance {
     position: relative;
-    width: 400px;
+    width: 450px;
     max-width: 90%;
     text-align: center;
     opacity: 0;
-    background: rgba(10, 10, 10, 0.85);
-    padding: 50px;
-    border-radius: 20px;
+    background: rgba(14, 14, 46, 0.85);
+    padding: 60px;
+    border-radius: 25px;
     border: 2px solid var(--accent-color);
     transform: translateZ(0);
-    animation: fadeInUp 1s ease forwards;
-    backdrop-filter: blur(10px);
+    animation: fadeInUp 1.5s ease forwards;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 20px rgba(142, 45, 226, 0.5);
 }
 
 h1 {
-    font-size: 3.5rem;
-    margin-bottom: 40px;
+    font-size: 4rem;
+    margin-bottom: 50px;
     font-weight: 700;
     letter-spacing: 2px;
     color: var(--accent-color);
-    text-shadow: 0 0 10px var(--accent-color);
+    text-shadow: 0 0 15px var(--accent-color), 0 0 30px var(--secondary-accent);
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent);
+    }
+    to {
+        text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
+    }
 }
 
 form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
+    gap: 35px;
 }
 
 .input-container {
@@ -114,22 +129,28 @@ form {
 .input-container input,
 .custom-select select {
     width: 100%;
-    padding: 15px;
+    padding: 18px;
     background: rgba(255, 255, 255, 0.05);
     color: var(--foreground-color);
     border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    line-height: 1.5;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    line-height: 1.6;
     outline: none;
     transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+    box-shadow: 0 0 15px rgba(142, 45, 226, 0.3);
+}
+
+.input-container input::placeholder,
+.custom-select select:invalid {
+    color: var(--foreground-color);
+    opacity: 0.6;
 }
 
 .input-container input:focus,
 .custom-select select:focus {
     background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+    box-shadow: 0 0 25px var(--input-focus), 0 0 35px var(--secondary-accent);
 }
 
 .custom-select {
@@ -140,10 +161,11 @@ form {
     content: '▼';
     position: absolute;
     top: 50%;
-    right: 15px;
+    right: 20px;
     transform: translateY(-50%);
     color: var(--accent-color);
     pointer-events: none;
+    font-size: 1rem;
 }
 
 .custom-select select {
@@ -151,9 +173,10 @@ form {
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
-    padding-right: 40px;
+    padding-right: 50px;
     background: rgba(255, 255, 255, 0.05);
     color: var(--foreground-color);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .custom-select select option {
@@ -161,29 +184,23 @@ form {
     background: var(--background-color);
 }
 
-input::placeholder,
-select:invalid {
-    color: var(--foreground-color);
-    opacity: 0.5;
-}
-
 button {
-    padding: 15px 30px;
+    padding: 18px 35px;
     background: var(--accent-color);
     color: var(--background-color);
     border: none;
-    border-radius: 10px;
-    font-size: 1rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
     cursor: pointer;
     transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
-    box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+    box-shadow: 0 0 15px rgba(142, 45, 226, 0.5);
 }
 
 button:hover {
     transform: scale(1.05);
-    background: #00e6b3;
-    box-shadow: 0 0 20px rgba(0, 230, 179, 0.7);
+    background: var(--secondary-accent);
+    box-shadow: 0 0 25px rgba(142, 45, 226, 0.7);
 }
 
 @keyframes fadeInUp {
@@ -203,32 +220,44 @@ button:hover {
     }
 }
 
+@media (max-width: 1024px) {
+    .entrance {
+        width: 400px;
+        padding: 50px;
+    }
+    h1 {
+        font-size: 3.5rem;
+        margin-bottom: 40px;
+    }
+}
+
 @media (max-width: 768px) {
     .entrance {
         width: 350px;
+        padding: 45px;
     }
     h1 {
         font-size: 3rem;
-        margin-bottom: 30px;
+        margin-bottom: 35px;
     }
 }
 
 @media (max-width: 480px) {
     .entrance {
         width: 300px;
-        padding: 30px;
+        padding: 35px;
     }
     h1 {
         font-size: 2.5rem;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
     }
     input,
     .custom-select select,
     button {
-        font-size: 0.9rem;
-        padding: 12px;
+        font-size: 1rem;
+        padding: 14px;
     }
     button {
-        padding: 12px 24px;
+        padding: 14px 28px;
     }
 }

@@ -6,12 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' https://cdnjs.cloudflare.com;
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        script-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline';
+        style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
         img-src 'self' data:;
         font-src 'self' https://fonts.gstatic.com data:;
         connect-src 'self';
-        frame-ancestors 'none';
     ">
     <link rel="icon" href="favicons/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
@@ -87,11 +86,11 @@
             </div>
         </main>
     </noscript>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r153/three.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r153/examples/js/postprocessing/EffectComposer.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r153/examples/js/postprocessing/RenderPass.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r153/examples/js/postprocessing/UnrealBloomPass.js" defer></script>
-    <script src="js/script.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r153/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r153/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r153/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r153/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>

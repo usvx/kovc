@@ -113,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('resize', onWindowResize, false);
 
         animate();
-        hidePreloader();
     }
 
     function onDocumentMouseMove(event) {
@@ -179,7 +178,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    init();
+    function onLoad() {
+        init();
+        hidePreloader();
+    }
+
+    window.addEventListener('load', onLoad);
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();

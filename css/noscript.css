@@ -10,6 +10,7 @@ body {
     opacity: 1;
     animation: none;
     padding-top: 100px;
+    background: rgba(0, 0, 0, 0.6);
 }
 .entrance h1 {
     text-shadow: none;

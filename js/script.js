@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = '#8e2de2';
+        ctx.fillStyle = '#00FFFF';
+        ctx.shadowColor = '#FF00FF';
         ctx.shadowBlur = isMobile ? 15 : 25;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
@@ -52,9 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1000 : 1500;
-        const ambientLight = new THREE.AmbientLight(0x404040, 2);
+        const ambientLight = new THREE.AmbientLight(0x00FFFF, 2);
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0x8e2de2, 1);
+        const directionalLight = new THREE.DirectionalLight(0xFF00FF, 1);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(directionalLight);
         sceneGroup = new THREE.Group();
@@ -82,11 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(isMobile ? 60 : 80, 1);
             const material = new THREE.MeshStandardMaterial({
-                color: 0x8e2de2,
+                color: 0xFF00FF,
                 wireframe: true,
                 transparent: true,
                 opacity: 0.4,
-                emissive: 0x8e2de2,
+                emissive: 0xFF00FF,
                 emissiveIntensity: 0.5
             });
             const mesh = new THREE.Mesh(geometry, material);

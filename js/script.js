@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let mouse = new THREE.Vector2();
     let raycaster = new THREE.Raycaster();
     let INTERSECTED = null;
+    let preloaderHidden = false;
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const particleCount = 500;
+        const particleCount = 700;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
@@ -82,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 60; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(50, 0);
             const material = new THREE.MeshStandardMaterial({
@@ -112,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('resize', onWindowResize, false);
 
         animate();
+        hidePreloader();
     }
 
     function onDocumentMouseMove(event) {
@@ -168,13 +170,16 @@ document.addEventListener('DOMContentLoaded', () => {
         composer.render();
     }
 
-    init();
+    function hidePreloader() {
+        if (!preloaderHidden) {
+            gsap.to(preloader, { duration: 1, opacity: 0, onComplete: () => {
+                preloader.style.display = 'none';
+                preloaderHidden = true;
+            }});
+        }
+    }
 
-    window.onload = () => {
-        setTimeout(() => {
-            preloader.style.display = 'none';
-        }, 1000);
-    };
+    init();
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();

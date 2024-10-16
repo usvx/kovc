@@ -27,6 +27,18 @@
     font-family: var(--font-family);
 }
 
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 html, body {
     height: 100%;
     width: 100%;
@@ -203,10 +215,19 @@ button {
     box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
 }
 
-button:hover {
+button:hover,
+button:focus {
     transform: scale(1.05);
     background: var(--secondary-accent);
     box-shadow: 0 0 25px rgba(57, 255, 20, 0.7);
+    outline: none;
+}
+
+input:focus,
+select:focus,
+button:focus {
+    outline: 2px solid var(--input-focus);
+    outline-offset: 2px;
 }
 
 @keyframes fadeInUp {

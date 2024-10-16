@@ -22,6 +22,7 @@ html, body {
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
+    perspective: 1000px;
 }
 
 #preloader {
@@ -63,11 +64,12 @@ main {
     justify-content: center;
     min-height: 100vh;
     background: transparent;
+    perspective: 1000px;
 }
 
 .entrance {
     position: relative;
-    width: 350px;
+    width: 400px;
     max-width: 90%;
     text-align: center;
     opacity: 0;
@@ -75,8 +77,9 @@ main {
     padding: 40px;
     border-radius: 20px;
     border: 2px solid var(--accent-color);
-    transform: translateZ(0);
-    animation: fadeInUp 1s ease forwards;
+    transform: translateZ(0) rotateY(0deg);
+    animation: fadeIn 1.5s ease forwards, rotate 10s linear infinite;
+    backdrop-filter: blur(10px);
 }
 
 h1 {
@@ -85,6 +88,7 @@ h1 {
     font-weight: 700;
     letter-spacing: 2px;
     color: var(--accent-color);
+    text-shadow: 0 0 10px var(--accent-color);
 }
 
 form {
@@ -109,7 +113,13 @@ form {
     font-size: 1rem;
     line-height: 1.5;
     outline: none;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, transform 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.input-container input:hover,
+.custom-select select:hover {
+    transform: translateY(-3px);
 }
 
 .input-container input:focus,
@@ -160,22 +170,33 @@ button {
     border-radius: 10px;
     font-size: 1rem;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
+    backdrop-filter: blur(5px);
 }
 
 button:hover {
     transform: scale(1.05);
+    box-shadow: 0 0 15px var(--accent-color);
 }
 
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    from {
+@keyframes fadeIn {
+    0% {
         opacity: 0;
-        transform: translateY(50px);
+        transform: translateY(50px) rotateY(0deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotateY(360deg);
+    }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotateY(0deg);
+    }
+    100% {
+        transform: rotateY(360deg);
     }
 }
 

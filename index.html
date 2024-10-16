@@ -22,20 +22,20 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div id="preloader">
-        <div class="loader"></div>
-    </div>
-    <canvas id="background"></canvas>
+    <div id="preloader" aria-label="Loading"></div>
+    <canvas id="background" aria-hidden="true" loading="lazy"></canvas>
     <main>
         <div class="entrance">
             <h1>Lumina</h1>
-            <form id="login-form">
+            <form id="login-form" aria-label="Login Form">
                 <div class="input-container">
-                    <input type="text" name="username" placeholder="Username" required autocomplete="username">
+                    <label for="username" class="visually-hidden">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username" aria-required="true">
                 </div>
                 <div class="input-container">
+                    <label for="domain" class="visually-hidden">Domain</label>
                     <div class="custom-select">
-                        <select name="domain" required autocomplete="off">
+                        <select id="domain" name="domain" required autocomplete="off" aria-required="true">
                             <option value="" disabled selected>Select Domain</option>
                             <option value="@gj.to">@gj.to</option>
                             <option value="@ko.vc">@ko.vc</option>
@@ -43,7 +43,7 @@
                         </select>
                     </div>
                 </div>
-                <button type="submit">Enter</button>
+                <button type="submit" aria-label="Enter">Enter</button>
             </form>
         </div>
     </main>
@@ -55,11 +55,13 @@
                 <p>Welcome to Lumina. Please enable JavaScript to experience the full site features.</p>
                 <form action="https://accounts.google.com/AccountChooser" method="get">
                     <div class="input-container">
-                        <input type="text" name="Email" placeholder="Username" required autocomplete="username">
+                        <label for="Email" class="visually-hidden">Username</label>
+                        <input type="text" id="Email" name="Email" placeholder="Username" required autocomplete="username" aria-required="true">
                     </div>
                     <div class="input-container">
+                        <label for="domain-noscript" class="visually-hidden">Domain</label>
                         <div class="custom-select">
-                            <select name="domain" required autocomplete="off">
+                            <select id="domain-noscript" name="domain" required autocomplete="off" aria-required="true">
                                 <option value="" disabled selected>Select Domain</option>
                                 <option value="@gj.to">@gj.to</option>
                                 <option value="@ko.vc">@ko.vc</option>
@@ -68,7 +70,7 @@
                         </div>
                     </div>
                     <input type="hidden" name="continue" value="https://mail.google.com/a/">
-                    <button type="submit">Enter</button>
+                    <button type="submit" aria-label="Enter">Enter</button>
                 </form>
             </div>
         </main>

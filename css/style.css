@@ -12,12 +12,12 @@
     --button-hover: #00FF00;
     --input-focus: #39FF14;
     --loader-color: rgba(57, 255, 20, 0.2);
-    --h1-font-size: clamp(2.5rem, 5vw, 4rem);
-    --form-width: clamp(300px, 90%, 450px);
-    --form-padding: clamp(35px, 5vw, 60px);
-    --input-font-size: clamp(1rem, 2vw, 1.2rem);
-    --button-font-size: clamp(1rem, 2vw, 1.2rem);
-    --button-padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
+    --h1-font-size: clamp(2rem, 5vw, 3rem);
+    --form-width: clamp(250px, 90%, 400px);
+    --form-padding: clamp(25px, 5vw, 50px);
+    --input-font-size: clamp(0.9rem, 2vw, 1rem);
+    --button-font-size: clamp(0.9rem, 2vw, 1rem);
+    --button-padding: clamp(12px, 3vw, 16px) clamp(24px, 5vw, 30px);
 }
 
 * {
@@ -244,5 +244,25 @@ button:focus {
 @keyframes spin {
     to {
         transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 375px) {
+    :root {
+        --h1-font-size: clamp(1.8rem, 5vw, 2.5rem);
+        --form-width: clamp(220px, 90%, 350px);
+        --form-padding: clamp(20px, 5vw, 40px);
+        --input-font-size: clamp(0.8rem, 2vw, 0.9rem);
+        --button-font-size: clamp(0.8rem, 2vw, 0.9rem);
+        --button-padding: clamp(10px, 3vw, 14px) clamp(20px, 5vw, 25px);
+    }
+    .entrance {
+        padding: var(--form-padding);
+    }
+    h1 {
+        margin-bottom: 40px;
+    }
+    form {
+        gap: 25px;
     }
 }

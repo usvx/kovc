@@ -2,7 +2,7 @@
     display: none;
 }
 body {
-    background-color: #0a0a0a;
+    background-color: #0e0e2e;
     color: #e0e0e0;
     font-family: 'Urbanist', sans-serif;
 }
@@ -10,4 +10,7 @@ body {
     opacity: 1;
     animation: none;
     padding-top: 100px;
+}
+.entrance h1 {
+    text-shadow: none;
 }

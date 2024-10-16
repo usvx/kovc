@@ -1,17 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
-    --background-color: #0e0e2e;
-    --foreground-color: #e0e0e0;
-    --accent-color: #39FF14;
-    --secondary-accent: #00FF00;
+    --background-color: #1a1a40;
+    --foreground-color: #ffffff;
+    --accent-color: #00BFFF;
+    --secondary-accent: #FF69B4;
     --font-family: 'Urbanist', sans-serif;
-    --gradient-start: #000000;
-    --gradient-mid: #0a0a0a;
-    --gradient-end: #1a1a1a;
-    --button-hover: #00FF00;
-    --input-focus: #39FF14;
-    --loader-color: rgba(57, 255, 20, 0.2);
+    --gradient-start: #0a0a2a;
+    --gradient-mid: #14145b;
+    --gradient-end: #1a1a6a;
+    --button-hover: #00FF7F;
+    --input-focus: #00BFFF;
+    --loader-color: rgba(0, 191, 255, 0.2);
     --h1-font-size: clamp(2rem, 5vw, 3rem);
     --form-width: clamp(250px, 80%, 400px);
     --form-padding: clamp(25px, 5vw, 50px);
@@ -42,11 +42,19 @@
 html, body {
     height: 100%;
     width: 100%;
-    background: var(--background-color);
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
+    background-size: 400% 400%;
     color: var(--foreground-color);
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
+    animation: gradientAnimation 20s ease infinite;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 #preloader {
@@ -104,7 +112,7 @@ main {
     transform: translateZ(0);
     animation: fadeInUp 1.5s ease forwards;
     backdrop-filter: blur(15px);
-    box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
     margin: 20px;
 }
 
@@ -150,7 +158,7 @@ form {
     line-height: 1.6;
     outline: none;
     transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+    box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
 }
 
 .input-container input::placeholder,
@@ -206,14 +214,14 @@ button {
     cursor: pointer;
     transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
-    box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+    box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
 }
 
 button:hover,
 button:focus {
     transform: scale(1.05);
     background: var(--secondary-accent);
-    box-shadow: 0 0 25px rgba(57, 255, 20, 0.7);
+    box-shadow: 0 0 25px rgba(0, 191, 255, 0.7);
     outline: none;
 }
 

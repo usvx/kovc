@@ -136,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animate() {
         requestAnimationFrame(animate);
-
         particles.forEach(p => {
             p.position.x += p.speedX;
             p.position.y += p.speedY;
@@ -146,21 +145,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.position.y > 2500 || p.position.y < -2500) p.speedY *= -1;
             if (p.position.z > 2500 || p.position.z < -2500) p.speedZ *= -1;
         });
-
         shapes.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;
         });
-
         sceneGroup.rotation.y += 0.0025;
         sceneGroup.rotation.x += 0.002;
-
         const targetRotationY = mouseX * 0.05;
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
-
         renderer.render(scene, camera);
     }
 
@@ -183,6 +178,13 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = loginUrl;
         } else {
             alert('Please enter your username and select a domain.');
+        }
+    });
+
+    form.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            form.dispatchEvent(new Event('submit'));
         }
     });
 });

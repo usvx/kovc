@@ -67,7 +67,7 @@ main {
 
 .entrance {
     position: relative;
-    width: 400px;
+    width: 350px;
     max-width: 90%;
     text-align: center;
     opacity: 0;
@@ -75,6 +75,7 @@ main {
     padding: 40px;
     border-radius: 20px;
     border: 2px solid var(--accent-color);
+    transform: translateZ(0);
     animation: fadeInUp 1s ease forwards;
 }
 
@@ -84,7 +85,6 @@ h1 {
     font-weight: 700;
     letter-spacing: 2px;
     color: var(--accent-color);
-    animation: neonGlow 2s infinite alternate;
 }
 
 form {
@@ -96,7 +96,6 @@ form {
 
 .input-container {
     width: 100%;
-    position: relative;
 }
 
 .input-container input,
@@ -111,7 +110,6 @@ form {
     line-height: 1.5;
     outline: none;
     transition: background 0.3s ease;
-    backdrop-filter: blur(5px);
 }
 
 .input-container input:focus,
@@ -162,14 +160,13 @@ button {
     border-radius: 10px;
     font-size: 1rem;
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, background 0.3s ease;
     width: 100%;
-    box-shadow: 0 0 10px var(--accent-color);
 }
 
 button:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 20px var(--accent-color);
+    background: #00e6b3;
 }
 
 @keyframes fadeInUp {
@@ -186,15 +183,6 @@ button:hover {
 @keyframes spin {
     to {
         transform: rotate(360deg);
-    }
-}
-
-@keyframes neonGlow {
-    from {
-        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color), 0 0 30px var(--accent-color);
-    }
-    to {
-        text-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--accent-color), 0 0 40px var(--accent-color);
     }
 }
 

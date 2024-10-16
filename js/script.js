@@ -2,14 +2,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
 
-    let scene, camera, renderer;
+    let scene, camera, renderer, composer;
     let particles = [];
     let shapes = [];
     let sceneGroup;
-    let composer;
     let mouse = new THREE.Vector2();
     let raycaster = new THREE.Raycaster();
-    let INTERSECTED;
+    let INTERSECTED = null;
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
@@ -41,11 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const hangeulChar = String.fromCharCode(syllableCode);
         const cyrillicLetters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
         const isHangeul = Math.random() < 0.5;
-        if (isHangeul) {
-            return hangeulChar;
-        } else {
-            return cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
-        }
+        return isHangeul ? hangeulChar : cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
     }
 
     function init() {
@@ -150,10 +145,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(sceneGroup.children);
+        const intersects = raycaster.intersectObjects(sceneGroup.children, true);
 
         if (intersects.length > 0) {
-            if (INTERSECTED != intersects[0].object) {
+            if (INTERSECTED !== intersects[0].object) {
+                if (INTERSECTED) {
+                    gsap.to(INTERSECTED.scale, { x: 80, y: 80, duration: 0.5 });
+                }
                 INTERSECTED = intersects[0].object;
                 gsap.to(INTERSECTED.scale, { x: 120, y: 120, duration: 0.5 });
             }
@@ -175,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.onload = () => {
         setTimeout(() => {
             preloader.style.display = 'none';
-        }, 500);
+        }, 1000);
     };
 
     form.addEventListener('submit', (event) => {

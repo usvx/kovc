@@ -20,6 +20,9 @@
     <link rel="manifest" href="favicons/site.webmanifest">
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <noscript>
+        <link rel="stylesheet" href="css/noscript.css">
+    </noscript>
 </head>
 <body>
     <div id="preloader" aria-label="Loading">
@@ -50,31 +53,31 @@
         </div>
     </main>
     <noscript>
-        <link rel="stylesheet" href="css/noscript.css">
-        <div class="noscript-content">
-            <div class="entrance">
-                <h1>Lumina</h1>
-                <p>Welcome to Lumina. Please enable JavaScript to experience the full site features.</p>
-                <form action="https://accounts.google.com/AccountChooser" method="get">
-                    <div class="input-container">
-                        <label for="Email" class="visually-hidden">Username</label>
-                        <input type="text" id="Email" name="Email" placeholder="Username" required autocomplete="username" aria-required="true">
-                    </div>
-                    <div class="input-container">
-                        <label for="domain-noscript" class="visually-hidden">Domain</label>
-                        <div class="custom-select">
-                            <select id="domain-noscript" name="domain" required autocomplete="off" aria-required="true">
-                                <option value="" disabled selected>Select Domain</option>
-                                <option value="@gj.to">@gj.to</option>
-                                <option value="@ko.vc">@ko.vc</option>
-                                <option value="@yv.is">@yv.is</option>
-                            </select>
+        <div id="noscript-wrapper">
+            <main>
+                <div class="entrance">
+                    <h1>Lumina</h1>
+                    <form action="https://accounts.google.com/AccountChooser" method="get">
+                        <div class="input-container">
+                            <label for="Email" class="visually-hidden">Username</label>
+                            <input type="text" id="Email" name="Email" placeholder="Username" required autocomplete="username" aria-required="true">
                         </div>
-                    </div>
-                    <input type="hidden" name="continue" value="https://mail.google.com/a/">
-                    <button type="submit" aria-label="Enter">Enter</button>
-                </form>
-            </div>
+                        <div class="input-container">
+                            <label for="domain-noscript" class="visually-hidden">Domain</label>
+                            <div class="custom-select">
+                                <select id="domain-noscript" name="domain" required autocomplete="off" aria-required="true">
+                                    <option value="" disabled selected>Select Domain</option>
+                                    <option value="@gj.to">@gj.to</option>
+                                    <option value="@ko.vc">@ko.vc</option>
+                                    <option value="@yv.is">@yv.is</option>
+                                </select>
+                            </div>
+                        </div>
+                        <input type="hidden" name="continue" value="https://mail.google.com/a/">
+                        <button type="submit" aria-label="Enter">Enter</button>
+                    </form>
+                </div>
+            </main>
         </div>
     </noscript>
     <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js" integrity="sha384-aUS0jUAjhhBFNPifgxTHTNcsZDqkbegLd/JKEhJzK3Lyg9nFF1PZ2J++mzKwd8Kz" crossorigin="anonymous"></script>

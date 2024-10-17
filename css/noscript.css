@@ -1,28 +1,70 @@
-#preloader, #background {
-    display: none;
-}
 body {
     background-color: #0a0a0a;
     color: #00FFD1;
     font-family: 'Urbanist', sans-serif;
 }
+
 .entrance {
     opacity: 1;
     animation: none;
     padding-top: 100px;
     background: rgba(0, 0, 0, 0.6);
+    padding: 40px;
+    border-radius: 15px;
+    border: 2px solid #00FFD1;
+    box-shadow: 0 0 20px rgba(0, 255, 209, 0.5);
 }
-.entrance h1 {
+
+h1 {
     text-shadow: none;
+    font-size: 3rem;
+    margin-bottom: 30px;
+    color: #00FFD1;
 }
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+
+p {
+    margin-bottom: 20px;
+}
+
+.input-container {
+    margin-bottom: 15px;
+}
+
+.input-container input,
+.custom-select select {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: 8px;
+    color: #00FFD1;
+    font-size: 1rem;
+    box-shadow: 0 0 15px rgba(0, 255, 209, 0.3);
+}
+
+button {
+    padding: 15px;
+    background: #00FFD1;
+    color: #0a0a0a;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 100%;
+    box-shadow: 0 0 15px rgba(0, 255, 209, 0.5);
+}
+
+button:hover,
+button:focus {
+    background: #FF00FF;
+    box-shadow: 0 0 25px rgba(0, 255, 209, 0.7);
+    outline: none;
+}
+
+input:focus,
+select:focus,
+button:focus {
+    outline: 2px solid #00FFD1;
+    outline-offset: 2px;
 }

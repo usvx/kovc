@@ -79,6 +79,10 @@ html, body {
     animation: spin 1s linear infinite;
 }
 
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 canvas#background {
     position: fixed;
     top: 0;
@@ -127,12 +131,8 @@ h1 {
 }
 
 @keyframes glow {
-    from {
-        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent);
-    }
-    to {
-        text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
-    }
+    from { text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent); }
+    to { text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent); }
 }
 
 form {
@@ -240,12 +240,6 @@ button:focus {
     from {
         opacity: 0;
         transform: translateY(50px);
-    }
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
     }
 }
 

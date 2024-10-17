@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
-        const size = isMobile ? 256 : 256;
+        const size = 256;
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textBaseline = 'middle';
         ctx.fillStyle = '#00FFD1';
         ctx.shadowColor = '#FF00FF';
-        ctx.shadowBlur = isMobile ? 20 : 25;
+        ctx.shadowBlur = 25;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
@@ -39,12 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
         const hangeulChar = String.fromCharCode(syllableCode);
         const cyrillicLetters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
-        const isHangeul = Math.random() < 0.5;
-        if (isHangeul) {
-            return hangeulChar;
-        } else {
-            return cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
-        }
+        return Math.random() < 0.5 ? hangeulChar : cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
     }
 
     function init() {
@@ -65,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const particleCount = isMobile ? 1200 : 1200;
+        const particleCount = 1200;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
@@ -74,20 +69,20 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.position.x = (Math.random() - 0.5) * 5000;
             sprite.position.y = (Math.random() - 0.5) * 5000;
             sprite.position.z = (Math.random() - 0.5) * 5000;
-            sprite.scale.set(isMobile ? 150 : 150, isMobile ? 150 : 150, 1);
-            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 2 : 4);
-            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 2 : 4);
-            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 2 : 4);
+            sprite.scale.set(150, 150, 1);
+            sprite.speedX = (Math.random() - 0.5) * 4;
+            sprite.speedY = (Math.random() - 0.5) * 4;
+            sprite.speedZ = (Math.random() - 0.5) * 4;
             sprite.rotationSpeed = (Math.random() - 0.5) * 0.1;
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
 
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
-        const shapeCount = isMobile ? 80 : 80;
+        const shapeCount = 80;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(isMobile ? 80 : 80, 1);
+            const geometry = new GeometryClass(80, 1);
             const material = new THREE.MeshStandardMaterial({
                 color: 0x00FFD1,
                 wireframe: true,

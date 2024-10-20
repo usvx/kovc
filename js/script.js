@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
-        const size = isMobile ? 256 : 256;
+        const size = 256;
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
@@ -29,9 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
-        ctx.shadowBlur = isMobile ? 10 : 15;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.1)';
+        ctx.shadowBlur = 5;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
@@ -56,23 +56,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.outputColorSpace = THREE.SRGBColorSpace;
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1000 : 1500;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(directionalLight);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const particleCount = 1000;
+        const particleCount = 800;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
@@ -80,48 +80,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 map: texture,
                 transparent: true,
                 blending: THREE.NormalBlending,
-                depthTest: false,
+                depthTest: true,
                 depthWrite: false
             });
             const sprite = new THREE.Sprite(spriteMaterial);
-            sprite.position.x = (Math.random() - 0.5) * 5000;
-            sprite.position.y = (Math.random() - 0.5) * 5000;
-            sprite.position.z = (Math.random() - 0.5) * 5000;
-            sprite.scale.set(isMobile ? 120 : 150, isMobile ? 120 : 150, 1);
-            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
-            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
-            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.05;
+            sprite.position.x = (Math.random() - 0.5) * 4000;
+            sprite.position.y = (Math.random() - 0.5) * 4000;
+            sprite.position.z = (Math.random() - 0.5) * 4000;
+            sprite.scale.set(isMobile ? 100 : 120, isMobile ? 100 : 120, 1);
+            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1 : 2);
+            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1 : 2);
+            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 1 : 2);
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
 
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
-        const shapeCount = 60;
+        const shapeCount = 50;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(50, 2);
+            const geometry = new GeometryClass(40, 1);
 
             const material = new THREE.MeshPhysicalMaterial({
-                color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 80%)`),
-                metalness: 0.1,
+                color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 70%)`),
+                metalness: 0,
                 roughness: 0,
                 transmission: 1.0,
                 transparent: true,
-                opacity: 0.9,
+                opacity: 0.85,
                 reflectivity: 0.9,
                 ior: 1.5,
                 clearcoat: 1.0,
-                clearcoatRoughness: 0.1,
+                clearcoatRoughness: 0.05,
+                envMapIntensity: 1.0
             });
 
             const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.x = (Math.random() - 0.5) * 4000;
-            mesh.position.y = (Math.random() - 0.5) * 4000;
-            mesh.position.z = (Math.random() - 0.5) * 4000;
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.005;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.005;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.005;
+            mesh.position.x = (Math.random() - 0.5) * 3000;
+            mesh.position.y = (Math.random() - 0.5) * 3000;
+            mesh.position.z = (Math.random() - 0.5) * 3000;
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.002;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.002;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.002;
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
@@ -132,12 +133,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const bloomPass = new UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),
-            0.8,
-            0.2,
-            0.5
+            0.5, // Reduced Strength
+            0.1, // Reduced Radius
+            0.3  // Lower Threshold
         );
         bloomPass.threshold = 0.1;
-        bloomPass.strength = 1.0;
+        bloomPass.strength = 0.5;
         bloomPass.radius = 0.1;
         composer.addPass(bloomPass);
 
@@ -145,9 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
         fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
         composer.addPass(fxaaPass);
 
-        const rgbShiftPass = new ShaderPass(RGBShiftShader);
-        rgbShiftPass.uniforms['amount'].value = 0.0005;
-        composer.addPass(rgbShiftPass);
+        // Removed RGBShiftPass to reduce color distortion and blurriness
+        // const rgbShiftPass = new ShaderPass(RGBShiftShader);
+        // rgbShiftPass.uniforms['amount'].value = 0.0003;
+        // composer.addPass(rgbShiftPass);
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
@@ -185,6 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function animate() {
         requestAnimationFrame(animate);
         const delta = clock.getDelta();
+        const time = clock.getElapsedTime();
 
         particles.forEach(p => {
             p.position.x += p.speedX;
@@ -192,9 +195,9 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.z += p.speedZ;
             p.material.rotation += p.rotationSpeed;
 
-            if (p.position.x > 2500 || p.position.x < -2500) p.speedX *= -1;
-            if (p.position.y > 2500 || p.position.y < -2500) p.speedY *= -1;
-            if (p.position.z > 2500 || p.position.z < -2500) p.speedZ *= -1;
+            if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
+            if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
+            if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
         });
 
         shapes.forEach(s => {
@@ -203,15 +206,15 @@ document.addEventListener('DOMContentLoaded', () => {
             s.rotation.z += s.rotationSpeedZ;
         });
 
-        sceneGroup.rotation.y += 0.0025;
-        sceneGroup.rotation.x += 0.002;
-        const targetRotationY = mouseX * 0.05;
-        const targetRotationX = mouseY * 0.05;
+        sceneGroup.rotation.y += 0.0015;
+        sceneGroup.rotation.x += 0.001;
+        const targetRotationY = mouseX * 0.02;
+        const targetRotationX = mouseY * 0.02;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
 
-        camera.rotation.x += (mouseY * 0.02 - camera.rotation.x) * 0.05;
-        camera.rotation.y += (mouseX * 0.02 - camera.rotation.y) * 0.05;
+        camera.rotation.x += (mouseY * 0.01 - camera.rotation.x) * 0.05;
+        camera.rotation.y += (mouseX * 0.01 - camera.rotation.y) * 0.05;
 
         composer.render(delta);
     }

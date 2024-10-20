@@ -5,6 +5,8 @@ import { UnrealBloomPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postp
 import { ShaderPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'https://esm.sh/three@0.153.0/examples/jsm/shaders/FXAAShader.js';
 import { RGBShiftShader } from 'https://esm.sh/three@0.153.0/examples/jsm/shaders/RGBShiftShader.js';
+import { BokehPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/BokehPass.js';
+import { LuminosityShader } from 'https://esm.sh/three@0.153.0/examples/jsm/shaders/LuminosityShader.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -101,19 +103,55 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(50, 1);
-            const material = new THREE.MeshPhysicalMaterial({
-                color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
-                metalness: 0.3,
-                roughness: 0.2,
+            
+            // Custom Shader Material
+            const vertexShader = `
+                uniform float time;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+
+                void main() {
+                    vNormal = normalize(normalMatrix * normal);
+                    vPosition = position;
+
+                    // Create a wave-like distortion effect
+                    float wave = sin(time + position.x * 0.1) * 10.0;
+                    vec3 newPosition = position + normal * wave;
+
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+                }
+            `;
+
+            const fragmentShader = `
+                uniform vec3 color;
+                uniform float time;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+
+                void main() {
+                    // Calculate light intensity based on normal
+                    float intensity = dot(vNormal, vec3(0.0, 0.0, 1.0));
+
+                    // Dynamic color based on time and position
+                    vec3 dynamicColor = color * (0.5 + 0.5 * sin(time + vPosition.x * 0.1));
+
+                    // Final color with emissive effect
+                    gl_FragColor = vec4(dynamicColor * intensity, 0.6);
+                }
+            `;
+
+            const shaderMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 },
+                    color: { value: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`) }
+                },
+                vertexShader: vertexShader,
+                fragmentShader: fragmentShader,
                 transparent: true,
-                opacity: 0.6,
-                reflectivity: 0.9,
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.1,
-                emissive: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 60%)`),
-                emissiveIntensity: 0.5
+                blending: THREE.AdditiveBlending,
             });
-            const mesh = new THREE.Mesh(geometry, material);
+
+            const mesh = new THREE.Mesh(geometry, shaderMaterial);
             mesh.position.x = (Math.random() - 0.5) * 4000;
             mesh.position.y = (Math.random() - 0.5) * 4000;
             mesh.position.z = (Math.random() - 0.5) * 4000;
@@ -150,6 +188,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const rgbShiftPass = new ShaderPass(RGBShiftShader);
         rgbShiftPass.uniforms['amount'].value = 0.0015;
         composer.addPass(rgbShiftPass);
+
+        // Bokeh Pass for Depth of Field
+        const bokehPass = new BokehPass(scene, camera, {
+            focus: 1000.0,
+            aperture: 0.025,
+            maxblur: 1.0,
+            width: window.innerWidth,
+            height: window.innerHeight
+        });
+        composer.addPass(bokehPass);
+
+        // Luminosity Shader Pass for Color Grading
+        const luminosityPass = new ShaderPass(LuminosityShader);
+        composer.addPass(luminosityPass);
 
         // Event Listeners
         document.addEventListener('mousemove', onDocumentMouseMove, false);
@@ -195,6 +247,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const delta = clock.getDelta();
         const time = clock.getElapsedTime();
 
+        // Update shader uniforms for shapes
+        shapes.forEach(s => {
+            if (s.material.uniforms && s.material.uniforms.time) {
+                s.material.uniforms.time.value = time;
+            }
+        });
+
         // Update Particles (Sprites)
         particles.forEach(p => {
             p.position.x += p.speedX;
@@ -213,9 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;
-
-            // Optional: Dynamic material properties
-            // s.material.emissiveIntensity = 0.5 + 0.5 * Math.sin(time * 2 + s.position.x);
         });
 
         // Update Scene Group Rotation Based on Mouse Movement

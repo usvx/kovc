@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = 'rgba(0, 255, 209, 0.7)'; // Adjusted for better visibility
+        ctx.fillStyle = 'rgba(0, 255, 209, 0.7)';
         ctx.shadowColor = 'rgba(255, 0, 255, 0.5)';
         ctx.shadowBlur = isMobile ? 15 : 20;
         ctx.fillText(char, size / 2, size / 2);
@@ -99,22 +99,64 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        // Create Shapes
+        // Create Shapes with Custom Shader Material
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
         const shapeCount = 60; // Adjusted for performance
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(50, 0);
-            const material = new THREE.MeshBasicMaterial({
-                color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
-                wireframe: true,
+
+            // Custom Shader Material
+            const vertexShader = `
+                uniform float time;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+
+                void main() {
+                    vNormal = normalize(normalMatrix * normal);
+                    vPosition = position;
+
+                    // Create a pulsating effect
+                    float displacement = sin(dot(position.xyz, vec3(10.0)) + time * 5.0) * 5.0;
+                    vec3 newPosition = position + normal * displacement;
+
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+                }
+            `;
+
+            const fragmentShader = `
+                uniform float time;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+
+                void main() {
+                    // Dynamic color based on position and time
+                    vec3 color = vec3(
+                        0.5 + 0.5 * sin(vPosition.x * 0.1 + time),
+                        0.5 + 0.5 * sin(vPosition.y * 0.1 + time),
+                        0.5 + 0.5 * sin(vPosition.z * 0.1 + time)
+                    );
+
+                    // Intensity based on normal direction
+                    float intensity = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
+
+                    gl_FragColor = vec4(color * intensity, 1.0);
+                }
+            `;
+
+            const shaderMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 },
+                },
+                vertexShader: vertexShader,
+                fragmentShader: fragmentShader,
                 transparent: true,
-                opacity: 0.5,
                 blending: THREE.AdditiveBlending,
                 depthTest: false,
-                depthWrite: false
+                depthWrite: false,
             });
-            const mesh = new THREE.Mesh(geometry, material);
+
+            const mesh = new THREE.Mesh(geometry, shaderMaterial);
             mesh.position.x = (Math.random() - 0.5) * 4000;
             mesh.position.y = (Math.random() - 0.5) * 4000;
             mesh.position.z = (Math.random() - 0.5) * 4000;
@@ -175,6 +217,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function animate() {
         requestAnimationFrame(animate);
         const delta = clock.getDelta();
+        const time = clock.getElapsedTime();
+
+        // Update shader uniforms for shapes
+        shapes.forEach(s => {
+            if (s.material.uniforms && s.material.uniforms.time) {
+                s.material.uniforms.time.value = time;
+            }
+        });
 
         // Update Particles (Sprites)
         particles.forEach(p => {

@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let windowHalfX = window.innerWidth / 2;
     let windowHalfY = window.innerHeight / 2;
     let isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+    let particleSystem;
+    let composer;
+    const clock = new THREE.Clock();
 
     function getRandomCharacter() {
         const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
@@ -92,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
             depthTest: false,
         });
 
-        const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+        particleSystem = new THREE.Points(particleGeometry, particleMaterial);
         sceneGroup.add(particleSystem);
 
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
@@ -134,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             shapes.push(mesh);
         }
 
-        const composer = new EffectComposer(renderer);
+        composer = new EffectComposer(renderer);
         const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
 
@@ -144,6 +147,27 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
+            particleSystem.material.uniforms.time.value = time;
+            shapes.forEach(s => {
+                s.rotation.x += s.rotationSpeedX;
+                s.rotation.y += s.rotationSpeedY;
+                s.rotation.z += s.rotationSpeedZ;
+                s.material.uniforms.time.value = time;
+            });
+            sceneGroup.rotation.y += 0.0025;
+            sceneGroup.rotation.x += 0.002;
+            const targetRotationY = mouseX * 0.05;
+            const targetRotationX = mouseY * 0.05;
+            sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
+            sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
+            composer.render(delta);
+        }
+
         animate();
     }
 
@@ -169,27 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         composer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    function animate() {
-        requestAnimationFrame(animate);
-        const delta = clock.getDelta();
-        const time = clock.getElapsedTime();
-        particleSystem.material.uniforms.time.value = time;
-        shapes.forEach(s => {
-            s.rotation.x += s.rotationSpeedX;
-            s.rotation.y += s.rotationSpeedY;
-            s.rotation.z += s.rotationSpeedZ;
-            s.material.uniforms.time.value = time;
-        });
-        sceneGroup.rotation.y += 0.0025;
-        sceneGroup.rotation.x += 0.002;
-        const targetRotationY = mouseX * 0.05;
-        const targetRotationX = mouseY * 0.05;
-        sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
-        sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
-        composer.render(delta);
-    }
-
-    const clock = new THREE.Clock();
     init();
     window.onload = () => {
         setTimeout(() => {

@@ -2,6 +2,9 @@ import * as THREE from 'https://esm.sh/three@0.153.0';
 import { EffectComposer } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/ShaderPass.js';
+import { FXAAShader } from 'https://esm.sh/three@0.153.0/examples/jsm/shaders/FXAAShader.js';
+import { RGBShiftShader } from 'https://esm.sh/three@0.153.0/examples/jsm/shaders/RGBShiftShader.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -27,9 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#00FFD1';
-        ctx.shadowColor = '#FF00FF';
-        ctx.shadowBlur = isMobile ? 20 : 25;
+        ctx.fillStyle = 'rgba(0, 255, 209, 0.7)'; // Reduced opacity for better visibility
+        ctx.shadowColor = 'rgba(255, 0, 255, 0.5)'; // Softer shadow
+        ctx.shadowBlur = isMobile ? 15 : 20;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
@@ -57,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.outputEncoding = THREE.sRGBEncoding; // Enhance colors
+        renderer.outputEncoding = THREE.sRGBEncoding; // Enhanced color vibrancy
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1000 : 1500;
@@ -74,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scene.add(sceneGroup);
 
         // Create Letters as Sprites
-        const particleCount = 1200;
+        const particleCount = 1000; // Adjusted for performance
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
@@ -83,38 +86,40 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.position.x = (Math.random() - 0.5) * 5000;
             sprite.position.y = (Math.random() - 0.5) * 5000;
             sprite.position.z = (Math.random() - 0.5) * 5000;
-            sprite.scale.set(isMobile ? 150 : 150, isMobile ? 150 : 150, 1);
-            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 2 : 4);
-            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 2 : 4);
-            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 2 : 4);
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.1;
+            sprite.scale.set(isMobile ? 120 : 150, isMobile ? 120 : 150, 1);
+            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
+            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
+            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.05;
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
 
-        // Create Shapes with Enhanced Materials
+        // Create Shapes with Custom Shaders
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
-        const shapeCount = 80;
+        const shapeCount = 60; // Adjusted for performance
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(80, 1);
+            const geometry = new GeometryClass(50, 1);
             const material = new THREE.MeshPhysicalMaterial({
-                color: 0x00FFD1,
-                metalness: 0.5,
-                roughness: 0.1,
+                color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
+                metalness: 0.3,
+                roughness: 0.2,
                 transparent: true,
-                opacity: 0.7,
-                reflectivity: 1,
-                emissive: 0xFF00FF,
+                opacity: 0.6,
+                reflectivity: 0.9,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.1,
+                emissive: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 60%)`),
                 emissiveIntensity: 0.5
             });
             const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.x = (Math.random() - 0.5) * 5000;
-            mesh.position.y = (Math.random() - 0.5) * 5000;
-            mesh.position.z = (Math.random() - 0.5) * 5000;
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+            mesh.position.x = (Math.random() - 0.5) * 4000;
+            mesh.position.y = (Math.random() - 0.5) * 4000;
+            mesh.position.z = (Math.random() - 0.5) * 4000;
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.005;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.005;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.005;
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
@@ -124,11 +129,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
 
-        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.0, 0.4, 0.85);
-        bloomPass.threshold = 0;
+        // Bloom Pass
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5, // Strength
+            0.4, // Radius
+            0.85 // Threshold
+        );
+        bloomPass.threshold = 0.1;
         bloomPass.strength = 2.0;
         bloomPass.radius = 0.5;
         composer.addPass(bloomPass);
+
+        // FXAA Pass for Anti-Aliasing
+        const fxaaPass = new ShaderPass(FXAAShader);
+        fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+        composer.addPass(fxaaPass);
+
+        // RGB Shift Pass for Color Distortion
+        const rgbShiftPass = new ShaderPass(RGBShiftShader);
+        rgbShiftPass.uniforms['amount'].value = 0.0015;
+        composer.addPass(rgbShiftPass);
 
         // Event Listeners
         document.addEventListener('mousemove', onDocumentMouseMove, false);
@@ -160,6 +181,12 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
         composer.setSize(window.innerWidth, window.innerHeight);
+
+        // Update FXAA resolution
+        const fxaaPass = composer.passes.find(pass => pass instanceof ShaderPass && pass.uniforms['resolution']);
+        if (fxaaPass) {
+            fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+        }
     }
 
     // Animation Loop
@@ -186,6 +213,9 @@ document.addEventListener('DOMContentLoaded', () => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;
+
+            // Optional: Dynamic material properties
+            // s.material.emissiveIntensity = 0.5 + 0.5 * Math.sin(time * 2 + s.position.x);
         });
 
         // Update Scene Group Rotation Based on Mouse Movement
@@ -196,8 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
 
+        // Subtle Camera Tilt for Immersion
+        camera.rotation.x += (mouseY * 0.02 - camera.rotation.x) * 0.05;
+        camera.rotation.y += (mouseX * 0.02 - camera.rotation.y) * 0.05;
+
         // Render the Scene with Post-processing
-        composer.render(delta);
+        composer.render();
     }
 
     // Initialize the Scene

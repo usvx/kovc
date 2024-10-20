@@ -5,8 +5,6 @@ import { UnrealBloomPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postp
 import { ShaderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'https://esm.sh/three@0.154.0/examples/jsm/shaders/FXAAShader.js';
 import { RGBShiftShader } from 'https://esm.sh/three@0.154.0/examples/jsm/shaders/RGBShiftShader.js';
-// Optional: Import SSAOPass if ambient occlusion is desired
-// import { SSAOPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/SSAOPass.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -21,19 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let windowHalfY = window.innerHeight / 2;
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
-    // Optional: Ambient Sound Setup
-    // const listener = new THREE.AudioListener();
-    // camera.add(listener);
-    // const sound = new THREE.Audio(listener);
-    // const audioLoader = new THREE.AudioLoader();
-    // audioLoader.load('path/to/your/ambient-sound.mp3', function(buffer) {
-    //     sound.setBuffer(buffer);
-    //     sound.setLoop(true);
-    //     sound.setVolume(0.5);
-    //     sound.play();
-    // });
-
-    // Function to create texture for each character
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
         const size = isMobile ? 256 : 256;
@@ -44,16 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = 'rgba(0, 255, 209, 0.7)';
-        ctx.shadowColor = 'rgba(255, 0, 255, 0.5)';
-        ctx.shadowBlur = isMobile ? 15 : 20;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
+        ctx.shadowBlur = isMobile ? 10 : 15;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
         return texture;
     }
 
-    // Function to generate random characters
     function getRandomCharacter() {
         const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
         const hangeulMedials = [0x1161, 0x1165, 0x1166, 0x1167, 0x1169, 0x116E, 0x1172, 0x1173, 0x1175];
@@ -68,38 +52,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return isHangeul ? hangeulChar : cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
     }
 
-    // Initialization function
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.outputColorSpace = THREE.SRGBColorSpace; // Updated property
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1000 : 1500;
 
-        // Lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
         scene.add(ambientLight);
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(directionalLight);
 
-        // Group to hold all objects
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        // Create Letters as Sprites
-        const particleCount = 1000; // Optimized for performance
+        const particleCount = 1000;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
             const spriteMaterial = new THREE.SpriteMaterial({
                 map: texture,
                 transparent: true,
-                blending: THREE.AdditiveBlending,
+                blending: THREE.NormalBlending,
                 depthTest: false,
                 depthWrite: false
             });
@@ -116,71 +96,26 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        // Create Shapes with Advanced Shader Material
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
-        const shapeCount = 60; // Optimized for performance
+        const shapeCount = 60;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(50, 1); // Increased detail with detail level 1
+            const geometry = new GeometryClass(50, 2);
 
-            // Custom Shader Material
-            const vertexShader = `
-                uniform float time;
-                varying vec3 vNormal;
-                varying vec3 vPosition;
-                varying float vOpacity;
-
-                void main() {
-                    vNormal = normalize(normalMatrix * normal);
-                    vPosition = position;
-
-                    // Pulsating displacement based on sine wave
-                    float pulsate = sin(time * 2.0 + position.x * 0.5) * 5.0;
-                    vec3 displacedPosition = position + normal * pulsate;
-
-                    // Simple wave deformation
-                    displacedPosition.y += sin(displacedPosition.x * 0.3 + time) * 2.0;
-
-                    // Set opacity based on position for depth effect
-                    vOpacity = 0.5 + 0.5 * sin(time + position.x * 0.1);
-
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
-                }
-            `;
-
-            const fragmentShader = `
-                uniform vec3 color;
-                uniform float time;
-                varying vec3 vNormal;
-                varying vec3 vPosition;
-                varying float vOpacity;
-
-                void main() {
-                    // Calculate lighting based on normal
-                    float lighting = dot(vNormal, vec3(0.0, 0.0, 1.0)) * 0.5 + 0.5;
-
-                    // Dynamic color based on position and time
-                    vec3 dynamicColor = color * lighting;
-
-                    // Apply opacity variation
-                    gl_FragColor = vec4(dynamicColor, vOpacity);
-                }
-            `;
-
-            const shaderMaterial = new THREE.ShaderMaterial({
-                uniforms: {
-                    time: { value: 0 },
-                    color: { value: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`) }
-                },
-                vertexShader: vertexShader,
-                fragmentShader: fragmentShader,
+            const material = new THREE.MeshPhysicalMaterial({
+                color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 80%)`),
+                metalness: 0.1,
+                roughness: 0,
+                transmission: 1.0,
                 transparent: true,
-                blending: THREE.AdditiveBlending,
-                depthTest: false,
-                depthWrite: false
+                opacity: 0.9,
+                reflectivity: 0.9,
+                ior: 1.5,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.1,
             });
 
-            const mesh = new THREE.Mesh(geometry, shaderMaterial);
+            const mesh = new THREE.Mesh(geometry, material);
             mesh.position.x = (Math.random() - 0.5) * 4000;
             mesh.position.y = (Math.random() - 0.5) * 4000;
             mesh.position.z = (Math.random() - 0.5) * 4000;
@@ -191,52 +126,40 @@ document.addEventListener('DOMContentLoaded', () => {
             shapes.push(mesh);
         }
 
-        // Initialize EffectComposer for Post-processing
         composer = new EffectComposer(renderer);
         const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
 
-        // Bloom Pass
         const bloomPass = new UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),
-            1.5, // Strength
-            0.4, // Radius
-            0.85 // Threshold
+            0.8,
+            0.2,
+            0.5
         );
         bloomPass.threshold = 0.1;
-        bloomPass.strength = 2.0;
-        bloomPass.radius = 0.5;
+        bloomPass.strength = 1.0;
+        bloomPass.radius = 0.1;
         composer.addPass(bloomPass);
 
-        // FXAA Pass for Anti-Aliasing
         const fxaaPass = new ShaderPass(FXAAShader);
         fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
         composer.addPass(fxaaPass);
 
-        // RGB Shift Pass for Color Distortion
         const rgbShiftPass = new ShaderPass(RGBShiftShader);
-        rgbShiftPass.uniforms['amount'].value = 0.0015;
+        rgbShiftPass.uniforms['amount'].value = 0.0005;
         composer.addPass(rgbShiftPass);
 
-        // Optional: SSAO Pass for Ambient Occlusion (adds depth)
-        // const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
-        // ssaoPass.kernelRadius = 16;
-        // composer.addPass(ssaoPass);
-
-        // Event Listeners
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
         animate();
     }
 
-    // Mouse Move Handler
     function onDocumentMouseMove(event) {
         mouseX = (event.clientX - windowHalfX) / windowHalfX;
         mouseY = (event.clientY - windowHalfY) / windowHalfY;
     }
 
-    // Touch Move Handler
     function onDocumentTouchMove(event) {
         if (event.touches.length === 1) {
             event.preventDefault();
@@ -245,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Window Resize Handler
     function onWindowResize() {
         windowHalfX = window.innerWidth / 2;
         windowHalfY = window.innerHeight / 2;
@@ -254,47 +176,33 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         composer.setSize(window.innerWidth, window.innerHeight);
 
-        // Update FXAA resolution
         const fxaaPass = composer.passes.find(pass => pass instanceof ShaderPass && pass.uniforms['resolution']);
         if (fxaaPass) {
             fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
         }
     }
 
-    // Animation Loop
     function animate() {
         requestAnimationFrame(animate);
         const delta = clock.getDelta();
-        const time = clock.getElapsedTime();
 
-        // Update shader uniforms for shapes
-        shapes.forEach(s => {
-            if (s.material.uniforms && s.material.uniforms.time) {
-                s.material.uniforms.time.value = time;
-            }
-        });
-
-        // Update Particles (Sprites)
         particles.forEach(p => {
             p.position.x += p.speedX;
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
             p.material.rotation += p.rotationSpeed;
 
-            // Boundary Conditions
             if (p.position.x > 2500 || p.position.x < -2500) p.speedX *= -1;
             if (p.position.y > 2500 || p.position.y < -2500) p.speedY *= -1;
             if (p.position.z > 2500 || p.position.z < -2500) p.speedZ *= -1;
         });
 
-        // Update Shapes
         shapes.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;
         });
 
-        // Update Scene Group Rotation Based on Mouse Movement
         sceneGroup.rotation.y += 0.0025;
         sceneGroup.rotation.x += 0.002;
         const targetRotationY = mouseX * 0.05;
@@ -302,30 +210,20 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
 
-        // Optional: Subtle Camera Tilt for Immersion
         camera.rotation.x += (mouseY * 0.02 - camera.rotation.x) * 0.05;
         camera.rotation.y += (mouseX * 0.02 - camera.rotation.y) * 0.05;
 
-        // Optional: Update SSAO Pass
-        // if (ssaoPass) {
-        //     ssaoPass.radius = 16.0 + 4.0 * Math.sin(time * 0.5);
-        // }
-
-        // Render the Scene with Post-processing
         composer.render(delta);
     }
 
-    // Initialize the Scene
     init();
 
-    // Hide Preloader after Loading
     window.onload = () => {
         setTimeout(() => {
             preloader.style.display = 'none';
         }, 1000);
     };
 
-    // Form Submission Handler
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const username = form.username.value.trim();
@@ -340,7 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Prevent Form Submission on Enter Key
     form.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();

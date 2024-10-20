@@ -1,7 +1,7 @@
-import * as THREE from 'https://cdn.skypack.dev/three@0.153.0';
-import { EffectComposer } from 'https://cdn.skypack.dev/three@0.153.0/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'https://cdn.skypack.dev/three@0.153.0/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'https://cdn.skypack.dev/three@0.153.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+import * as THREE from 'https://esm.sh/three@0.153.0';
+import { EffectComposer } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.outputEncoding = THREE.sRGBEncoding; // Enhance colors
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1000 : 1500;
@@ -77,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
-            const material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
-            const sprite = new THREE.Sprite(material);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
+            const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.x = (Math.random() - 0.5) * 5000;
             sprite.position.y = (Math.random() - 0.5) * 5000;
             sprite.position.z = (Math.random() - 0.5) * 5000;
@@ -97,11 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(80, 1);
-            const material = new THREE.MeshStandardMaterial({
+            const material = new THREE.MeshPhysicalMaterial({
                 color: 0x00FFD1,
-                wireframe: true,
+                metalness: 0.5,
+                roughness: 0.1,
                 transparent: true,
-                opacity: 0.4,
+                opacity: 0.7,
+                reflectivity: 1,
                 emissive: 0xFF00FF,
                 emissiveIntensity: 0.5
             });
@@ -121,9 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
 
-        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-        bloomPass.threshold = 0.1;
-        bloomPass.strength = 2;
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2.0, 0.4, 0.85);
+        bloomPass.threshold = 0;
+        bloomPass.strength = 2.0;
         bloomPass.radius = 0.5;
         composer.addPass(bloomPass);
 
@@ -171,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
             p.material.rotation += p.rotationSpeed;
+
             // Boundary Conditions
             if (p.position.x > 2500 || p.position.x < -2500) p.speedX *= -1;
             if (p.position.y > 2500 || p.position.y < -2500) p.speedY *= -1;
@@ -193,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
 
         // Render the Scene with Post-processing
-        composer.render();
+        composer.render(delta);
     }
 
     // Initialize the Scene

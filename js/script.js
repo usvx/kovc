@@ -1,7 +1,7 @@
-import * as THREE from 'https://esm.sh/three@0.153.0';
-import { EffectComposer } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js';
+import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -10,13 +10,32 @@ document.addEventListener('DOMContentLoaded', () => {
     let particles = [];
     let shapes = [];
     let sceneGroup;
+    let composer;
+    let particleSystem;
+    let clock = new THREE.Clock();
     let mouseX = 0, mouseY = 0;
     let windowHalfX = window.innerWidth / 2;
     let windowHalfY = window.innerHeight / 2;
     let isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-    let particleSystem;
-    let composer;
-    const clock = new THREE.Clock();
+
+    function createTextTexture(char) {
+        const canvas = document.createElement('canvas');
+        const size = isMobile ? 256 : 256;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, size, size);
+        ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#00FFD1';
+        ctx.shadowColor = '#FF00FF';
+        ctx.shadowBlur = isMobile ? 20 : 25;
+        ctx.fillText(char, size / 2, size / 2);
+        const texture = new THREE.Texture(canvas);
+        texture.needsUpdate = true;
+        return texture;
+    }
 
     function getRandomCharacter() {
         const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
@@ -51,80 +70,35 @@ document.addEventListener('DOMContentLoaded', () => {
         scene.add(sceneGroup);
 
         const particleCount = 1200;
-        const particleGeometry = new THREE.BufferGeometry();
-        const positions = [];
-        const speeds = [];
-
         for (let i = 0; i < particleCount; i++) {
-            positions.push((Math.random() - 0.5) * 5000);
-            positions.push((Math.random() - 0.5) * 5000);
-            positions.push((Math.random() - 0.5) * 5000);
-            speeds.push((Math.random() - 0.5) * (isMobile ? 2 : 4));
-            speeds.push((Math.random() - 0.5) * (isMobile ? 2 : 4));
-            speeds.push((Math.random() - 0.5) * (isMobile ? 2 : 4));
+            const char = getRandomCharacter();
+            const texture = createTextTexture(char);
+            const material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
+            const sprite = new THREE.Sprite(material);
+            sprite.position.x = (Math.random() - 0.5) * 5000;
+            sprite.position.y = (Math.random() - 0.5) * 5000;
+            sprite.position.z = (Math.random() - 0.5) * 5000;
+            sprite.scale.set(isMobile ? 150 : 150, isMobile ? 150 : 150, 1);
+            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 2 : 4);
+            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 2 : 4);
+            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 2 : 4);
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.1;
+            sceneGroup.add(sprite);
+            particles.push(sprite);
         }
-
-        particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        particleGeometry.setAttribute('speed', new THREE.Float32BufferAttribute(speeds, 3));
-
-        const particleMaterial = new THREE.ShaderMaterial({
-            uniforms: {
-                time: { value: 0 },
-                resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-            },
-            vertexShader: `
-                attribute vec3 speed;
-                varying vec2 vUv;
-                uniform float time;
-                void main() {
-                    vec3 pos = position + speed * time;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-                    gl_PointSize = 150.0 * (1.0 / - gl_Position.z);
-                }
-            `,
-            fragmentShader: `
-                void main() {
-                    vec2 uv = gl_PointCoord;
-                    float alpha = 1.0 - smoothstep(0.0, 0.5, length(uv - 0.5));
-                    vec3 color = vec3(0.0, 1.0, 0.82);
-                    gl_FragColor = vec4(color, alpha);
-                }
-            `,
-            blending: THREE.AdditiveBlending,
-            transparent: true,
-            depthTest: false,
-        });
-
-        particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-        sceneGroup.add(particleSystem);
 
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
         const shapeCount = 80;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(80, 1);
-            const material = new THREE.ShaderMaterial({
-                uniforms: {
-                    time: { value: 0 },
-                    color: { value: new THREE.Color(0x00FFD1) },
-                },
-                vertexShader: `
-                    varying vec3 vPosition;
-                    uniform float time;
-                    void main() {
-                        vPosition = position;
-                        vec3 newPosition = position + normal * sin(time + position.x * 0.1) * 10.0;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-                    }
-                `,
-                fragmentShader: `
-                    uniform vec3 color;
-                    varying vec3 vPosition;
-                    void main() {
-                        gl_FragColor = vec4(color * (0.5 + 0.5 * sin(length(vPosition) * 0.1)), 0.4);
-                    }
-                `,
+            const material = new THREE.MeshStandardMaterial({
+                color: 0x00FFD1,
+                wireframe: true,
                 transparent: true,
+                opacity: 0.4,
+                emissive: 0xFF00FF,
+                emissiveIntensity: 0.5
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.x = (Math.random() - 0.5) * 5000;
@@ -142,32 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
         composer.addPass(renderPass);
 
         const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        bloomPass.threshold = 0;
+        bloomPass.strength = 1.5;
+        bloomPass.radius = 0;
         composer.addPass(bloomPass);
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const delta = clock.getDelta();
-            const time = clock.getElapsedTime();
-            particleSystem.material.uniforms.time.value = time;
-            shapes.forEach(s => {
-                s.rotation.x += s.rotationSpeedX;
-                s.rotation.y += s.rotationSpeedY;
-                s.rotation.z += s.rotationSpeedZ;
-                s.material.uniforms.time.value = time;
-            });
-            sceneGroup.rotation.y += 0.0025;
-            sceneGroup.rotation.x += 0.002;
-            const targetRotationY = mouseX * 0.05;
-            const targetRotationX = mouseY * 0.05;
-            sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
-            sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
-            composer.render(delta);
-        }
-
         animate();
     }
 
@@ -193,12 +149,45 @@ document.addEventListener('DOMContentLoaded', () => {
         composer.setSize(window.innerWidth, window.innerHeight);
     }
 
+    function animate() {
+        requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        const time = clock.getElapsedTime();
+
+        particles.forEach(p => {
+            p.position.x += p.speedX;
+            p.position.y += p.speedY;
+            p.position.z += p.speedZ;
+            p.material.rotation += p.rotationSpeed;
+            if (p.position.x > 2500 || p.position.x < -2500) p.speedX *= -1;
+            if (p.position.y > 2500 || p.position.y < -2500) p.speedY *= -1;
+            if (p.position.z > 2500 || p.position.z < -2500) p.speedZ *= -1;
+        });
+
+        shapes.forEach(s => {
+            s.rotation.x += s.rotationSpeedX;
+            s.rotation.y += s.rotationSpeedY;
+            s.rotation.z += s.rotationSpeedZ;
+        });
+
+        sceneGroup.rotation.y += 0.0025;
+        sceneGroup.rotation.x += 0.002;
+        const targetRotationY = mouseX * 0.05;
+        const targetRotationX = mouseY * 0.05;
+        sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
+        sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
+
+        composer.render();
+    }
+
     init();
+
     window.onload = () => {
         setTimeout(() => {
             preloader.style.display = 'none';
         }, 1000);
     };
+
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const username = form.username.value.trim();
@@ -212,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please enter your username and select a domain.');
         }
     });
+
     form.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();

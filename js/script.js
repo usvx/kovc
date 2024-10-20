@@ -1,7 +1,7 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js';
-import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+import * as THREE from 'https://esm.sh/three@0.153.0';
+import { EffectComposer } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const particleCount = isMobile ? 1200 : 1200;
+        const particleCount = 1200;
         const particleGeometry = new THREE.BufferGeometry();
         const positions = [];
         const speeds = [];
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 void main() {
                     vec3 pos = position + speed * time;
                     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-                    gl_PointSize = ${isMobile ? '150.0' : '150.0'} * (1.0 / - gl_Position.z);
+                    gl_PointSize = 150.0 * (1.0 / - gl_Position.z);
                 }
             `,
             fragmentShader: `
@@ -96,10 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup.add(particleSystem);
 
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
-        const shapeCount = isMobile ? 80 : 80;
+        const shapeCount = 80;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(isMobile ? 80 : 80, 1);
+            const geometry = new GeometryClass(80, 1);
             const material = new THREE.ShaderMaterial({
                 uniforms: {
                     time: { value: 0 },

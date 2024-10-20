@@ -1,12 +1,7 @@
-import * as THREE from 'https://esm.sh/three@0.153.0';
-import { EffectComposer } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/ShaderPass.js';
-import { FXAAShader } from 'https://esm.sh/three@0.153.0/examples/jsm/shaders/FXAAShader.js';
-import { RGBShiftShader } from 'https://esm.sh/three@0.153.0/examples/jsm/shaders/RGBShiftShader.js';
-import { BokehPass } from 'https://esm.sh/three@0.153.0/examples/jsm/postprocessing/BokehPass.js';
-import { LuminosityShader } from 'https://esm.sh/three@0.153.0/examples/jsm/shaders/LuminosityShader.js';
+import * as THREE from 'https://esm.sh/three@0.154.0';
+import { EffectComposer } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -32,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = 'rgba(0, 255, 209, 0.7)'; // Reduced opacity for better visibility
-        ctx.shadowColor = 'rgba(255, 0, 255, 0.5)'; // Softer shadow
+        ctx.fillStyle = 'rgba(0, 255, 209, 0.7)'; // Adjusted for better visibility
+        ctx.shadowColor = 'rgba(255, 0, 255, 0.5)';
         ctx.shadowBlur = isMobile ? 15 : 20;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
@@ -62,7 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.outputEncoding = THREE.sRGBEncoding; // Enhanced color vibrancy
+        renderer.outputColorSpace = THREE.SRGBColorSpace; // Updated property
+
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1000 : 1500;
@@ -83,7 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
-            const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
+            const spriteMaterial = new THREE.SpriteMaterial({
+                map: texture,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthTest: false,
+                depthWrite: false
+            });
             const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.x = (Math.random() - 0.5) * 5000;
             sprite.position.y = (Math.random() - 0.5) * 5000;
@@ -97,61 +99,22 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        // Create Shapes with Custom Shaders
+        // Create Shapes
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
         const shapeCount = 60; // Adjusted for performance
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(50, 1);
-            
-            // Custom Shader Material
-            const vertexShader = `
-                uniform float time;
-                varying vec3 vNormal;
-                varying vec3 vPosition;
-
-                void main() {
-                    vNormal = normalize(normalMatrix * normal);
-                    vPosition = position;
-
-                    // Create a wave-like distortion effect
-                    float wave = sin(time + position.x * 0.1) * 10.0;
-                    vec3 newPosition = position + normal * wave;
-
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-                }
-            `;
-
-            const fragmentShader = `
-                uniform vec3 color;
-                uniform float time;
-                varying vec3 vNormal;
-                varying vec3 vPosition;
-
-                void main() {
-                    // Calculate light intensity based on normal
-                    float intensity = dot(vNormal, vec3(0.0, 0.0, 1.0));
-
-                    // Dynamic color based on time and position
-                    vec3 dynamicColor = color * (0.5 + 0.5 * sin(time + vPosition.x * 0.1));
-
-                    // Final color with emissive effect
-                    gl_FragColor = vec4(dynamicColor * intensity, 0.6);
-                }
-            `;
-
-            const shaderMaterial = new THREE.ShaderMaterial({
-                uniforms: {
-                    time: { value: 0 },
-                    color: { value: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`) }
-                },
-                vertexShader: vertexShader,
-                fragmentShader: fragmentShader,
+            const geometry = new GeometryClass(50, 0);
+            const material = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
+                wireframe: true,
                 transparent: true,
+                opacity: 0.5,
                 blending: THREE.AdditiveBlending,
+                depthTest: false,
+                depthWrite: false
             });
-
-            const mesh = new THREE.Mesh(geometry, shaderMaterial);
+            const mesh = new THREE.Mesh(geometry, material);
             mesh.position.x = (Math.random() - 0.5) * 4000;
             mesh.position.y = (Math.random() - 0.5) * 4000;
             mesh.position.z = (Math.random() - 0.5) * 4000;
@@ -174,34 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             0.4, // Radius
             0.85 // Threshold
         );
-        bloomPass.threshold = 0.1;
-        bloomPass.strength = 2.0;
-        bloomPass.radius = 0.5;
         composer.addPass(bloomPass);
-
-        // FXAA Pass for Anti-Aliasing
-        const fxaaPass = new ShaderPass(FXAAShader);
-        fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
-        composer.addPass(fxaaPass);
-
-        // RGB Shift Pass for Color Distortion
-        const rgbShiftPass = new ShaderPass(RGBShiftShader);
-        rgbShiftPass.uniforms['amount'].value = 0.0015;
-        composer.addPass(rgbShiftPass);
-
-        // Bokeh Pass for Depth of Field
-        const bokehPass = new BokehPass(scene, camera, {
-            focus: 1000.0,
-            aperture: 0.025,
-            maxblur: 1.0,
-            width: window.innerWidth,
-            height: window.innerHeight
-        });
-        composer.addPass(bokehPass);
-
-        // Luminosity Shader Pass for Color Grading
-        const luminosityPass = new ShaderPass(LuminosityShader);
-        composer.addPass(luminosityPass);
 
         // Event Listeners
         document.addEventListener('mousemove', onDocumentMouseMove, false);
@@ -233,26 +169,12 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
         composer.setSize(window.innerWidth, window.innerHeight);
-
-        // Update FXAA resolution
-        const fxaaPass = composer.passes.find(pass => pass instanceof ShaderPass && pass.uniforms['resolution']);
-        if (fxaaPass) {
-            fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
-        }
     }
 
     // Animation Loop
     function animate() {
         requestAnimationFrame(animate);
         const delta = clock.getDelta();
-        const time = clock.getElapsedTime();
-
-        // Update shader uniforms for shapes
-        shapes.forEach(s => {
-            if (s.material.uniforms && s.material.uniforms.time) {
-                s.material.uniforms.time.value = time;
-            }
-        });
 
         // Update Particles (Sprites)
         particles.forEach(p => {
@@ -282,12 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
 
-        // Subtle Camera Tilt for Immersion
-        camera.rotation.x += (mouseY * 0.02 - camera.rotation.x) * 0.05;
-        camera.rotation.y += (mouseX * 0.02 - camera.rotation.y) * 0.05;
-
         // Render the Scene with Post-processing
-        composer.render();
+        composer.render(delta);
     }
 
     // Initialize the Scene

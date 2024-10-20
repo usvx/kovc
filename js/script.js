@@ -2,6 +2,11 @@ import * as THREE from 'https://esm.sh/three@0.154.0';
 import { EffectComposer } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/ShaderPass.js';
+import { FXAAShader } from 'https://esm.sh/three@0.154.0/examples/jsm/shaders/FXAAShader.js';
+import { RGBShiftShader } from 'https://esm.sh/three@0.154.0/examples/jsm/shaders/RGBShiftShader.js';
+// Optional: Import SSAOPass if ambient occlusion is desired
+// import { SSAOPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/SSAOPass.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -15,6 +20,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let windowHalfX = window.innerWidth / 2;
     let windowHalfY = window.innerHeight / 2;
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+
+    // Optional: Ambient Sound Setup
+    // const listener = new THREE.AudioListener();
+    // camera.add(listener);
+    // const sound = new THREE.Audio(listener);
+    // const audioLoader = new THREE.AudioLoader();
+    // audioLoader.load('path/to/your/ambient-sound.mp3', function(buffer) {
+    //     sound.setBuffer(buffer);
+    //     sound.setLoop(true);
+    //     sound.setVolume(0.5);
+    //     sound.play();
+    // });
 
     // Function to create texture for each character
     function createTextTexture(char) {
@@ -64,9 +81,9 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.position.z = isMobile ? 1000 : 1500;
 
         // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(directionalLight);
 
@@ -75,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scene.add(sceneGroup);
 
         // Create Letters as Sprites
-        const particleCount = 1000; // Adjusted for performance
+        const particleCount = 1000; // Optimized for performance
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
@@ -99,61 +116,68 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        // Create Shapes with Custom Shader Material
+        // Create Shapes with Advanced Shader Material
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
-        const shapeCount = 60; // Adjusted for performance
+        const shapeCount = 60; // Optimized for performance
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(50, 0);
+            const geometry = new GeometryClass(50, 1); // Increased detail with detail level 1
 
             // Custom Shader Material
             const vertexShader = `
                 uniform float time;
                 varying vec3 vNormal;
                 varying vec3 vPosition;
+                varying float vOpacity;
 
                 void main() {
                     vNormal = normalize(normalMatrix * normal);
                     vPosition = position;
 
-                    // Create a pulsating effect
-                    float displacement = sin(dot(position.xyz, vec3(10.0)) + time * 5.0) * 5.0;
-                    vec3 newPosition = position + normal * displacement;
+                    // Pulsating displacement based on sine wave
+                    float pulsate = sin(time * 2.0 + position.x * 0.5) * 5.0;
+                    vec3 displacedPosition = position + normal * pulsate;
 
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+                    // Simple wave deformation
+                    displacedPosition.y += sin(displacedPosition.x * 0.3 + time) * 2.0;
+
+                    // Set opacity based on position for depth effect
+                    vOpacity = 0.5 + 0.5 * sin(time + position.x * 0.1);
+
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
                 }
             `;
 
             const fragmentShader = `
+                uniform vec3 color;
                 uniform float time;
                 varying vec3 vNormal;
                 varying vec3 vPosition;
+                varying float vOpacity;
 
                 void main() {
+                    // Calculate lighting based on normal
+                    float lighting = dot(vNormal, vec3(0.0, 0.0, 1.0)) * 0.5 + 0.5;
+
                     // Dynamic color based on position and time
-                    vec3 color = vec3(
-                        0.5 + 0.5 * sin(vPosition.x * 0.1 + time),
-                        0.5 + 0.5 * sin(vPosition.y * 0.1 + time),
-                        0.5 + 0.5 * sin(vPosition.z * 0.1 + time)
-                    );
+                    vec3 dynamicColor = color * lighting;
 
-                    // Intensity based on normal direction
-                    float intensity = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
-
-                    gl_FragColor = vec4(color * intensity, 1.0);
+                    // Apply opacity variation
+                    gl_FragColor = vec4(dynamicColor, vOpacity);
                 }
             `;
 
             const shaderMaterial = new THREE.ShaderMaterial({
                 uniforms: {
                     time: { value: 0 },
+                    color: { value: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`) }
                 },
                 vertexShader: vertexShader,
                 fragmentShader: fragmentShader,
                 transparent: true,
                 blending: THREE.AdditiveBlending,
                 depthTest: false,
-                depthWrite: false,
+                depthWrite: false
             });
 
             const mesh = new THREE.Mesh(geometry, shaderMaterial);
@@ -179,7 +203,25 @@ document.addEventListener('DOMContentLoaded', () => {
             0.4, // Radius
             0.85 // Threshold
         );
+        bloomPass.threshold = 0.1;
+        bloomPass.strength = 2.0;
+        bloomPass.radius = 0.5;
         composer.addPass(bloomPass);
+
+        // FXAA Pass for Anti-Aliasing
+        const fxaaPass = new ShaderPass(FXAAShader);
+        fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+        composer.addPass(fxaaPass);
+
+        // RGB Shift Pass for Color Distortion
+        const rgbShiftPass = new ShaderPass(RGBShiftShader);
+        rgbShiftPass.uniforms['amount'].value = 0.0015;
+        composer.addPass(rgbShiftPass);
+
+        // Optional: SSAO Pass for Ambient Occlusion (adds depth)
+        // const ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight);
+        // ssaoPass.kernelRadius = 16;
+        // composer.addPass(ssaoPass);
 
         // Event Listeners
         document.addEventListener('mousemove', onDocumentMouseMove, false);
@@ -211,6 +253,12 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
         composer.setSize(window.innerWidth, window.innerHeight);
+
+        // Update FXAA resolution
+        const fxaaPass = composer.passes.find(pass => pass instanceof ShaderPass && pass.uniforms['resolution']);
+        if (fxaaPass) {
+            fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+        }
     }
 
     // Animation Loop
@@ -253,6 +301,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
+
+        // Optional: Subtle Camera Tilt for Immersion
+        camera.rotation.x += (mouseY * 0.02 - camera.rotation.x) * 0.05;
+        camera.rotation.y += (mouseX * 0.02 - camera.rotation.y) * 0.05;
+
+        // Optional: Update SSAO Pass
+        // if (ssaoPass) {
+        //     ssaoPass.radius = 16.0 + 4.0 * Math.sin(time * 0.5);
+        // }
 
         // Render the Scene with Post-processing
         composer.render(delta);

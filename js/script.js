@@ -4,7 +4,6 @@ import { RenderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postproces
 import { UnrealBloomPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'https://esm.sh/three@0.154.0/examples/jsm/shaders/FXAAShader.js';
-import { RGBShiftShader } from 'https://esm.sh/three@0.154.0/examples/jsm/shaders/RGBShiftShader.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -29,12 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.1)';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.2)';
         ctx.shadowBlur = 5;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
+        texture.encoding = THREE.sRGBEncoding;
         return texture;
     }
 
@@ -57,17 +57,29 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.physicallyCorrectLights = true;
 
         scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000);
+
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1000 : 1500;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(directionalLight);
+
+        const pointLight1 = new THREE.PointLight(0xff00ff, 1, 1000);
+        pointLight1.position.set(-1000, 500, 1000);
+        scene.add(pointLight1);
+
+        const pointLight2 = new THREE.PointLight(0x00ffff, 1, 1000);
+        pointLight2.position.set(1000, -500, -1000);
+        scene.add(pointLight2);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
@@ -79,9 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const spriteMaterial = new THREE.SpriteMaterial({
                 map: texture,
                 transparent: true,
-                blending: THREE.NormalBlending,
+                blending: THREE.AdditiveBlending,
                 depthTest: true,
-                depthWrite: false
+                depthWrite: false,
+                emissive: new THREE.Color(0xffffff),
+                emissiveIntensity: 0.5,
             });
             const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.x = (Math.random() - 0.5) * 4000;
@@ -100,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const shapeCount = 50;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(40, 1);
+            const geometry = new GeometryClass(40, 2);
 
             const material = new THREE.MeshPhysicalMaterial({
                 color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 70%)`),
@@ -113,7 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 ior: 1.5,
                 clearcoat: 1.0,
                 clearcoatRoughness: 0.05,
-                envMapIntensity: 1.0
+                emissive: new THREE.Color(0xffffff),
+                emissiveIntensity: 0.2,
             });
 
             const mesh = new THREE.Mesh(geometry, material);
@@ -133,23 +148,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const bloomPass = new UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),
-            0.5, // Reduced Strength
-            0.1, // Reduced Radius
-            0.3  // Lower Threshold
+            1.5,
+            0.4,
+            0.85
         );
         bloomPass.threshold = 0.1;
-        bloomPass.strength = 0.5;
-        bloomPass.radius = 0.1;
+        bloomPass.strength = 1.5;
+        bloomPass.radius = 0.4;
         composer.addPass(bloomPass);
 
         const fxaaPass = new ShaderPass(FXAAShader);
         fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
         composer.addPass(fxaaPass);
-
-        // Removed RGBShiftPass to reduce color distortion and blurriness
-        // const rgbShiftPass = new ShaderPass(RGBShiftShader);
-        // rgbShiftPass.uniforms['amount'].value = 0.0003;
-        // composer.addPass(rgbShiftPass);
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });

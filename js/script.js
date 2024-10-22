@@ -7,7 +7,7 @@ import { ShaderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postproces
 import { FXAAShader } from 'https://esm.sh/three@0.154.0/examples/jsm/shaders/FXAAShader.js';
 import { SSAOPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/SSAOPass.js';
 import { BokehPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/BokehPass.js?bundle';
-import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.17/+esm'; // Switched to lil-gui
+import { GUI } from 'https://esm.sh/lil-gui@0.17'; // Using esm.sh for lil-gui
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -306,16 +306,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        const bokehFolder = gui.addFolder('Bokeh');
-        bokehFolder.add(bokehPass.uniforms.focus, 'value', 500, 3000).name('Focus Distance');
-        bokehFolder.add(bokehPass.uniforms.aperture, 'value', 0.00001, 0.001).name('Aperture');
-        bokehFolder.add(bokehPass.uniforms.maxblur, 'value', 0.0, 0.1).name('Max Blur');
-        bokehFolder.open();
+        const bokehPass = composer.passes.find(pass => pass instanceof BokehPass);
+        if (bokehPass) {
+            const bokehFolder = gui.addFolder('Bokeh');
+            bokehFolder.add(bokehPass.uniforms.focus, 'value', 500, 3000).name('Focus Distance');
+            bokehFolder.add(bokehPass.uniforms.aperture, 'value', 0.00001, 0.001).name('Aperture');
+            bokehFolder.add(bokehPass.uniforms.maxblur, 'value', 0.0, 0.1).name('Max Blur');
+            bokehFolder.open();
+        }
 
-        const fxaaFolder = gui.addFolder('FXAA');
-        fxaaFolder.add(fxaaPass.uniforms.resolution.value, 'x').min(0).max(1).step(0.0001).name('Resolution X');
-        fxaaFolder.add(fxaaPass.uniforms.resolution.value, 'y').min(0).max(1).step(0.0001).name('Resolution Y');
-        fxaaFolder.open();
+        const fxaaPass = composer.passes.find(pass => pass instanceof ShaderPass && pass.uniforms['resolution']);
+        if (fxaaPass) {
+            const fxaaFolder = gui.addFolder('FXAA');
+            fxaaFolder.add(fxaaPass.uniforms.resolution.value, 'x').min(0).max(1).step(0.0001).name('Resolution X');
+            fxaaFolder.add(fxaaPass.uniforms.resolution.value, 'y').min(0).max(1).step(0.0001).name('Resolution Y');
+            fxaaFolder.open();
+        }
     }
 
     // Handle Mouse Movement

@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
     let scene, camera, renderer, composer;
-    let particlesGroup, shapesGroup;
+    let particlesGroup, shapesGroup, sceneGroup; // Added sceneGroup
     const clock = new THREE.Clock();
     let mouseX = 0, mouseY = 0;
     let windowHalfX = window.innerWidth / 2;
@@ -93,7 +93,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Groups for better performance
         particlesGroup = new THREE.Group();
         shapesGroup = new THREE.Group();
-        scene.add(particlesGroup, shapesGroup);
+        sceneGroup = new THREE.Group(); // Initialize sceneGroup
+        sceneGroup.add(particlesGroup);
+        sceneGroup.add(shapesGroup);
+        scene.add(sceneGroup); // Add sceneGroup to the scene
 
         // Create Objects
         createParticles();
@@ -181,8 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 blending: THREE.AdditiveBlending,
                 depthTest: true,
                 depthWrite: false,
-                emissive: new THREE.Color(0xffffff),
-                emissiveIntensity: 0.8,
+                // Removed emissive properties
             });
             const sprite = new THREE.Sprite(spriteMaterial);
             sprite.position.set(

@@ -5,7 +5,7 @@ import { UnrealBloomPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postp
 import { ShaderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'https://esm.sh/three@0.154.0/examples/jsm/shaders/FXAAShader.js';
 import { SSAOPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/SSAOPass.js';
-import { DepthOfFieldPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/DepthOfFieldPass.js';
+import { BokehPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/BokehPass.js';
 import { GUI } from 'https://esm.sh/dat.gui@0.7.7';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -189,12 +189,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ssaoPass.minDistance = 0.005;
         ssaoPass.maxDistance = 0.1;
         composer.addPass(ssaoPass);
-        const dofPass = new DepthOfFieldPass(scene, camera, {
+        const bokehPass = new BokehPass(scene, camera, {
             focus: 1000,
-            aperture: 0.0002,
+            aperture: 0.00002,
             maxblur: 0.01
         });
-        composer.addPass(dofPass);
+        composer.addPass(bokehPass);
         const fxaaPass = new ShaderPass(FXAAShader);
         fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
         composer.addPass(fxaaPass);
@@ -211,11 +211,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ssaoFolder.add(composer.passes[2], 'minDistance', 0.001, 0.02).name('Min Distance');
         ssaoFolder.add(composer.passes[2], 'maxDistance', 0.01, 0.2).name('Max Distance');
         ssaoFolder.open();
-        const dofFolder = gui.addFolder('Depth of Field');
-        dofFolder.add(composer.passes[3].settings, 'focus', 500, 3000).name('Focus Distance');
-        dofFolder.add(composer.passes[3].settings, 'aperture', 0.0001, 0.001).name('Aperture');
-        dofFolder.add(composer.passes[3].settings, 'maxblur', 0.0, 0.05).name('Max Blur');
-        dofFolder.open();
+        const bokehFolder = gui.addFolder('Bokeh');
+        bokehFolder.add(composer.passes[3].uniforms['focus'], 'value', 500, 3000).name('Focus Distance');
+        bokehFolder.add(composer.passes[3].uniforms['aperture'], 'value', 0.00001, 0.001).name('Aperture');
+        bokehFolder.add(composer.passes[3].uniforms['maxblur'], 'value', 0.0, 0.1).name('Max Blur');
+        bokehFolder.open();
         const fxaaFolder = gui.addFolder('FXAA');
         fxaaFolder.add(composer.passes[4].uniforms['resolution'].value, 'x').min(0).max(1).step(0.0001).name('Resolution X');
         fxaaFolder.add(composer.passes[4].uniforms['resolution'].value, 'y').min(0).max(1).step(0.0001).name('Resolution Y');

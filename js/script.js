@@ -5,7 +5,7 @@ import { UnrealBloomPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postp
 import { ShaderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'https://esm.sh/three@0.154.0/examples/jsm/shaders/FXAAShader.js';
 import { SSAOPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/SSAOPass.js';
-import { BokehPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/BokehPass.js';
+import { BokehPass } from 'https://unpkg.com/three@0.154.0/examples/jsm/postprocessing/BokehPass.js';
 import { GUI } from 'https://esm.sh/dat.gui@0.7.7';
 
 document.addEventListener('DOMContentLoaded', () => {

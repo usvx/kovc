@@ -1,3 +1,4 @@
+// Importing necessary modules from ESM.sh
 import * as THREE from 'https://esm.sh/three@0.154.0';
 import { EffectComposer } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/RenderPass.js';
@@ -6,7 +7,7 @@ import { ShaderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postproces
 import { FXAAShader } from 'https://esm.sh/three@0.154.0/examples/jsm/shaders/FXAAShader.js';
 import { SSAOPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/SSAOPass.js';
 import { BokehPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/BokehPass.js?bundle';
-import { GUI } from 'https://esm.sh/dat.gui@0.7.7';
+import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.17/+esm'; // Switched to lil-gui
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -51,8 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.outputEncoding = THREE.sRGBEncoding;
-        renderer.physicallyCorrectLights = true;
+        renderer.outputColorSpace = THREE.SRGBColorSpace; // Updated property
+        renderer.useLegacyLights = true; // Updated property
+        renderer.physicallyCorrectLights = false; // Explicitly set to false
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -167,39 +169,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Create Particles using InstancedMesh
+    // Create Particles using Sprites
     function createParticles() {
         const particleCount = CONFIG.PARTICLE_COUNT;
-        const geometry = new THREE.SpriteGeometry();
-        const material = new THREE.SpriteMaterial({
-            map: createTextTexture(getRandomCharacter()),
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthTest: true,
-            depthWrite: false,
-            emissive: new THREE.Color(0xffffff),
-            emissiveIntensity: 0.8,
-        });
-
-        // Using InstancedMesh for better performance
-        const sprite = new THREE.Sprite(material);
         for (let i = 0; i < particleCount; i++) {
-            const instance = sprite.clone();
-            instance.position.set(
+            const char = getRandomCharacter();
+            const texture = createTextTexture(char);
+            const spriteMaterial = new THREE.SpriteMaterial({
+                map: texture,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthTest: true,
+                depthWrite: false,
+                emissive: new THREE.Color(0xffffff),
+                emissiveIntensity: 0.8,
+            });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.position.set(
                 (Math.random() - 0.5) * (isMobile ? 8000 : 6000),
                 (Math.random() - 0.5) * (isMobile ? 8000 : 6000),
                 (Math.random() - 0.5) * (isMobile ? 8000 : 6000)
             );
-            instance.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
-            instance.speedX = (Math.random() - 0.5) * (isMobile ? 3 : 4);
-            instance.speedY = (Math.random() - 0.5) * (isMobile ? 3 : 4);
-            instance.speedZ = (Math.random() - 0.5) * (isMobile ? 3 : 4);
-            instance.rotationSpeed = (Math.random() - 0.5) * 0.05;
-            particlesGroup.add(instance);
+            sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
+            sprite.userData = {
+                speedX: (Math.random() - 0.5) * (isMobile ? 3 : 4),
+                speedY: (Math.random() - 0.5) * (isMobile ? 3 : 4),
+                speedZ: (Math.random() - 0.5) * (isMobile ? 3 : 4),
+                rotationSpeed: (Math.random() - 0.5) * 0.05,
+            };
+            particlesGroup.add(sprite);
         }
     }
 
-    // Create Shapes using InstancedMesh
+    // Create Shapes using Meshes
     function createShapes() {
         const shapeCount = CONFIG.SHAPE_COUNT;
         const geometryTypes = [
@@ -211,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
             THREE.SphereGeometry
         ];
 
-        const materials = [];
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(CONFIG.SHAPE_SIZE, isMobile ? 1 : 2);
@@ -229,8 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 emissive: new THREE.Color(0x000000),
                 emissiveIntensity: 0.1,
             });
-            materials.push(material);
-
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(
                 (Math.random() - 0.5) * (isMobile ? 8000 : 6000),
@@ -239,9 +238,11 @@ document.addEventListener('DOMContentLoaded', () => {
             );
             mesh.castShadow = true;
             mesh.receiveShadow = true;
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.01;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.01;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.01;
+            mesh.userData = {
+                rotationSpeedX: (Math.random() - 0.5) * 0.01,
+                rotationSpeedY: (Math.random() - 0.5) * 0.01,
+                rotationSpeedZ: (Math.random() - 0.5) * 0.01,
+            };
             shapesGroup.add(mesh);
         }
     }
@@ -284,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
         composer.addPass(fxaaPass);
     }
 
-    // Setup GUI Controls (Hidden by default for production)
+    // Setup GUI Controls using lil-gui
     function setupGUI() {
         gui.close(); // Hide GUI by default to avoid performance hit in production
 
@@ -306,14 +307,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const bokehFolder = gui.addFolder('Bokeh');
-        bokehFolder.add(composer.passes[2], 'uniforms.focus.value', 500, 3000).name('Focus Distance');
-        bokehFolder.add(composer.passes[2], 'uniforms.aperture.value', 0.00001, 0.001).name('Aperture');
-        bokehFolder.add(composer.passes[2], 'uniforms.maxblur.value', 0.0, 0.1).name('Max Blur');
+        bokehFolder.add(bokehPass.uniforms.focus, 'value', 500, 3000).name('Focus Distance');
+        bokehFolder.add(bokehPass.uniforms.aperture, 'value', 0.00001, 0.001).name('Aperture');
+        bokehFolder.add(bokehPass.uniforms.maxblur, 'value', 0.0, 0.1).name('Max Blur');
         bokehFolder.open();
 
         const fxaaFolder = gui.addFolder('FXAA');
-        fxaaFolder.add(composer.passes[3], 'uniforms.resolution.value.x').min(0).max(1).step(0.0001).name('Resolution X');
-        fxaaFolder.add(composer.passes[3], 'uniforms.resolution.value.y').min(0).max(1).step(0.0001).name('Resolution Y');
+        fxaaFolder.add(fxaaPass.uniforms.resolution.value, 'x').min(0).max(1).step(0.0001).name('Resolution X');
+        fxaaFolder.add(fxaaPass.uniforms.resolution.value, 'y').min(0).max(1).step(0.0001).name('Resolution Y');
         fxaaFolder.open();
     }
 
@@ -355,22 +356,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update Particles
         particlesGroup.children.forEach(p => {
-            p.position.x += p.speedX * delta * 60;
-            p.position.y += p.speedY * delta * 60;
-            p.position.z += p.speedZ * delta * 60;
-            p.material.rotation += p.rotationSpeed * delta * 60;
+            p.position.x += p.userData.speedX * delta * 60;
+            p.position.y += p.userData.speedY * delta * 60;
+            p.position.z += p.userData.speedZ * delta * 60;
+            p.material.rotation += p.userData.rotationSpeed * delta * 60;
 
             const boundary = isMobile ? 4000 : 3000;
-            if (p.position.x > boundary || p.position.x < -boundary) p.speedX *= -1;
-            if (p.position.y > boundary || p.position.y < -boundary) p.speedY *= -1;
-            if (p.position.z > boundary || p.position.z < -boundary) p.speedZ *= -1;
+            if (p.position.x > boundary || p.position.x < -boundary) p.userData.speedX *= -1;
+            if (p.position.y > boundary || p.position.y < -boundary) p.userData.speedY *= -1;
+            if (p.position.z > boundary || p.position.z < -boundary) p.userData.speedZ *= -1;
         });
 
         // Update Shapes
         shapesGroup.children.forEach(s => {
-            s.rotation.x += s.rotationSpeedX * delta * 60;
-            s.rotation.y += s.rotationSpeedY * delta * 60;
-            s.rotation.z += s.rotationSpeedZ * delta * 60;
+            s.rotation.x += s.userData.rotationSpeedX * delta * 60;
+            s.rotation.y += s.userData.rotationSpeedY * delta * 60;
+            s.rotation.z += s.userData.rotationSpeedZ * delta * 60;
         });
 
         // Group Rotation based on mouse movement

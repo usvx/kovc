@@ -14,20 +14,21 @@ document.addEventListener('DOMContentLoaded', () => {
   let windowHalfY = window.innerHeight / 2;
   const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
-  function createTextTexture(char) {
+  function createTextTexture(char, hueOffset = 0) {
     const canvas = document.createElement('canvas');
     const size = 256;
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext('2d');
 
-    // Optimize text rendering
+    // Dynamic color based on hueOffset
+    const hue = (Date.now() * 0.05 + hueOffset) % 360;
     ctx.clearRect(0, 0, size, size);
     ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#00FFD1';
-    ctx.shadowColor = '#FF00FF';
+    ctx.fillStyle = `hsl(${hue}, 100%, 70%)`;
+    ctx.shadowColor = `hsl(${(hue + 180) % 360}, 100%, 50%)`;
     ctx.shadowBlur = 15;
     ctx.fillText(char, size / 2, size / 2);
 
@@ -75,6 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio for performance
+    renderer.setClearColor(0x000000, 1); // Set background color to deep black
+
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(
       75,
@@ -84,20 +87,22 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     camera.position.z = isMobile ? 1000 : 1500;
 
-    // Optimize lighting
-    const ambientLight = new THREE.AmbientLight(0x00ffd1, 1.5);
+    // Adjusted lighting to enhance visuals
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xff00ff, 0.8);
-    directionalLight.position.set(1, 1, 1).normalize();
-    scene.add(directionalLight);
+
+    const pointLight = new THREE.PointLight(0xffffff, 1);
+    pointLight.position.set(0, 0, 0);
+    scene.add(pointLight);
 
     sceneGroup = new THREE.Group();
     scene.add(sceneGroup);
 
-    const particleCount = isMobile ? 600 : 800; // Reduce particle count for performance
+    const particleCount = isMobile ? 600 : 800;
     for (let i = 0; i < particleCount; i++) {
       const char = getRandomCharacter();
-      const texture = createTextTexture(char);
+      const hueOffset = Math.random() * 360;
+      const texture = createTextTexture(char, hueOffset);
       const material = new THREE.SpriteMaterial({
         map: texture,
         transparent: true,
@@ -117,6 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (Math.random() - 0.5) * 2
       );
       sprite.rotationSpeed = (Math.random() - 0.5) * 0.05;
+      sprite.hueOffset = hueOffset;
       sceneGroup.add(sprite);
       particles.push(sprite);
     }
@@ -127,17 +133,17 @@ document.addEventListener('DOMContentLoaded', () => {
       THREE.IcosahedronGeometry,
       THREE.DodecahedronGeometry,
     ];
-    const shapeCount = isMobile ? 40 : 60; // Reduce shape count for performance
+    const shapeCount = isMobile ? 40 : 60;
     for (let i = 0; i < shapeCount; i++) {
       const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
       const geometry = new GeometryClass(isMobile ? 60 : 80, 0);
       const material = new THREE.MeshStandardMaterial({
-        color: 0x00ffd1,
+        color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
         wireframe: true,
         transparent: true,
-        opacity: 0.3,
-        emissive: 0xff00ff,
-        emissiveIntensity: 0.4,
+        opacity: 0.5,
+        emissive: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
+        emissiveIntensity: 0.5,
       });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(
@@ -146,9 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
         (Math.random() - 0.5) * 4000
       );
       mesh.rotationSpeed = new THREE.Vector3(
-        (Math.random() - 0.5) * 0.01,
-        (Math.random() - 0.5) * 0.01,
-        (Math.random() - 0.5) * 0.01
+        (Math.random() - 0.5) * 0.02,
+        (Math.random() - 0.5) * 0.02,
+        (Math.random() - 0.5) * 0.02
       );
       sceneGroup.add(mesh);
       shapes.push(mesh);
@@ -184,10 +190,17 @@ document.addEventListener('DOMContentLoaded', () => {
   function animate() {
     requestAnimationFrame(animate);
 
+    const time = Date.now() * 0.001;
+
     // Update particles
     particles.forEach((p) => {
       p.position.add(p.speed);
       p.material.rotation += p.rotationSpeed;
+
+      // Update particle color dynamically
+      const hue = (time * 20 + p.hueOffset) % 360;
+      p.material.map = createTextTexture(p.material.map.image.innerText, hue);
+      p.material.map.needsUpdate = true;
 
       // Boundary check
       const boundary = 2000;
@@ -201,6 +214,11 @@ document.addEventListener('DOMContentLoaded', () => {
       s.rotation.x += s.rotationSpeed.x;
       s.rotation.y += s.rotationSpeed.y;
       s.rotation.z += s.rotationSpeed.z;
+
+      // Update shape color dynamically
+      const hue = (time * 10 + s.id * 10) % 360;
+      s.material.color.setHSL(hue / 360, 1, 0.5);
+      s.material.emissive.setHSL((hue + 180) / 360, 1, 0.5);
     });
 
     // Rotate scene group

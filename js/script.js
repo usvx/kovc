@@ -6,7 +6,7 @@ import { ShaderPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postproces
 import { FXAAShader } from 'https://esm.sh/three@0.154.0/examples/jsm/shaders/FXAAShader.js';
 import { SSAOPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/SSAOPass.js';
 import { DepthOfFieldPass } from 'https://esm.sh/three@0.154.0/examples/jsm/postprocessing/DepthOfFieldPass.js';
-import { GUI } from 'https://cdn.jsdelivr.net/npm/dat.gui@0.7.7/build/dat.gui.module.js';
+import { GUI } from 'https://esm.sh/dat.gui@0.7.7';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
         texture.encoding = THREE.sRGBEncoding;
-        texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        texture.anisotropy = renderer ? renderer.capabilities.getMaxAnisotropy() : 16;
         return texture;
     }
 

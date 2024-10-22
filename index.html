@@ -4,31 +4,52 @@
     <meta charset="UTF-8">
     <title>Lumina</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' https://esm.sh https://unpkg.com;
-    style-src 'self' https://fonts.googleapis.com;
-    img-src 'self' data:;
-    font-src 'self' https://fonts.gstatic.com data:;
-    connect-src 'self';
-">
+    
+    <!-- Updated Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' https://esm.sh https://unpkg.com;
+        style-src 'self' https://fonts.googleapis.com https://unpkg.com 'unsafe-inline';
+        img-src 'self' data:;
+        font-src 'self' https://fonts.gstatic.com data:;
+        connect-src 'self';
+        object-src 'none';
+        frame-ancestors 'none';
+    ">
+    
     <meta name="referrer" content="no-referrer">
+    
+    <!-- Favicon Links -->
     <link rel="icon" href="favicons/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
     <link rel="manifest" href="favicons/site.webmanifest">
+    
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean" rel="stylesheet">
+    
+    <!-- lil-gui CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/lil-gui@0.17/dist/lil-gui.min.css">
+    
+    <!-- External CSS -->
     <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Noscript CSS -->
     <noscript>
         <link rel="stylesheet" href="css/noscript.css">
     </noscript>
 </head>
 <body>
+    <!-- Preloader -->
     <div id="preloader" aria-label="Loading">
         <div class="loader"></div>
     </div>
+    
+    <!-- Three.js Canvas -->
     <canvas id="background" aria-hidden="true" loading="lazy"></canvas>
+    
+    <!-- Main Content -->
     <main>
         <div class="entrance">
             <h1>Lumina</h1>
@@ -52,6 +73,8 @@
             </form>
         </div>
     </main>
+    
+    <!-- Noscript Fallback -->
     <noscript>
         <div id="noscript-wrapper">
             <main>
@@ -80,6 +103,8 @@
             </main>
         </div>
     </noscript>
+    
+    <!-- External JavaScript -->
     <script type="module" src="js/script.js"></script>
 </body>
 </html>

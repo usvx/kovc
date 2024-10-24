@@ -20,9 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#00FFD1';
-        ctx.shadowColor = '#FF00FF';
-        ctx.shadowBlur = isMobile ? 20 : 25;
+        const gradient = ctx.createRadialGradient(size / 2, size / 2, size * 0.1, size / 2, size / 2, size * 0.5);
+        gradient.addColorStop(0, '#FF00FF');
+        gradient.addColorStop(1, '#00FFFF');
+        ctx.fillStyle = gradient;
+        ctx.shadowColor = '#FF5733';
+        ctx.shadowBlur = isMobile ? 30 : 35;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
@@ -52,53 +55,58 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1000 : 1500;
 
-        const ambientLight = new THREE.AmbientLight(0x00FFD1, 2);
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1.5);
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xFF00FF, 1);
-        directionalLight.position.set(1, 1, 1).normalize();
-        scene.add(directionalLight);
+        const pointLight = new THREE.PointLight(0xFF5733, 2, 5000);
+        pointLight.position.set(0, 0, 1000);
+        scene.add(pointLight);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const particleCount = isMobile ? 1200 : 1200;
+        const particleCount = isMobile ? 1500 : 2000;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
             const material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
             const sprite = new THREE.Sprite(material);
-            sprite.position.x = (Math.random() - 0.5) * 5000;
-            sprite.position.y = (Math.random() - 0.5) * 5000;
-            sprite.position.z = (Math.random() - 0.5) * 5000;
-            sprite.scale.set(isMobile ? 150 : 150, isMobile ? 150 : 150, 1);
-            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 2 : 4);
-            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 2 : 4);
-            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 2 : 4);
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.1;
+            sprite.position.x = (Math.random() - 0.5) * 6000;
+            sprite.position.y = (Math.random() - 0.5) * 6000;
+            sprite.position.z = (Math.random() - 0.5) * 6000;
+            sprite.scale.set(isMobile ? 200 : 200, isMobile ? 200 : 200, 1);
+            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 3 : 5);
+            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 3 : 5);
+            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 3 : 5);
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.2;
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
 
-        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
-        const shapeCount = isMobile ? 80 : 80;
+        const geometryTypes = [
+            THREE.TetrahedronGeometry,
+            THREE.OctahedronGeometry,
+            THREE.IcosahedronGeometry,
+            THREE.DodecahedronGeometry
+        ];
+        const shapeCount = isMobile ? 100 : 150;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(isMobile ? 80 : 80, 1);
+            const geometry = new GeometryClass(isMobile ? 100 : 100, 1);
             const material = new THREE.MeshStandardMaterial({
-                color: 0x00FFD1,
+                color: 0xFF00FF,
                 wireframe: true,
                 transparent: true,
-                opacity: 0.4,
-                emissive: 0xFF00FF,
-                emissiveIntensity: 0.5
+                opacity: 0.5,
+                emissive: 0x00FFFF,
+                emissiveIntensity: 1
             });
             const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.x = (Math.random() - 0.5) * 5000;
-            mesh.position.y = (Math.random() - 0.5) * 5000;
-            mesh.position.z = (Math.random() - 0.5) * 5000;
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+            mesh.position.x = (Math.random() - 0.5) * 6000;
+            mesh.position.y = (Math.random() - 0.5) * 6000;
+            mesh.position.z = (Math.random() - 0.5) * 6000;
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.03;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.03;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.03;
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
@@ -137,21 +145,21 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
             p.material.rotation += p.rotationSpeed;
-            if (p.position.x > 2500 || p.position.x < -2500) p.speedX *= -1;
-            if (p.position.y > 2500 || p.position.y < -2500) p.speedY *= -1;
-            if (p.position.z > 2500 || p.position.z < -2500) p.speedZ *= -1;
+            if (p.position.x > 3000 || p.position.x < -3000) p.speedX *= -1;
+            if (p.position.y > 3000 || p.position.y < -3000) p.speedY *= -1;
+            if (p.position.z > 3000 || p.position.z < -3000) p.speedZ *= -1;
         });
         shapes.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;
         });
-        sceneGroup.rotation.y += 0.0025;
-        sceneGroup.rotation.x += 0.002;
-        const targetRotationY = mouseX * 0.05;
-        const targetRotationX = mouseY * 0.05;
-        sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
-        sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
+        sceneGroup.rotation.y += 0.003;
+        sceneGroup.rotation.x += 0.0025;
+        const targetRotationY = mouseX * 0.1;
+        const targetRotationX = mouseY * 0.1;
+        sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.07;
+        sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.07;
         renderer.render(scene, camera);
     }
 
@@ -159,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.onload = () => {
         setTimeout(() => {
             preloader.style.display = 'none';
-        }, 1000);
+        }, 1500);
     };
     form.addEventListener('submit', (event) => {
         event.preventDefault();

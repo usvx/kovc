@@ -1,17 +1,15 @@
 /* css/style.css */
 
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
-
+/* Root Variables */
 :root {
-    /* Color Variables */
-    --background-color: rgba(10, 10, 10, 0.85); /* Semi-transparent for glass effect */
+    --background-color: #000000; /* Changed to solid black */
     --foreground-color: #00FFD1;
     --accent-color: #00FFD1;
     --secondary-accent: #FF00FF;
     --font-family: 'Urbanist', sans-serif;
-    --gradient-start: #1a1a1a;
-    --gradient-mid: #2c2c2c;
-    --gradient-end: #3a3a3a;
+    --gradient-start: #000000; /* Adjusted for black background */
+    --gradient-mid: #1a1a1a;
+    --gradient-end: #2c2c2c;
     --button-hover: #FF00FF;
     --input-focus: #00FFD1;
     --loader-color: rgba(0, 255, 209, 0.2);
@@ -21,9 +19,10 @@
     --input-font-size: clamp(1rem, 2vw, 1.1rem);
     --button-font-size: clamp(1rem, 2vw, 1.1rem);
     --button-padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
-    --glass-blur: 10px; /* Enhanced blur for better glass effect */
+    --glass-blur: 10px;
 }
 
+/* Global Styles */
 * {
     margin: 0;
     padding: 0;
@@ -31,6 +30,19 @@
     font-family: var(--font-family);
 }
 
+html, body {
+    height: 100%;
+    width: 100%;
+    background: var(--background-color); /* Changed to solid black */
+    color: var(--foreground-color);
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Visually Hidden Class for Accessibility */
 .visually-hidden {
     position: absolute;
     width: 1px;
@@ -43,88 +55,19 @@
     border: 0;
 }
 
-html, body {
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
-    background-size: 400% 400%;
-    color: var(--foreground-color);
-    overflow: hidden;
-    -webkit-user-select: none;
-    user-select: none;
-    animation: gradientAnimation 20s ease infinite;
-}
-
-@keyframes gradientAnimation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-#preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(10, 10, 10, 0.95); /* Dark overlay for preloader */
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.loader {
-    border: 5px solid var(--loader-color);
-    border-top: 5px solid var(--accent-color);
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-canvas#background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-}
-
-main {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: transparent;
-    padding: 0 10px;
-}
-
+/* Entrance Container */
 .entrance {
-    position: relative;
-    width: var(--form-width);
-    max-width: 100%;
-    text-align: center;
-    opacity: 0;
-    background: rgba(255, 255, 255, 0.1); /* Enhanced glass effect */
-    padding: var(--form-padding);
-    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.05); /* Reduced opacity for better contrast */
     border: 1px solid rgba(255, 255, 255, 0.2);
-    transform: translateZ(0);
-    animation: fadeInUp 1.5s ease forwards;
     backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-radius: 20px;
+    padding: var(--form-padding);
     box-shadow: 0 0 30px rgba(0, 255, 209, 0.3);
-    margin: 20px;
+    transition: background 0.3s ease;
 }
 
+/* Header Styles */
 h1 {
     font-size: var(--h1-font-size);
     margin-bottom: 50px;
@@ -135,11 +78,13 @@ h1 {
     animation: glow 2s infinite alternate;
 }
 
+/* Glow Animation */
 @keyframes glow {
     from { text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent); }
     to { text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent); }
 }
 
+/* Form Styles */
 form {
     display: flex;
     flex-direction: column;
@@ -153,31 +98,27 @@ form {
 
 .input-container input,
 .custom-select select {
-    width: 100%;
-    padding: 18px;
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--foreground-color);
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFFFFF;
     border: none;
-    border-radius: 12px;
+    border-radius: 15px;
+    padding: 20px;
+    width: 100%;
     font-size: var(--input-font-size);
-    line-height: 1.6;
     outline: none;
-    transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
-    box-shadow: 0 0 15px rgba(0, 255, 209, 0.3);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .input-container input::placeholder,
 .custom-select select:invalid {
-    color: var(--foreground-color);
+    color: #FFFFFF;
     opacity: 0.6;
 }
 
-.input-container input:focus,
-.custom-select select:focus {
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 25px var(--input-focus), 0 0 35px var(--secondary-accent);
-}
-
+/* Custom Select Arrow */
 .custom-select {
     position: relative;
 }
@@ -209,17 +150,18 @@ form {
     background: var(--background-color);
 }
 
+/* Button Styles */
 button {
-    padding: var(--button-padding);
     background: var(--accent-color);
-    color: #0a0a0a; /* Enhanced contrast */
+    color: #0a0a0a;
     border: none;
-    border-radius: 12px;
+    border-radius: 15px;
+    padding: var(--button-padding);
     font-size: var(--button-font-size);
     cursor: pointer;
-    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
     box-shadow: 0 0 15px rgba(0, 255, 209, 0.5);
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
 button:hover,
@@ -230,6 +172,7 @@ button:focus {
     outline: none;
 }
 
+/* Focus States for Accessibility */
 input:focus,
 select:focus,
 button:focus {
@@ -237,17 +180,7 @@ button:focus {
     outline-offset: 2px;
 }
 
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    from {
-        opacity: 0;
-        transform: translateY(50px);
-    }
-}
-
+/* Responsive Design */
 @media (max-width: 1024px) {
     .entrance {
         width: 400px;
@@ -296,18 +229,18 @@ button:focus {
         .input-container input,
         .custom-select select,
         button {
-            background: rgba(255, 255, 255, 0.15); /* Increased opacity for better contrast */
-            color: #00FFD1; /* Ensuring text color matches foreground */
+            background: rgba(255, 255, 255, 0.15);
+            color: #00FFD1;
         }
 
         button {
-            background: #00FFD1; /* Solid color for better visibility */
-            color: #0a0a0a; /* Contrast text color */
+            background: #00FFD1;
+            color: #0a0a0a;
         }
 
         .entrance {
-            backdrop-filter: blur(var(--glass-blur)); /* Ensure blur is applied */
-            -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
         }
     }
 }

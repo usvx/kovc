@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
-    let scene, camera, renderer;
+    let scene, camera, renderer, composer;
     let particles = [];
     let shapes = [];
     let sceneGroup;
@@ -65,21 +65,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Initializes the Three.js scene.
+     * Initializes the Three.js scene with enhanced visuals.
      */
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setClearColor(0x000000, 0); // Transparent background
+
         scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x000000, 0.0008); // Adds fog for depth
+        scene.fog = new THREE.FogExp2(0x000000, 0.0008); // Optional: Adjust or remove for different depth effects
 
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
         // Ambient Light with vibrant color
-        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1);
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.5);
         scene.add(ambientLight);
 
         // Point Light for dynamic lighting effects
@@ -92,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scene.add(sceneGroup);
 
         // Create Hangeul and Cyrillic particles
-        const particleCount = isMobile ? 1000 : 1500;
+        const particleCount = isMobile ? 1500 : 2000;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
@@ -102,10 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.position.y = (Math.random() - 0.5) * 4000;
             sprite.position.z = (Math.random() - 0.5) * 4000;
             sprite.scale.set(100, 100, 1);
-            sprite.speedX = (Math.random() - 0.5) * 2;
-            sprite.speedY = (Math.random() - 0.5) * 2;
-            sprite.speedZ = (Math.random() - 0.5) * 2;
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.2;
+            sprite.speedX = (Math.random() - 0.5) * 1.5;
+            sprite.speedY = (Math.random() - 0.5) * 1.5;
+            sprite.speedZ = (Math.random() - 0.5) * 1.5;
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.1;
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
@@ -123,31 +125,94 @@ document.addEventListener('DOMContentLoaded', () => {
             ]), 64, 20, 8, false)
         ];
 
-        const shapeCount = isMobile ? 50 : 75;
+        const shapeCount = isMobile ? 75 : 100;
         for (let i = 0; i < shapeCount; i++) {
             const geometry = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const material = new THREE.MeshStandardMaterial({
                 color: 0xFFFFFF,
                 wireframe: true,
                 transparent: true,
-                opacity: 0.3
+                opacity: 0.2,
+                emissive: 0xAA00FF,
+                emissiveIntensity: 0.5
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.x = (Math.random() - 0.5) * 4000;
             mesh.position.y = (Math.random() - 0.5) * 4000;
             mesh.position.z = (Math.random() - 0.5) * 4000;
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.01;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.01;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.01;
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
+
+        // Add a starfield background
+        addStarfield();
+
+        // Initialize post-processing
+        initPostProcessing();
 
         // Event listeners for interactivity
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
         animate();
+    }
+
+    /**
+     * Adds a dynamic starfield to the scene.
+     */
+    function addStarfield() {
+        const starGeometry = new THREE.BufferGeometry();
+        const starCount = 5000;
+        const positions = [];
+        const colors = [];
+
+        for (let i = 0; i < starCount; i++) {
+            const x = (Math.random() - 0.5) * 10000;
+            const y = (Math.random() - 0.5) * 10000;
+            const z = (Math.random() - 0.5) * 10000;
+            positions.push(x, y, z);
+
+            // Random star colors
+            const color = new THREE.Color();
+            color.setHSL(Math.random(), 0.7, 0.8);
+            colors.push(color.r, color.g, color.b);
+        }
+
+        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+        const starMaterial = new THREE.PointsMaterial({
+            size: isMobile ? 1.5 : 2.5,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.7,
+            blending: THREE.AdditiveBlending
+        });
+
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+    }
+
+    /**
+     * Initializes post-processing effects.
+     */
+    function initPostProcessing() {
+        composer = new THREE.EffectComposer(renderer);
+
+        const renderPass = new THREE.RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloomPass = new THREE.UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5, // strength
+            0.4, // radius
+            0.85 // threshold
+        );
+        bloomPass.renderToScreen = true;
+        composer.addPass(bloomPass);
     }
 
     /**
@@ -180,6 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
     }
 
     /**
@@ -198,6 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
             if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
+
+            // Optional: Rotate the sprites for dynamic effects
+            p.rotation += p.rotationSpeed * 0.01;
         });
 
         // Rotate geometric shapes
@@ -208,16 +277,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Slight rotation of the entire scene group for a dynamic effect
-        sceneGroup.rotation.y += 0.001;
-        sceneGroup.rotation.x += 0.001;
+        sceneGroup.rotation.y += 0.0005;
+        sceneGroup.rotation.x += 0.0005;
 
         // Smooth rotation based on mouse movement
-        const targetRotationY = mouseX * 0.05;
-        const targetRotationX = mouseY * 0.05;
+        const targetRotationY = mouseX * 0.02;
+        const targetRotationX = mouseY * 0.02;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
 
-        renderer.render(scene, camera);
+        composer.render();
     }
 
     /**

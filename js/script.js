@@ -22,8 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#FFFFFF';
-        ctx.shadowColor = '#FF00FF';
+        
+        // Create a vibrant gradient for the text
+        const gradient = ctx.createRadialGradient(size / 2, size / 2, size * 0.1, size / 2, size / 2, size * 0.5);
+        gradient.addColorStop(0, '#FF00FF'); // Magenta
+        gradient.addColorStop(1, '#00FFFF'); // Cyan
+        
+        ctx.fillStyle = gradient;
+        ctx.shadowColor = '#FF5733'; // Orange shadow
         ctx.shadowBlur = isMobile ? 30 : 35;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
@@ -32,8 +38,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getRandomCharacter() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        return chars.charAt(Math.floor(Math.random() * chars.length));
+        const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
+        const hangeulMedials = [0x1161, 0x1165, 0x1166, 0x1167, 0x1169, 0x116E, 0x1172, 0x1173, 0x1175];
+        const hangeulFinals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA];
+        const cyrillicLetters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
+        
+        const isHangeul = Math.random() < 0.5;
+        if (isHangeul) {
+            const initial = hangeulInitials[Math.floor(Math.random() * hangeulInitials.length)];
+            const medial = hangeulMedials[Math.floor(Math.random() * hangeulMedials.length)];
+            const final = hangeulFinals[Math.floor(Math.random() * hangeulFinals.length)];
+            const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
+            return String.fromCharCode(syllableCode);
+        } else {
+            return cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
+        }
     }
 
     function init() {
@@ -42,26 +61,30 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x000000, 0.0008);
+        scene.fog = new THREE.FogExp2(0x000000, 0.0008); // Adds fog for depth
 
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
+        // Ambient Light with vibrant color
         const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1);
         scene.add(ambientLight);
 
-        const pointLight = new THREE.PointLight(0xFF00FF, 1.5, 5000);
+        // Point Light for dynamic lighting effects
+        const pointLight = new THREE.PointLight(0xFF5733, 1.5, 5000);
         pointLight.position.set(0, 0, 500);
         scene.add(pointLight);
 
+        // Group to hold all particles and shapes
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
+        // Create Hangeul and Cyrillic particles
         const particleCount = isMobile ? 1000 : 1500;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
-            const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+            const material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
             const sprite = new THREE.Sprite(material);
             sprite.position.x = (Math.random() - 0.5) * 4000;
             sprite.position.y = (Math.random() - 0.5) * 4000;
@@ -70,10 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.speedX = (Math.random() - 0.5) * 2;
             sprite.speedY = (Math.random() - 0.5) * 2;
             sprite.speedZ = (Math.random() - 0.5) * 2;
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.2;
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
 
+        // Create geometric shapes with wireframe materials
         const geometryTypes = [
             THREE.TorusGeometry,
             THREE.TorusKnotGeometry,
@@ -102,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             shapes.push(mesh);
         }
 
+        // Event listeners for interactivity
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
@@ -132,24 +158,30 @@ document.addEventListener('DOMContentLoaded', () => {
     function animate() {
         requestAnimationFrame(animate);
 
+        // Update particle positions
         particles.forEach(p => {
             p.position.x += p.speedX;
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
 
+            // Boundary conditions to keep particles within a range
             if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
             if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
         });
 
+        // Rotate geometric shapes
         shapes.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;
         });
 
+        // Slight rotation of the entire scene group for a dynamic effect
         sceneGroup.rotation.y += 0.001;
         sceneGroup.rotation.x += 0.001;
+
+        // Smooth rotation based on mouse movement
         const targetRotationY = mouseX * 0.05;
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
@@ -166,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1500);
     };
 
+    // Form submission handling
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const username = form.username.value.trim();
@@ -180,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Prevent form submission on Enter key
     form.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();

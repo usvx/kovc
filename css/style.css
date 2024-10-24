@@ -4,25 +4,24 @@
 
 :root {
     /* Color Variables */
-    --background-color: #000000; /* Darkest black */
-    --foreground-color: #FFFFFF; /* White text */
-    --accent-color: #00FFAA; /* Natural teal */
-    --secondary-accent: #FFAA00; /* Warm amber */
-    --highlight-color: #AA00FF; /* Deep purple */
-    --glass-color: rgba(255, 255, 255, 0.2); /* Slightly increased opacity */
-    --glass-border: rgba(255, 255, 255, 0.25); /* Glass border color */
-    --input-background: rgba(255, 255, 255, 0.25); /* Increased opacity for better contrast */
-    --input-text-color: #FFFFFF; /* Input field text color */
-    --placeholder-color: rgba(255, 255, 255, 0.8); /* Placeholder text color */
+    --background-color: #0a0a0a;
+    --foreground-color: #00FFD1;
+    --accent-color: #00FFD1;
+    --secondary-accent: #FF00FF;
     --font-family: 'Urbanist', sans-serif;
-
-    /* Other Variables */
-    --form-width: clamp(300px, 80%, 500px);
-    --form-padding: clamp(40px, 5vw, 70px);
-    --input-font-size: clamp(1.1rem, 2vw, 1.3rem);
-    --button-font-size: clamp(1.1rem, 2vw, 1.3rem);
-    --button-padding: clamp(16px, 3vw, 20px) clamp(32px, 5vw, 40px);
-    --glass-blur: 5px; /* Further reduced blur for natural glass effect */
+    --gradient-start: #0a0a0a;
+    --gradient-mid: #141414;
+    --gradient-end: #1c1c1c;
+    --button-hover: #FF00FF;
+    --input-focus: #00FFD1;
+    --loader-color: rgba(0, 255, 209, 0.2);
+    --h1-font-size: clamp(2rem, 5vw, 3rem);
+    --form-width: clamp(250px, 80%, 450px);
+    --form-padding: clamp(35px, 5vw, 60px);
+    --input-font-size: clamp(1rem, 2vw, 1.1rem);
+    --button-font-size: clamp(1rem, 2vw, 1.1rem);
+    --button-padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
+    --glass-blur: 8px; /* Reduced blur for natural glass effect */
 }
 
 * {
@@ -32,14 +31,34 @@
     font-family: var(--font-family);
 }
 
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 html, body {
     height: 100%;
     width: 100%;
-    background-color: var(--background-color);
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
+    background-size: 400% 400%;
     color: var(--foreground-color);
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
+    animation: gradientAnimation 20s ease infinite;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 #preloader {
@@ -56,12 +75,12 @@ html, body {
 }
 
 .loader {
-    border: 5px solid rgba(255, 255, 255, 0.1);
+    border: 5px solid var(--loader-color);
     border-top: 5px solid var(--accent-color);
     border-radius: 50%;
-    width: 70px;
-    height: 70px;
-    animation: spin 1.2s linear infinite;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
@@ -84,7 +103,8 @@ main {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 0 15px;
+    background: transparent;
+    padding: 0 10px;
 }
 
 .entrance {
@@ -93,49 +113,38 @@ main {
     max-width: 100%;
     text-align: center;
     opacity: 0;
-    background: var(--glass-color);
-    border-radius: 20px;
-    backdrop-filter: none; /* Remove blur effect */
-    -webkit-backdrop-filter: none; /* Safari */
-    border: 1px solid var(--glass-border);
+    background: rgba(0, 0, 0, 0.6);
+    padding: var(--form-padding);
+    border-radius: 25px;
+    border: 2px solid var(--accent-color);
     transform: translateZ(0);
     animation: fadeInUp 1.5s ease forwards;
-    margin: 25px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-    padding: var(--form-padding);
-}
-
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    from {
-        opacity: 0;
-        transform: translateY(60px);
-    }
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
+    box-shadow: 0 0 20px rgba(0, 255, 209, 0.5);
+    margin: 20px;
 }
 
 h1 {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    margin-bottom: 60px;
-    font-weight: 800;
-    letter-spacing: 3px;
+    font-size: var(--h1-font-size);
+    margin-bottom: 50px;
+    font-weight: 700;
+    letter-spacing: 2px;
     color: var(--accent-color);
-    text-shadow: 0 0 20px var(--highlight-color), 0 0 40px var(--accent-color);
-    animation: glow 3s infinite alternate;
+    text-shadow: 0 0 15px var(--accent-color), 0 0 30px var(--secondary-accent);
+    animation: glow 2s infinite alternate;
 }
 
 @keyframes glow {
-    from { text-shadow: 0 0 20px var(--highlight-color), 0 0 40px var(--accent-color); }
-    to { text-shadow: 0 0 30px var(--highlight-color), 0 0 60px var(--accent-color); }
+    from { text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent); }
+    to { text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent); }
 }
 
 form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 40px;
+    gap: 35px;
 }
 
 .input-container {
@@ -145,29 +154,28 @@ form {
 .input-container input,
 .custom-select select {
     width: 100%;
-    padding: 20px;
-    background: var(--input-background);
-    color: var(--input-text-color);
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--foreground-color);
     border: none;
-    border-radius: 15px;
+    border-radius: 12px;
     font-size: var(--input-font-size);
-    line-height: 1.8;
+    line-height: 1.6;
     outline: none;
-    box-shadow: none; /* Remove inner shadow */
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none; /* Safari */
-    transition: background 0.4s ease, color 0.4s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+    box-shadow: 0 0 15px rgba(0, 255, 209, 0.3);
 }
 
 .input-container input::placeholder,
 .custom-select select:invalid {
-    color: var(--placeholder-color);
+    color: var(--foreground-color);
+    opacity: 0.6;
 }
 
 .input-container input:focus,
 .custom-select select:focus {
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: none;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 25px var(--input-focus), 0 0 35px var(--secondary-accent);
 }
 
 .custom-select {
@@ -175,14 +183,14 @@ form {
 }
 
 .custom-select::after {
-    content: '▼';
+    content: '▼'; /* Corrected the arrow symbol */
     position: absolute;
     top: 50%;
-    right: 25px;
+    right: 20px;
     transform: translateY(-50%);
     color: var(--accent-color);
     pointer-events: none;
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 .custom-select select {
@@ -190,9 +198,10 @@ form {
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
-    padding-right: 60px;
-    background: transparent;
-    color: var(--input-text-color);
+    padding-right: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--foreground-color);
+    transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
 }
 
 .custom-select select option {
@@ -202,60 +211,103 @@ form {
 
 button {
     padding: var(--button-padding);
-    background: var(--input-background);
-    color: var(--foreground-color);
+    background: var(--accent-color);
+    color: var(--background-color);
     border: none;
-    border-radius: 15px;
+    border-radius: 12px;
     font-size: var(--button-font-size);
     cursor: pointer;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none; /* Safari */
-    box-shadow: none;
-    transition: transform 0.4s ease, background 0.4s ease;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
+    box-shadow: 0 0 15px rgba(0, 255, 209, 0.5);
 }
 
 button:hover,
 button:focus {
     transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.3);
+    background: var(--button-hover);
+    box-shadow: 0 0 25px rgba(0, 255, 209, 0.7);
     outline: none;
 }
 
 input:focus,
 select:focus,
 button:focus {
-    outline: 2px solid var(--accent-color);
+    outline: 2px solid var(--input-focus);
     outline-offset: 2px;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+}
+
+@media (max-width: 1024px) {
+    .entrance {
+        width: 400px;
+        padding: 50px;
+    }
+    h1 {
+        font-size: 3.5rem;
+        margin-bottom: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .entrance {
+        width: 350px;
+        padding: 45px;
+    }
+    h1 {
+        font-size: 3rem;
+        margin-bottom: 35px;
+    }
 }
 
 @media (max-width: 480px) {
     .entrance {
         width: 300px;
-        padding: 40px;
+        padding: 35px;
     }
     h1 {
         font-size: 2.5rem;
-        margin-bottom: 35px;
+        margin-bottom: 25px;
     }
     input,
     .custom-select select,
     button {
         font-size: 1rem;
-        padding: 16px;
+        padding: 14px;
     }
     button {
-        padding: 16px 32px;
+        padding: 14px 28px;
     }
 }
 
 /* Safari Specific Styles */
-@media not all and (min-resolution: 0.001dpcm) {
-  @supports (-webkit-appearance: none) {
-    .input-container input,
-    .custom-select select,
-    button {
-      background: rgba(255, 255, 255, 0.3); /* Slightly more opaque */
+@media not all and (min-resolution: 0.001dpcm) { 
+    @supports (-webkit-appearance: none) {
+        .input-container input,
+        .custom-select select,
+        button {
+            background: rgba(255, 255, 255, 0.15); /* Increased opacity for better contrast */
+            color: #00FFD1; /* Ensuring text color matches foreground */
+        }
+
+        button {
+            background: #00FFD1; /* Solid color for better visibility */
+            color: #0a0a0a; /* Contrast text color */
+        }
+
+        .entrance {
+            backdrop-filter: blur(var(--glass-blur)); /* Ensure blur is applied */
+            -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
+        }
     }
-  }
 }

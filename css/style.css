@@ -1,29 +1,39 @@
 /* css/style.css */
 
+/* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
+/* Root Variables */
 :root {
-    /* Color Variables */
+    /* Colors */
     --background-color: #0a0a0a;
     --foreground-color: #00FFD1;
     --accent-color: #00FFD1;
     --secondary-accent: #FF00FF;
     --font-family: 'Urbanist', sans-serif;
+
+    /* Gradients */
     --gradient-start: #0a0a0a;
     --gradient-mid: #141414;
     --gradient-end: #1c1c1c;
-    --button-hover: #FF00FF;
-    --input-focus: #00FFD1;
-    --loader-color: rgba(0, 255, 209, 0.2);
-    --h1-font-size: clamp(2rem, 5vw, 3rem);
+
+    /* Animations */
+    --gradient-animation-duration: 20s;
+    --gradient-animation-timing: ease infinite;
+
+    /* Form Styling */
     --form-width: clamp(250px, 80%, 450px);
     --form-padding: clamp(35px, 5vw, 60px);
-    --input-font-size: clamp(1rem, 2vw, 1.1rem);
-    --button-font-size: clamp(1rem, 2vw, 1.1rem);
+    --input-padding: 18px;
     --button-padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
-    --glass-blur: 8px; /* Reduced blur for natural glass effect */
+
+    /* Other */
+    --glass-blur: 8px;
+    --loader-size: 60px;
+    --loader-border: 5px;
 }
 
+/* Global Styles */
 * {
     margin: 0;
     padding: 0;
@@ -50,9 +60,8 @@ html, body {
     background-size: 400% 400%;
     color: var(--foreground-color);
     overflow: hidden;
-    -webkit-user-select: none;
     user-select: none;
-    animation: gradientAnimation 20s ease infinite;
+    animation: gradientAnimation var(--gradient-animation-duration) var(--gradient-animation-timing);
 }
 
 @keyframes gradientAnimation {
@@ -61,6 +70,7 @@ html, body {
     100% { background-position: 0% 50%; }
 }
 
+/* Preloader Styles */
 #preloader {
     position: fixed;
     top: 0;
@@ -75,11 +85,11 @@ html, body {
 }
 
 .loader {
-    border: 5px solid var(--loader-color);
-    border-top: 5px solid var(--accent-color);
+    border: var(--loader-border) solid rgba(0, 255, 209, 0.2);
+    border-top: var(--loader-border) solid var(--accent-color);
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: var(--loader-size);
+    height: var(--loader-size);
     animation: spin 1s linear infinite;
 }
 
@@ -87,6 +97,7 @@ html, body {
     to { transform: rotate(360deg); }
 }
 
+/* Background Canvas */
 canvas#background {
     position: fixed;
     top: 0;
@@ -96,6 +107,7 @@ canvas#background {
     z-index: 0;
 }
 
+/* Main Content */
 main {
     position: relative;
     z-index: 1;
@@ -103,12 +115,11 @@ main {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: transparent;
     padding: 0 10px;
 }
 
+/* Entrance Form */
 .entrance {
-    position: relative;
     width: var(--form-width);
     max-width: 100%;
     text-align: center;
@@ -117,7 +128,6 @@ main {
     padding: var(--form-padding);
     border-radius: 25px;
     border: 2px solid var(--accent-color);
-    transform: translateZ(0);
     animation: fadeInUp 1.5s ease forwards;
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
@@ -126,7 +136,7 @@ main {
 }
 
 h1 {
-    font-size: var(--h1-font-size);
+    font-size: clamp(2rem, 5vw, 3rem);
     margin-bottom: 50px;
     font-weight: 700;
     letter-spacing: 2px;
@@ -149,17 +159,18 @@ form {
 
 .input-container {
     width: 100%;
+    position: relative;
 }
 
 .input-container input,
 .custom-select select {
     width: 100%;
-    padding: 18px;
+    padding: var(--input-padding);
     background: rgba(255, 255, 255, 0.05);
     color: var(--foreground-color);
     border: none;
     border-radius: 12px;
-    font-size: var(--input-font-size);
+    font-size: 1rem;
     line-height: 1.6;
     outline: none;
     transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
@@ -175,7 +186,7 @@ form {
 .input-container input:focus,
 .custom-select select:focus {
     background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 25px var(--input-focus), 0 0 35px var(--secondary-accent);
+    box-shadow: 0 0 25px var(--foreground-color), 0 0 35px var(--secondary-accent);
 }
 
 .custom-select {
@@ -183,7 +194,7 @@ form {
 }
 
 .custom-select::after {
-    content: '▼'; /* Corrected the arrow symbol */
+    content: '▼';
     position: absolute;
     top: 50%;
     right: 20px;
@@ -210,12 +221,12 @@ form {
 }
 
 button {
-    padding: var(--button-padding);
+    padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
     background: var(--accent-color);
     color: var(--background-color);
     border: none;
     border-radius: 12px;
-    font-size: var(--button-font-size);
+    font-size: 1rem;
     cursor: pointer;
     transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
@@ -225,7 +236,7 @@ button {
 button:hover,
 button:focus {
     transform: scale(1.05);
-    background: var(--button-hover);
+    background: var(--secondary-accent);
     box-shadow: 0 0 25px rgba(0, 255, 209, 0.7);
     outline: none;
 }
@@ -233,7 +244,7 @@ button:focus {
 input:focus,
 select:focus,
 button:focus {
-    outline: 2px solid var(--input-focus);
+    outline: 2px solid var(--foreground-color);
     outline-offset: 2px;
 }
 
@@ -248,13 +259,14 @@ button:focus {
     }
 }
 
+/* Responsive Design */
 @media (max-width: 1024px) {
     .entrance {
         width: 400px;
         padding: 50px;
     }
     h1 {
-        font-size: 3.5rem;
+        font-size: 3rem;
         margin-bottom: 40px;
     }
 }
@@ -265,7 +277,7 @@ button:focus {
         padding: 45px;
     }
     h1 {
-        font-size: 3rem;
+        font-size: 2.8rem;
         margin-bottom: 35px;
     }
 }
@@ -296,18 +308,18 @@ button:focus {
         .input-container input,
         .custom-select select,
         button {
-            background: rgba(255, 255, 255, 0.15); /* Increased opacity for better contrast */
-            color: #00FFD1; /* Ensuring text color matches foreground */
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--foreground-color);
         }
 
         button {
-            background: #00FFD1; /* Solid color for better visibility */
-            color: #0a0a0a; /* Contrast text color */
+            background: var(--accent-color);
+            color: var(--background-color);
         }
 
         .entrance {
-            backdrop-filter: blur(var(--glass-blur)); /* Ensure blur is applied */
-            -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
         }
     }
 }

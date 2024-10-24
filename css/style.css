@@ -6,9 +6,9 @@
     /* Color Variables */
     --background-color: #000000; /* Darkest black */
     --foreground-color: #FFFFFF; /* White text */
-    --accent-color: #FF00FF; /* Vibrant magenta */
-    --secondary-accent: #00FFFF; /* Vibrant cyan */
-    --highlight-color: #FF5733; /* Additional vibrant color */
+    --accent-color: #00FFAA; /* Natural teal */
+    --secondary-accent: #FFAA00; /* Warm amber */
+    --highlight-color: #AA00FF; /* Deep purple */
     --glass-color: rgba(255, 255, 255, 0.1); /* Glass effect color */
     --glass-border: rgba(255, 255, 255, 0.25); /* Glass border color */
     --font-family: 'Urbanist', sans-serif;
@@ -19,7 +19,7 @@
     --input-font-size: clamp(1.1rem, 2vw, 1.3rem);
     --button-font-size: clamp(1.1rem, 2vw, 1.3rem);
     --button-padding: clamp(16px, 3vw, 20px) clamp(32px, 5vw, 40px);
-    --glass-blur: 15px; /* Blur amount for glass effect */
+    --glass-blur: 10px; /* Reduced blur for glass effect */
     --gradient-start: #0a0a0a;
     --gradient-mid: #1a1a1a;
     --gradient-end: #333333;

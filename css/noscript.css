@@ -38,6 +38,12 @@ h1 {
     letter-spacing: 3px;
     color: #FFFFFF;
     text-shadow: 0 0 20px #FF00FF, 0 0 40px #FFFFFF;
+    animation: glow 3s infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 20px #FF00FF, 0 0 40px #FFFFFF; }
+    to { text-shadow: 0 0 30px #FF00FF, 0 0 60px #FFFFFF; }
 }
 
 .input-container {

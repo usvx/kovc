@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
-    let scene, camera, renderer;
+    let scene, camera, renderer, composer;
     let particles = [];
     let shapes = [];
     let sceneGroup;
@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let windowHalfX = window.innerWidth / 2;
     let windowHalfY = window.innerHeight / 2;
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+
+    const envMap = new THREE.CubeTextureLoader().setPath('textures/cube/').load([
+        'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg'
+    ]);
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
@@ -104,13 +108,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const shapeCount = isMobile ? 25 : 50;
         for (let i = 0; i < shapeCount; i++) {
             const geometry = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const material = new THREE.MeshStandardMaterial({
+            const material = new THREE.MeshPhysicalMaterial({
                 color: 0xFFFFFF,
-                wireframe: true,
+                roughness: 0.1,
+                metalness: 0.8,
+                clearcoat: 1,
+                envMap: envMap,
                 transparent: true,
-                opacity: 0.4,
-                emissive: 0xFF00FF,
-                emissiveIntensity: 0.5
+                opacity: 0.6,
+                reflectivity: 1,
+                refractionRatio: 0.98,
+                side: THREE.DoubleSide
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(
@@ -124,6 +132,16 @@ document.addEventListener('DOMContentLoaded', () => {
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
+
+        const renderPass = new THREE.RenderPass(scene, camera);
+        const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        bloomPass.threshold = 0;
+        bloomPass.strength = 1.5;
+        bloomPass.radius = 0.5;
+
+        composer = new THREE.EffectComposer(renderer);
+        composer.addPass(renderPass);
+        composer.addPass(bloomPass);
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
@@ -151,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
     }
 
     function animate() {
@@ -180,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
 
-        renderer.render(scene, camera);
+        composer.render();
     }
 
     init();

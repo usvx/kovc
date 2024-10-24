@@ -1,39 +1,29 @@
 /* css/style.css */
 
-/* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
-/* Root Variables */
 :root {
-    /* Colors */
-    --background-color: #0a0a0a;
+    /* Color Variables */
+    --background-color: rgba(10, 10, 10, 0.85); /* Semi-transparent for glass effect */
     --foreground-color: #00FFD1;
     --accent-color: #00FFD1;
     --secondary-accent: #FF00FF;
     --font-family: 'Urbanist', sans-serif;
-
-    /* Gradients */
-    --gradient-start: #0a0a0a;
-    --gradient-mid: #141414;
-    --gradient-end: #1c1c1c;
-
-    /* Animations */
-    --gradient-animation-duration: 20s;
-    --gradient-animation-timing: ease infinite;
-
-    /* Form Styling */
+    --gradient-start: #1a1a1a;
+    --gradient-mid: #2c2c2c;
+    --gradient-end: #3a3a3a;
+    --button-hover: #FF00FF;
+    --input-focus: #00FFD1;
+    --loader-color: rgba(0, 255, 209, 0.2);
+    --h1-font-size: clamp(2rem, 5vw, 3rem);
     --form-width: clamp(250px, 80%, 450px);
     --form-padding: clamp(35px, 5vw, 60px);
-    --input-padding: 18px;
+    --input-font-size: clamp(1rem, 2vw, 1.1rem);
+    --button-font-size: clamp(1rem, 2vw, 1.1rem);
     --button-padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
-
-    /* Other */
-    --glass-blur: 8px;
-    --loader-size: 60px;
-    --loader-border: 5px;
+    --glass-blur: 10px; /* Enhanced blur for better glass effect */
 }
 
-/* Global Styles */
 * {
     margin: 0;
     padding: 0;
@@ -60,8 +50,9 @@ html, body {
     background-size: 400% 400%;
     color: var(--foreground-color);
     overflow: hidden;
+    -webkit-user-select: none;
     user-select: none;
-    animation: gradientAnimation var(--gradient-animation-duration) var(--gradient-animation-timing);
+    animation: gradientAnimation 20s ease infinite;
 }
 
 @keyframes gradientAnimation {
@@ -70,14 +61,13 @@ html, body {
     100% { background-position: 0% 50%; }
 }
 
-/* Preloader Styles */
 #preloader {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--background-color);
+    background-color: rgba(10, 10, 10, 0.95); /* Dark overlay for preloader */
     z-index: 9999;
     display: flex;
     align-items: center;
@@ -85,11 +75,11 @@ html, body {
 }
 
 .loader {
-    border: var(--loader-border) solid rgba(0, 255, 209, 0.2);
-    border-top: var(--loader-border) solid var(--accent-color);
+    border: 5px solid var(--loader-color);
+    border-top: 5px solid var(--accent-color);
     border-radius: 50%;
-    width: var(--loader-size);
-    height: var(--loader-size);
+    width: 60px;
+    height: 60px;
     animation: spin 1s linear infinite;
 }
 
@@ -97,7 +87,6 @@ html, body {
     to { transform: rotate(360deg); }
 }
 
-/* Background Canvas */
 canvas#background {
     position: fixed;
     top: 0;
@@ -107,7 +96,6 @@ canvas#background {
     z-index: 0;
 }
 
-/* Main Content */
 main {
     position: relative;
     z-index: 1;
@@ -115,28 +103,30 @@ main {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    background: transparent;
     padding: 0 10px;
 }
 
-/* Entrance Form */
 .entrance {
+    position: relative;
     width: var(--form-width);
     max-width: 100%;
     text-align: center;
     opacity: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(255, 255, 255, 0.1); /* Enhanced glass effect */
     padding: var(--form-padding);
     border-radius: 25px;
-    border: 2px solid var(--accent-color);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transform: translateZ(0);
     animation: fadeInUp 1.5s ease forwards;
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
-    box-shadow: 0 0 20px rgba(0, 255, 209, 0.5);
+    box-shadow: 0 0 30px rgba(0, 255, 209, 0.3);
     margin: 20px;
 }
 
 h1 {
-    font-size: clamp(2rem, 5vw, 3rem);
+    font-size: var(--h1-font-size);
     margin-bottom: 50px;
     font-weight: 700;
     letter-spacing: 2px;
@@ -159,18 +149,17 @@ form {
 
 .input-container {
     width: 100%;
-    position: relative;
 }
 
 .input-container input,
 .custom-select select {
     width: 100%;
-    padding: var(--input-padding);
+    padding: 18px;
     background: rgba(255, 255, 255, 0.05);
     color: var(--foreground-color);
     border: none;
     border-radius: 12px;
-    font-size: 1rem;
+    font-size: var(--input-font-size);
     line-height: 1.6;
     outline: none;
     transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
@@ -186,7 +175,7 @@ form {
 .input-container input:focus,
 .custom-select select:focus {
     background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 25px var(--foreground-color), 0 0 35px var(--secondary-accent);
+    box-shadow: 0 0 25px var(--input-focus), 0 0 35px var(--secondary-accent);
 }
 
 .custom-select {
@@ -194,7 +183,7 @@ form {
 }
 
 .custom-select::after {
-    content: '▼';
+    content: '▼'; /* Arrow symbol */
     position: absolute;
     top: 50%;
     right: 20px;
@@ -221,12 +210,12 @@ form {
 }
 
 button {
-    padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
+    padding: var(--button-padding);
     background: var(--accent-color);
-    color: var(--background-color);
+    color: #0a0a0a; /* Enhanced contrast */
     border: none;
     border-radius: 12px;
-    font-size: 1rem;
+    font-size: var(--button-font-size);
     cursor: pointer;
     transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
@@ -236,7 +225,7 @@ button {
 button:hover,
 button:focus {
     transform: scale(1.05);
-    background: var(--secondary-accent);
+    background: var(--button-hover);
     box-shadow: 0 0 25px rgba(0, 255, 209, 0.7);
     outline: none;
 }
@@ -244,7 +233,7 @@ button:focus {
 input:focus,
 select:focus,
 button:focus {
-    outline: 2px solid var(--foreground-color);
+    outline: 2px solid var(--input-focus);
     outline-offset: 2px;
 }
 
@@ -259,14 +248,13 @@ button:focus {
     }
 }
 
-/* Responsive Design */
 @media (max-width: 1024px) {
     .entrance {
         width: 400px;
         padding: 50px;
     }
     h1 {
-        font-size: 3rem;
+        font-size: 3.5rem;
         margin-bottom: 40px;
     }
 }
@@ -277,7 +265,7 @@ button:focus {
         padding: 45px;
     }
     h1 {
-        font-size: 2.8rem;
+        font-size: 3rem;
         margin-bottom: 35px;
     }
 }
@@ -308,18 +296,18 @@ button:focus {
         .input-container input,
         .custom-select select,
         button {
-            background: rgba(255, 255, 255, 0.15);
-            color: var(--foreground-color);
+            background: rgba(255, 255, 255, 0.15); /* Increased opacity for better contrast */
+            color: #00FFD1; /* Ensuring text color matches foreground */
         }
 
         button {
-            background: var(--accent-color);
-            color: var(--background-color);
+            background: #00FFD1; /* Solid color for better visibility */
+            color: #0a0a0a; /* Contrast text color */
         }
 
         .entrance {
-            backdrop-filter: blur(var(--glass-blur));
-            -webkit-backdrop-filter: blur(var(--glass-blur));
+            backdrop-filter: blur(var(--glass-blur)); /* Ensure blur is applied */
+            -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
         }
     }
 }

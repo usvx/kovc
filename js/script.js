@@ -25,12 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Create a vibrant gradient for the text
         const gradient = ctx.createRadialGradient(size / 2, size / 2, size * 0.1, size / 2, size / 2, size * 0.5);
-        gradient.addColorStop(0, '#FF00FF'); // Magenta
-        gradient.addColorStop(1, '#00FFFF'); // Cyan
+        gradient.addColorStop(0, '#00FFAA'); // Teal
+        gradient.addColorStop(1, '#FFAA00'); // Amber
         
         ctx.fillStyle = gradient;
-        ctx.shadowColor = '#FF5733'; // Orange shadow
-        ctx.shadowBlur = isMobile ? 30 : 35;
+        ctx.shadowColor = '#AA00FF'; // Deep purple shadow
+        ctx.shadowBlur = isMobile ? 20 : 25;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scene.add(ambientLight);
 
         // Point Light for dynamic lighting effects
-        const pointLight = new THREE.PointLight(0xFF5733, 1.5, 5000);
+        const pointLight = new THREE.PointLight(0xAA00FF, 1.5, 5000); // Deep purple light
         pointLight.position.set(0, 0, 500);
         scene.add(pointLight);
 

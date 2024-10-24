@@ -23,8 +23,8 @@ body {
     animation: none;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 20px;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(10px); /* Reduced blur */
+    -webkit-backdrop-filter: blur(10px); /* Reduced blur */
     border: 1px solid rgba(255, 255, 255, 0.25);
     margin: 25px;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
@@ -37,13 +37,13 @@ h1 {
     font-weight: 800;
     letter-spacing: 3px;
     color: #FFFFFF;
-    text-shadow: 0 0 20px #FF00FF, 0 0 40px #FFFFFF;
+    text-shadow: 0 0 20px #FF00AA, 0 0 40px #FFFFFF;
     animation: glow 3s infinite alternate;
 }
 
 @keyframes glow {
-    from { text-shadow: 0 0 20px #FF00FF, 0 0 40px #FFFFFF; }
-    to { text-shadow: 0 0 30px #FF00FF, 0 0 60px #FFFFFF; }
+    from { text-shadow: 0 0 20px #FF00AA, 0 0 40px #FFFFFF; }
+    to { text-shadow: 0 0 30px #FF00AA, 0 0 60px #FFFFFF; }
 }
 
 .input-container {
@@ -74,8 +74,8 @@ button {
     font-size: clamp(1.1rem, 2vw, 1.3rem);
     cursor: pointer;
     width: 100%;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(10px); /* Reduced blur */
+    -webkit-backdrop-filter: blur(10px); /* Reduced blur */
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
     transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
 }
@@ -91,6 +91,6 @@ button:focus {
 input:focus,
 select:focus,
 button:focus {
-    outline: 2px solid #FFFFFF;
+    outline: 2px solid #00FFAA;
     outline-offset: 2px;
 }

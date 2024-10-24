@@ -10,9 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let windowHalfY = window.innerHeight / 2;
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
-    const envMap = new THREE.CubeTextureLoader().setPath('textures/cube/').load([
-        'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg'
-    ]);
+const envMap = new THREE.CubeTextureLoader().setPath('https://threejs.org/examples/textures/cube/Park3Med/').load([
+    'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg'
+]);
+
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');

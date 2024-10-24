@@ -6,7 +6,7 @@
 }
 
 body {
-    background: rgba(10, 10, 10, 0.85); /* Semi-transparent for glass effect */
+    background: #000000; /* Solid black background */
     color: #FFFFFF;
     font-family: 'Urbanist', sans-serif;
 }
@@ -23,8 +23,8 @@ body {
     animation: none;
     background: rgba(255, 255, 255, 0.15); /* Enhanced glass effect */
     border-radius: 20px;
-    backdrop-filter: blur(8px); /* Adjusted blur */
-    -webkit-backdrop-filter: blur(8px); /* Safari */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.25);
     margin: 25px;
     box-shadow: 0 0 30px rgba(0, 255, 209, 0.3);
@@ -63,20 +63,20 @@ h1 {
     outline: none;
     box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px); /* Safari */
+    -webkit-backdrop-filter: blur(5px);
 }
 
 button {
     padding: clamp(16px, 3vw, 20px) clamp(32px, 5vw, 40px);
-    background: rgba(255, 255, 255, 0.15); /* Enhanced glass effect */
+    background: rgba(255, 255, 255, 0.15);
     color: #FFFFFF;
     border: none;
     border-radius: 15px;
     font-size: clamp(1.1rem, 2vw, 1.3rem);
     cursor: pointer;
     width: 100%;
-    backdrop-filter: blur(8px); /* Adjusted blur */
-    -webkit-backdrop-filter: blur(8px); /* Safari */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
     transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
 }

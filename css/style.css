@@ -11,7 +11,7 @@
     --highlight-color: #AA00FF; /* Deep purple */
     --glass-color: rgba(255, 255, 255, 0.15); /* Slightly less transparent */
     --glass-border: rgba(255, 255, 255, 0.25); /* Glass border color */
-    --input-background: rgba(255, 255, 255, 0.1); /* Input field background */
+    --input-background: rgba(255, 255, 255, 0.2); /* Increased opacity for better contrast */
     --input-text-color: #FFFFFF; /* Input field text color */
     --placeholder-color: rgba(255, 255, 255, 0.8); /* Placeholder text color */
     --font-family: 'Urbanist', sans-serif;

@@ -1,6 +1,6 @@
 /* css/noscript.css */
 
-/* Global Styles */
+/* Reset and Global Styles */
 body {
     background: #000000; /* Solid black background */
     color: #FFFFFF;
@@ -24,7 +24,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.05); /* Slight transparency for effect */
+    background: rgba(255, 255, 255, 0.05); /* Slight transparency */
     border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -86,13 +86,13 @@ form {
     opacity: 0.6;
 }
 
-/* Custom Select */
+/* Custom Select Arrow */
 .custom-select {
     position: relative;
 }
 
 .custom-select::after {
-    content: '▼'; /* Arrow symbol */
+    content: '▼';            /* Arrow symbol */
     position: absolute;
     top: 50%;
     right: 20px;

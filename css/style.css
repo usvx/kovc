@@ -96,7 +96,7 @@ main {
     background: var(--glass-color);
     border-radius: 20px;
     backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
     border: 1px solid var(--glass-border);
     transform: translateZ(0);
     animation: fadeInUp 1.5s ease forwards;
@@ -209,7 +209,7 @@ button {
     font-size: var(--button-font-size);
     cursor: pointer;
     backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
     transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
     width: 100%;

@@ -1,3 +1,9 @@
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+import { CubeTextureLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/loaders/CubeTextureLoader.js';
+import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/UnrealBloomPass.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
@@ -10,10 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let windowHalfY = window.innerHeight / 2;
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
-const envMap = new THREE.CubeTextureLoader().setPath('https://threejs.org/examples/textures/cube/Park3Med/').load([
-    'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg'
-]);
-
+    const envMap = new CubeTextureLoader().setPath('https://threejs.org/examples/textures/cube/Park3Med/').load([
+        'px.jpg', 'nx.jpg', 'py.jpg', 'ny.jpg', 'pz.jpg', 'nz.jpg'
+    ]);
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
@@ -134,13 +139,13 @@ const envMap = new THREE.CubeTextureLoader().setPath('https://threejs.org/exampl
             shapes.push(mesh);
         }
 
-        const renderPass = new THREE.RenderPass(scene, camera);
-        const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        const renderPass = new RenderPass(scene, camera);
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
         bloomPass.threshold = 0;
         bloomPass.strength = 1.5;
         bloomPass.radius = 0.5;
 
-        composer = new THREE.EffectComposer(renderer);
+        composer = new EffectComposer(renderer);
         composer.addPass(renderPass);
         composer.addPass(bloomPass);
 

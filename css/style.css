@@ -1,23 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
-    --background-color: #0a0a0a;
-    --foreground-color: #00FFD1;
-    --accent-color: #00FFD1;
-    --secondary-accent: #FF00FF;
+    --background-color: #000000; /* Pure black background */
+    --foreground-color: #FFFFFF; /* White text for better contrast */
+    --accent-color: #FF00FF; /* Vibrant magenta */
+    --secondary-accent: #00FFFF; /* Vibrant cyan */
+    --highlight-color: #FF5733; /* Additional vibrant color */
     --font-family: 'Urbanist', sans-serif;
-    --gradient-start: #0a0a0a;
-    --gradient-mid: #141414;
-    --gradient-end: #1c1c1c;
-    --button-hover: #FF00FF;
-    --input-focus: #00FFD1;
-    --loader-color: rgba(0, 255, 209, 0.2);
-    --h1-font-size: clamp(2rem, 5vw, 3rem);
-    --form-width: clamp(250px, 80%, 450px);
-    --form-padding: clamp(35px, 5vw, 60px);
-    --input-font-size: clamp(1rem, 2vw, 1.1rem);
-    --button-font-size: clamp(1rem, 2vw, 1.1rem);
-    --button-padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
+    --gradient-start: #000000;
+    --gradient-mid: #1a1a1a;
+    --gradient-end: #333333;
+    --button-hover: #FF5733;
+    --input-focus: #FF00FF;
+    --loader-color: rgba(255, 87, 51, 0.2);
+    --h1-font-size: clamp(2.5rem, 5vw, 3.5rem);
+    --form-width: clamp(300px, 80%, 500px);
+    --form-padding: clamp(40px, 5vw, 70px);
+    --input-font-size: clamp(1.1rem, 2vw, 1.3rem);
+    --button-font-size: clamp(1.1rem, 2vw, 1.3rem);
+    --button-padding: clamp(16px, 3vw, 20px) clamp(32px, 5vw, 40px);
 }
 
 * {
@@ -48,7 +49,7 @@ html, body {
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
-    animation: gradientAnimation 20s ease infinite;
+    animation: gradientAnimation 25s ease infinite;
 }
 
 @keyframes gradientAnimation {
@@ -74,9 +75,9 @@ html, body {
     border: 5px solid var(--loader-color);
     border-top: 5px solid var(--accent-color);
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
+    width: 70px;
+    height: 70px;
+    animation: spin 1.2s linear infinite;
 }
 
 @keyframes spin {
@@ -100,7 +101,7 @@ main {
     justify-content: center;
     min-height: 100vh;
     background: transparent;
-    padding: 0 10px;
+    padding: 0 15px;
 }
 
 .entrance {
@@ -109,37 +110,37 @@ main {
     max-width: 100%;
     text-align: center;
     opacity: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.8); /* Darker semi-transparent background */
     padding: var(--form-padding);
-    border-radius: 25px;
-    border: 2px solid var(--accent-color);
+    border-radius: 30px;
+    border: 3px solid var(--accent-color);
     transform: translateZ(0);
-    animation: fadeInUp 1.5s ease forwards;
-    backdrop-filter: blur(15px);
-    box-shadow: 0 0 20px rgba(0, 255, 209, 0.5);
-    margin: 20px;
+    animation: fadeInUp 1.8s ease forwards;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.7);
+    margin: 25px;
 }
 
 h1 {
     font-size: var(--h1-font-size);
-    margin-bottom: 50px;
-    font-weight: 700;
-    letter-spacing: 2px;
+    margin-bottom: 60px;
+    font-weight: 800;
+    letter-spacing: 3px;
     color: var(--accent-color);
-    text-shadow: 0 0 15px var(--accent-color), 0 0 30px var(--secondary-accent);
-    animation: glow 2s infinite alternate;
+    text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent), 0 0 60px var(--highlight-color);
+    animation: glow 3s infinite alternate;
 }
 
 @keyframes glow {
-    from { text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent); }
-    to { text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent); }
+    from { text-shadow: 0 0 15px var(--accent-color), 0 0 30px var(--secondary-accent), 0 0 45px var(--highlight-color); }
+    to { text-shadow: 0 0 25px var(--accent-color), 0 0 50px var(--secondary-accent), 0 0 75px var(--highlight-color); }
 }
 
 form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 35px;
+    gap: 40px;
 }
 
 .input-container {
@@ -149,28 +150,28 @@ form {
 .input-container input,
 .custom-select select {
     width: 100%;
-    padding: 18px;
-    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1); /* More opaque background */
     color: var(--foreground-color);
     border: none;
-    border-radius: 12px;
+    border-radius: 15px;
     font-size: var(--input-font-size);
-    line-height: 1.6;
+    line-height: 1.8;
     outline: none;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 0 15px rgba(0, 255, 209, 0.3);
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
 }
 
 .input-container input::placeholder,
 .custom-select select:invalid {
     color: var(--foreground-color);
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 .input-container input:focus,
 .custom-select select:focus {
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 25px var(--input-focus), 0 0 35px var(--secondary-accent);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 30px var(--input-focus), 0 0 45px var(--secondary-accent), 0 0 60px var(--highlight-color);
 }
 
 .custom-select {
@@ -181,11 +182,11 @@ form {
     content: '▼';
     position: absolute;
     top: 50%;
-    right: 20px;
+    right: 25px;
     transform: translateY(-50%);
     color: var(--accent-color);
     pointer-events: none;
-    font-size: 1rem;
+    font-size: 1.2rem;
 }
 
 .custom-select select {
@@ -193,10 +194,10 @@ form {
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
-    padding-right: 50px;
-    background: rgba(255, 255, 255, 0.05);
+    padding-right: 60px;
+    background: rgba(255, 255, 255, 0.1);
     color: var(--foreground-color);
-    transition: background 0.3s ease, box-shadow 0.3s ease;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
 }
 
 .custom-select select option {
@@ -209,27 +210,27 @@ button {
     background: var(--accent-color);
     color: var(--background-color);
     border: none;
-    border-radius: 12px;
+    border-radius: 15px;
     font-size: var(--button-font-size);
     cursor: pointer;
-    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
     width: 100%;
-    box-shadow: 0 0 15px rgba(0, 255, 209, 0.5);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
 }
 
 button:hover,
 button:focus {
-    transform: scale(1.05);
+    transform: scale(1.08);
     background: var(--button-hover);
-    box-shadow: 0 0 25px rgba(0, 255, 209, 0.7);
+    box-shadow: 0 0 35px rgba(255, 0, 255, 0.8);
     outline: none;
 }
 
 input:focus,
 select:focus,
 button:focus {
-    outline: 2px solid var(--input-focus);
-    outline-offset: 2px;
+    outline: 3px solid var(--input-focus);
+    outline-offset: 3px;
 }
 
 @keyframes fadeInUp {
@@ -239,48 +240,59 @@ button:focus {
     }
     from {
         opacity: 0;
-        transform: translateY(50px);
+        transform: translateY(60px);
+    }
+}
+
+@media (max-width: 1200px) {
+    .entrance {
+        width: 450px;
+        padding: 60px;
+    }
+    h1 {
+        font-size: 4rem;
+        margin-bottom: 50px;
     }
 }
 
 @media (max-width: 1024px) {
     .entrance {
         width: 400px;
-        padding: 50px;
+        padding: 55px;
     }
     h1 {
         font-size: 3.5rem;
-        margin-bottom: 40px;
+        margin-bottom: 45px;
     }
 }
 
 @media (max-width: 768px) {
     .entrance {
         width: 350px;
-        padding: 45px;
+        padding: 50px;
     }
     h1 {
         font-size: 3rem;
-        margin-bottom: 35px;
+        margin-bottom: 40px;
     }
 }
 
 @media (max-width: 480px) {
     .entrance {
         width: 300px;
-        padding: 35px;
+        padding: 40px;
     }
     h1 {
         font-size: 2.5rem;
-        margin-bottom: 25px;
+        margin-bottom: 35px;
     }
     input,
     .custom-select select,
     button {
         font-size: 1rem;
-        padding: 14px;
+        padding: 16px;
     }
     button {
-        padding: 14px 28px;
+        padding: 16px 32px;
     }
 }

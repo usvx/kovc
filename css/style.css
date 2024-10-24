@@ -1,24 +1,24 @@
+/* css/style.css */
+
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
-    --background-color: #000000; /* Pure black background */
-    --foreground-color: #FFFFFF; /* White text for better contrast */
-    --accent-color: #FF00FF; /* Vibrant magenta */
-    --secondary-accent: #00FFFF; /* Vibrant cyan */
-    --highlight-color: #FF5733; /* Additional vibrant color */
+    /* Color Variables */
+    --background-color: #000000; /* Darkest black */
+    --foreground-color: #FFFFFF; /* White text */
+    --accent-color: #FFFFFF; /* White accents */
+    --glass-color: rgba(255, 255, 255, 0.1); /* Glass effect color */
+    --glass-border: rgba(255, 255, 255, 0.25); /* Glass border color */
+    --highlight-color: #FF00FF; /* Accent highlight */
     --font-family: 'Urbanist', sans-serif;
-    --gradient-start: #000000;
-    --gradient-mid: #1a1a1a;
-    --gradient-end: #333333;
-    --button-hover: #FF5733;
-    --input-focus: #FF00FF;
-    --loader-color: rgba(255, 87, 51, 0.2);
-    --h1-font-size: clamp(2.5rem, 5vw, 3.5rem);
+
+    /* Other Variables */
     --form-width: clamp(300px, 80%, 500px);
     --form-padding: clamp(40px, 5vw, 70px);
     --input-font-size: clamp(1.1rem, 2vw, 1.3rem);
     --button-font-size: clamp(1.1rem, 2vw, 1.3rem);
     --button-padding: clamp(16px, 3vw, 20px) clamp(32px, 5vw, 40px);
+    --glass-blur: 15px; /* Blur amount for glass effect */
 }
 
 * {
@@ -28,34 +28,14 @@
     font-family: var(--font-family);
 }
 
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
 html, body {
     height: 100%;
     width: 100%;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
-    background-size: 400% 400%;
+    background-color: var(--background-color);
     color: var(--foreground-color);
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
-    animation: gradientAnimation 25s ease infinite;
-}
-
-@keyframes gradientAnimation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
 }
 
 #preloader {
@@ -72,7 +52,7 @@ html, body {
 }
 
 .loader {
-    border: 5px solid var(--loader-color);
+    border: 5px solid rgba(255, 255, 255, 0.1);
     border-top: 5px solid var(--accent-color);
     border-radius: 50%;
     width: 70px;
@@ -100,7 +80,6 @@ main {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: transparent;
     padding: 0 15px;
 }
 
@@ -110,30 +89,36 @@ main {
     max-width: 100%;
     text-align: center;
     opacity: 0;
-    background: rgba(0, 0, 0, 0.8); /* Darker semi-transparent background */
-    padding: var(--form-padding);
-    border-radius: 30px;
-    border: 3px solid var(--accent-color);
+    background: var(--glass-color);
+    border-radius: 20px;
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
     transform: translateZ(0);
-    animation: fadeInUp 1.8s ease forwards;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.7);
+    animation: fadeInUp 1.5s ease forwards;
     margin: 25px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    padding: var(--form-padding);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    from {
+        opacity: 0;
+        transform: translateY(60px);
+    }
 }
 
 h1 {
-    font-size: var(--h1-font-size);
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
     margin-bottom: 60px;
     font-weight: 800;
     letter-spacing: 3px;
     color: var(--accent-color);
-    text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent), 0 0 60px var(--highlight-color);
-    animation: glow 3s infinite alternate;
-}
-
-@keyframes glow {
-    from { text-shadow: 0 0 15px var(--accent-color), 0 0 30px var(--secondary-accent), 0 0 45px var(--highlight-color); }
-    to { text-shadow: 0 0 25px var(--accent-color), 0 0 50px var(--secondary-accent), 0 0 75px var(--highlight-color); }
+    text-shadow: 0 0 20px var(--highlight-color), 0 0 40px var(--accent-color);
 }
 
 form {
@@ -151,15 +136,16 @@ form {
 .custom-select select {
     width: 100%;
     padding: 20px;
-    background: rgba(255, 255, 255, 0.1); /* More opaque background */
+    background: rgba(255, 255, 255, 0.05);
     color: var(--foreground-color);
     border: none;
     border-radius: 15px;
     font-size: var(--input-font-size);
     line-height: 1.8;
     outline: none;
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
     transition: background 0.4s ease, box-shadow 0.4s ease;
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
 }
 
 .input-container input::placeholder,
@@ -170,8 +156,8 @@ form {
 
 .input-container input:focus,
 .custom-select select:focus {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 30px var(--input-focus), 0 0 45px var(--secondary-accent), 0 0 60px var(--highlight-color);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 .custom-select {
@@ -195,9 +181,8 @@ form {
     -moz-appearance: none;
     cursor: pointer;
     padding-right: 60px;
-    background: rgba(255, 255, 255, 0.1);
+    background: transparent;
     color: var(--foreground-color);
-    transition: background 0.4s ease, box-shadow 0.4s ease;
 }
 
 .custom-select select option {
@@ -207,74 +192,32 @@ form {
 
 button {
     padding: var(--button-padding);
-    background: var(--accent-color);
-    color: var(--background-color);
+    background: var(--glass-color);
+    color: var(--foreground-color);
     border: none;
     border-radius: 15px;
     font-size: var(--button-font-size);
     cursor: pointer;
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
     transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
     width: 100%;
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
 }
 
 button:hover,
 button:focus {
-    transform: scale(1.08);
-    background: var(--button-hover);
-    box-shadow: 0 0 35px rgba(255, 0, 255, 0.8);
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
     outline: none;
 }
 
 input:focus,
 select:focus,
 button:focus {
-    outline: 3px solid var(--input-focus);
-    outline-offset: 3px;
-}
-
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    from {
-        opacity: 0;
-        transform: translateY(60px);
-    }
-}
-
-@media (max-width: 1200px) {
-    .entrance {
-        width: 450px;
-        padding: 60px;
-    }
-    h1 {
-        font-size: 4rem;
-        margin-bottom: 50px;
-    }
-}
-
-@media (max-width: 1024px) {
-    .entrance {
-        width: 400px;
-        padding: 55px;
-    }
-    h1 {
-        font-size: 3.5rem;
-        margin-bottom: 45px;
-    }
-}
-
-@media (max-width: 768px) {
-    .entrance {
-        width: 350px;
-        padding: 50px;
-    }
-    h1 {
-        font-size: 3rem;
-        margin-bottom: 40px;
-    }
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
 }
 
 @media (max-width: 480px) {

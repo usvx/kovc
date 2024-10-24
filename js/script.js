@@ -10,8 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let mouseX = 0, mouseY = 0;
     let windowHalfX = window.innerWidth / 2;
     let windowHalfY = window.innerHeight / 2;
-    let isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+    const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
+    /**
+     * Creates a texture with a character.
+     * @param {string} char - The character to render.
+     * @returns {THREE.Texture} - The generated texture.
+     */
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
         const size = isMobile ? 256 : 256;
@@ -37,6 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return texture;
     }
 
+    /**
+     * Generates a random character (Hangeul or Cyrillic).
+     * @returns {string} - The generated character.
+     */
     function getRandomCharacter() {
         const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
         const hangeulMedials = [0x1161, 0x1165, 0x1166, 0x1167, 0x1169, 0x116E, 0x1172, 0x1173, 0x1175];
@@ -55,6 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Initializes the Three.js scene.
+     */
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -99,27 +111,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Create geometric shapes with wireframe materials
-        const geometryTypes = [];
-
-        // Torus Knot Geometry
-        geometryTypes.push(new THREE.TorusKnotGeometry(100, 30, 128, 16));
-
-        // Octahedron Geometry
-        geometryTypes.push(new THREE.OctahedronGeometry(100, 0));
-
-        // Dodecahedron Geometry
-        geometryTypes.push(new THREE.DodecahedronGeometry(100, 0));
-
-        // Icosahedron Geometry
-        geometryTypes.push(new THREE.IcosahedronGeometry(100, 0));
-
-        // Custom Tube Geometry
-        const path = new THREE.CatmullRomCurve3([
-            new THREE.Vector3(-100, -100, -100),
-            new THREE.Vector3(0, 100, 0),
-            new THREE.Vector3(100, -100, 100)
-        ]);
-        geometryTypes.push(new THREE.TubeGeometry(path, 64, 20, 8, false));
+        const geometryTypes = [
+            new THREE.TorusKnotGeometry(100, 30, 128, 16),
+            new THREE.OctahedronGeometry(100, 0),
+            new THREE.DodecahedronGeometry(100, 0),
+            new THREE.IcosahedronGeometry(100, 0),
+            new THREE.TubeGeometry(new THREE.CatmullRomCurve3([
+                new THREE.Vector3(-100, -100, -100),
+                new THREE.Vector3(0, 100, 0),
+                new THREE.Vector3(100, -100, 100)
+            ]), 64, 20, 8, false)
+        ];
 
         const shapeCount = isMobile ? 50 : 75;
         for (let i = 0; i < shapeCount; i++) {
@@ -148,11 +150,19 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     }
 
+    /**
+     * Handles mouse movement events.
+     * @param {MouseEvent} event 
+     */
     function onDocumentMouseMove(event) {
         mouseX = (event.clientX - windowHalfX) / windowHalfX;
         mouseY = (event.clientY - windowHalfY) / windowHalfY;
     }
 
+    /**
+     * Handles touch movement events.
+     * @param {TouchEvent} event 
+     */
     function onDocumentTouchMove(event) {
         if (event.touches.length === 1) {
             event.preventDefault();
@@ -161,6 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Handles window resize events.
+     */
     function onWindowResize() {
         windowHalfX = window.innerWidth / 2;
         windowHalfY = window.innerHeight / 2;
@@ -169,6 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
+    /**
+     * Animation loop.
+     */
     function animate() {
         requestAnimationFrame(animate);
 
@@ -204,15 +220,24 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.render(scene, camera);
     }
 
+    /**
+     * Initializes the scene.
+     */
     init();
 
-    window.onload = () => {
+    /**
+     * Hides the preloader after the window has fully loaded.
+     */
+    window.addEventListener('load', () => {
         setTimeout(() => {
             preloader.style.display = 'none';
         }, 1500);
-    };
+    });
 
-    // Form submission handling
+    /**
+     * Handles form submission.
+     * @param {Event} event 
+     */
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const username = form.username.value.trim();
@@ -227,7 +252,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Prevent form submission on Enter key
+    /**
+     * Prevents form submission on Enter key and handles it manually.
+     * @param {KeyboardEvent} event 
+     */
     form.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();

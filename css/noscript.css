@@ -4,8 +4,8 @@
 }
 
 body {
-    background-color: #0a0a0a;
-    color: #00FFD1;
+    background-color: #000000; /* Pure black background */
+    color: #FFFFFF; /* White text for better contrast */
     font-family: 'Urbanist', sans-serif;
 }
 
@@ -19,67 +19,68 @@ body {
 .entrance {
     opacity: 1;
     animation: none;
-    background: rgba(0, 0, 0, 0.6);
-    padding: clamp(35px, 5vw, 60px);
-    border-radius: 25px;
-    border: 2px solid #00FFD1;
-    box-shadow: 0 0 20px rgba(0, 255, 209, 0.5);
+    background: rgba(0, 0, 0, 0.8); /* Darker semi-transparent background */
+    padding: clamp(40px, 5vw, 70px);
+    border-radius: 30px;
+    border: 3px solid #FF00FF; /* Updated border color */
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.7); /* Enhanced shadow */
 }
 
 h1 {
-    text-shadow: none;
-    font-size: clamp(2rem, 5vw, 3rem);
-    margin-bottom: 50px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: #00FFD1;
+    text-shadow: 0 0 20px #FF00FF, 0 0 40px #00FFFF, 0 0 60px #FF5733; /* Enhanced text shadow */
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    margin-bottom: 60px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: #FF00FF; /* Updated text color */
 }
 
 p {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .input-container {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .input-container input,
 .custom-select select {
     width: 100%;
-    padding: 18px;
-    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
     border: none;
-    border-radius: 12px;
-    color: #00FFD1;
-    font-size: clamp(1rem, 2vw, 1.1rem);
-    line-height: 1.6;
+    border-radius: 15px;
+    color: #FFFFFF;
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    line-height: 1.8;
     outline: none;
-    box-shadow: 0 0 15px rgba(0, 255, 209, 0.3);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
 }
 
 button {
-    padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
-    background: #00FFD1;
-    color: #0a0a0a;
+    padding: clamp(16px, 3vw, 20px) clamp(32px, 5vw, 40px);
+    background: #FF00FF;
+    color: #000000;
     border: none;
-    border-radius: 12px;
-    font-size: clamp(1rem, 2vw, 1.1rem);
+    border-radius: 15px;
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
     cursor: pointer;
     width: 100%;
-    box-shadow: 0 0 15px rgba(0, 255, 209, 0.5);
-    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
+    transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
 }
 
 button:hover,
 button:focus {
-    background: #FF00FF;
-    box-shadow: 0 0 25px rgba(0, 255, 209, 0.7);
+    transform: scale(1.08);
+    background: #FF5733;
+    box-shadow: 0 0 35px rgba(255, 0, 255, 0.8);
     outline: none;
 }
 
 input:focus,
 select:focus,
 button:focus {
-    outline: 2px solid #00FFD1;
-    outline-offset: 2px;
+    outline: 3px solid #FF00FF;
+    outline-offset: 3px;
 }

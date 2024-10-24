@@ -6,10 +6,11 @@
     /* Color Variables */
     --background-color: #000000; /* Darkest black */
     --foreground-color: #FFFFFF; /* White text */
-    --accent-color: #FFFFFF; /* White accents */
+    --accent-color: #FF00FF; /* Vibrant magenta */
+    --secondary-accent: #00FFFF; /* Vibrant cyan */
+    --highlight-color: #FF5733; /* Additional vibrant color */
     --glass-color: rgba(255, 255, 255, 0.1); /* Glass effect color */
     --glass-border: rgba(255, 255, 255, 0.25); /* Glass border color */
-    --highlight-color: #FF00FF; /* Accent highlight */
     --font-family: 'Urbanist', sans-serif;
 
     /* Other Variables */
@@ -19,6 +20,9 @@
     --button-font-size: clamp(1.1rem, 2vw, 1.3rem);
     --button-padding: clamp(16px, 3vw, 20px) clamp(32px, 5vw, 40px);
     --glass-blur: 15px; /* Blur amount for glass effect */
+    --gradient-start: #0a0a0a;
+    --gradient-mid: #1a1a1a;
+    --gradient-end: #333333;
 }
 
 * {
@@ -119,6 +123,12 @@ h1 {
     letter-spacing: 3px;
     color: var(--accent-color);
     text-shadow: 0 0 20px var(--highlight-color), 0 0 40px var(--accent-color);
+    animation: glow 3s infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 20px var(--highlight-color), 0 0 40px var(--accent-color); }
+    to { text-shadow: 0 0 30px var(--highlight-color), 0 0 60px var(--accent-color); }
 }
 
 form {

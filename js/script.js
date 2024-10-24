@@ -100,16 +100,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Create geometric shapes with wireframe materials
         const geometryTypes = [
-            THREE.TorusGeometry,
-            THREE.TorusKnotGeometry,
             THREE.SphereGeometry,
-            THREE.BoxGeometry
+            THREE.BoxGeometry,
+            THREE.ConeGeometry,
+            THREE.DodecahedronGeometry
         ];
 
         const shapeCount = isMobile ? 50 : 75;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(100, 30, 16, 100);
+            const geometry = new GeometryClass(100, 16, 16); // Simpler geometries
             const material = new THREE.MeshStandardMaterial({
                 color: 0xFFFFFF,
                 wireframe: true,

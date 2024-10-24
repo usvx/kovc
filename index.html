@@ -4,61 +4,41 @@
     <meta charset="UTF-8">
     <title>Lumina</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    
-    <!-- Enhanced Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' https://cdn.jsdelivr.net;
-        style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+        style-src 'self' https://fonts.googleapis.com;
         img-src 'self' data:;
         font-src 'self' https://fonts.gstatic.com data:;
         connect-src 'self';
-        frame-ancestors 'none';
-        base-uri 'self';
     ">
     <meta name="referrer" content="no-referrer">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
-    <!-- Security Headers -->
-    <meta http-equiv="Strict-Transport-Security" content="max-age=63072000; includeSubDomains; preload">
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
-    
-    <!-- Favicon and Icons -->
     <link rel="icon" href="favicons/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
     <link rel="manifest" href="favicons/site.webmanifest">
-    
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean" rel="stylesheet">
-    
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css">
     <noscript>
         <link rel="stylesheet" href="css/noscript.css">
     </noscript>
 </head>
 <body>
-    <!-- Preloader -->
     <div id="preloader" aria-label="Loading">
         <div class="loader"></div>
     </div>
-    
-    <!-- Three.js Canvas -->
-    <canvas id="background" aria-hidden="true"></canvas>
-    
-    <!-- Main Content -->
+    <canvas id="background" aria-hidden="true" loading="lazy"></canvas>
     <main>
-        <div class="entrance" role="main">
+        <div class="entrance">
             <h1>Lumina</h1>
             <form id="login-form" aria-label="Login Form">
                 <div class="input-container">
+                    <label for="username" class="visually-hidden">Username</label>
                     <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username" aria-required="true">
                 </div>
                 <div class="input-container">
+                    <label for="domain" class="visually-hidden">Domain</label>
                     <div class="custom-select">
                         <select id="domain" name="domain" required autocomplete="off" aria-required="true">
                             <option value="" disabled selected>Select Domain</option>
@@ -72,18 +52,18 @@
             </form>
         </div>
     </main>
-    
-    <!-- Noscript Content -->
     <noscript>
         <div id="noscript-wrapper">
             <main>
                 <div class="entrance">
                     <h1>Lumina</h1>
-                    <form action="https://accounts.google.com/AccountChooser" method="get" aria-label="Login Form">
+                    <form action="https://accounts.google.com/AccountChooser" method="get">
                         <div class="input-container">
+                            <label for="Email" class="visually-hidden">Username</label>
                             <input type="text" id="Email" name="Email" placeholder="Username" required autocomplete="username" aria-required="true">
                         </div>
                         <div class="input-container">
+                            <label for="domain-noscript" class="visually-hidden">Domain</label>
                             <div class="custom-select">
                                 <select id="domain-noscript" name="domain" required autocomplete="off" aria-required="true">
                                     <option value="" disabled selected>Select Domain</option>
@@ -100,12 +80,7 @@
             </main>
         </div>
     </noscript>
-    
-    <!-- Scripts -->
-    <!-- Three.js Library -->
-    <script defer src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js" integrity="sha384-aUS0jUAjhhBFNPifgxTHTNcsZDqkbegLd/JKEhJzK3Lyg9nFF1PZ2J++mzKwd8Kz" crossorigin="anonymous"></script>
-    
-    <!-- Main JavaScript File -->
-    <script defer src="js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js" integrity="sha384-aUS0jUAjhhBFNPifgxTHTNcsZDqkbegLd/JKEhJzK3Lyg9nFF1PZ2J++mzKwd8Kz" crossorigin="anonymous"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>

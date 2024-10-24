@@ -99,17 +99,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Create geometric shapes with wireframe materials
-        const geometryTypes = [
-            THREE.SphereGeometry,
-            THREE.BoxGeometry,
-            THREE.ConeGeometry,
-            THREE.DodecahedronGeometry
-        ];
+        const geometryTypes = [];
+
+        // Torus Knot Geometry
+        geometryTypes.push(new THREE.TorusKnotGeometry(100, 30, 128, 16));
+
+        // Octahedron Geometry
+        geometryTypes.push(new THREE.OctahedronGeometry(100, 0));
+
+        // Dodecahedron Geometry
+        geometryTypes.push(new THREE.DodecahedronGeometry(100, 0));
+
+        // Icosahedron Geometry
+        geometryTypes.push(new THREE.IcosahedronGeometry(100, 0));
+
+        // Custom Tube Geometry
+        const path = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(-100, -100, -100),
+            new THREE.Vector3(0, 100, 0),
+            new THREE.Vector3(100, -100, 100)
+        ]);
+        geometryTypes.push(new THREE.TubeGeometry(path, 64, 20, 8, false));
 
         const shapeCount = isMobile ? 50 : 75;
         for (let i = 0; i < shapeCount; i++) {
-            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(100, 16, 16); // Simpler geometries
+            const geometry = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const material = new THREE.MeshStandardMaterial({
                 color: 0xFFFFFF,
                 wireframe: true,

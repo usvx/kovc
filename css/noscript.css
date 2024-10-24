@@ -23,8 +23,8 @@ body {
     animation: none;
     background: rgba(255, 255, 255, 0.15); /* Slightly less transparent */
     border-radius: 20px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px); /* Safari */
+    backdrop-filter: blur(8px); /* Further reduced blur */
+    -webkit-backdrop-filter: blur(8px); /* Safari */
     border: 1px solid rgba(255, 255, 255, 0.25);
     margin: 25px;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
@@ -75,8 +75,8 @@ button {
     font-size: clamp(1.1rem, 2vw, 1.3rem);
     cursor: pointer;
     width: 100%;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px); /* Safari */
+    backdrop-filter: blur(8px); /* Further reduced blur */
+    -webkit-backdrop-filter: blur(8px); /* Safari */
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
     transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
 }

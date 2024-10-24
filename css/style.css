@@ -22,7 +22,7 @@
     --input-font-size: clamp(1.1rem, 2vw, 1.3rem);
     --button-font-size: clamp(1.1rem, 2vw, 1.3rem);
     --button-padding: clamp(16px, 3vw, 20px) clamp(32px, 5vw, 40px);
-    --glass-blur: 10px; /* Reduced blur for glass effect */
+    --glass-blur: 8px; /* Further reduced blur for natural glass effect */
     --gradient-start: #0a0a0a;
     --gradient-mid: #1a1a1a;
     --gradient-end: #333333;

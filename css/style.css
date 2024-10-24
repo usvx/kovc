@@ -9,9 +9,9 @@
     --accent-color: #00FFAA; /* Natural teal */
     --secondary-accent: #FFAA00; /* Warm amber */
     --highlight-color: #AA00FF; /* Deep purple */
-    --glass-color: rgba(255, 255, 255, 0.15); /* Slightly less transparent */
+    --glass-color: rgba(255, 255, 255, 0.2); /* Slightly increased opacity */
     --glass-border: rgba(255, 255, 255, 0.25); /* Glass border color */
-    --input-background: rgba(255, 255, 255, 0.2); /* Increased opacity for better contrast */
+    --input-background: rgba(255, 255, 255, 0.25); /* Increased opacity for better contrast */
     --input-text-color: #FFFFFF; /* Input field text color */
     --placeholder-color: rgba(255, 255, 255, 0.8); /* Placeholder text color */
     --font-family: 'Urbanist', sans-serif;
@@ -22,10 +22,7 @@
     --input-font-size: clamp(1.1rem, 2vw, 1.3rem);
     --button-font-size: clamp(1.1rem, 2vw, 1.3rem);
     --button-padding: clamp(16px, 3vw, 20px) clamp(32px, 5vw, 40px);
-    --glass-blur: 8px; /* Further reduced blur for natural glass effect */
-    --gradient-start: #0a0a0a;
-    --gradient-mid: #1a1a1a;
-    --gradient-end: #333333;
+    --glass-blur: 5px; /* Further reduced blur for natural glass effect */
 }
 
 * {
@@ -98,8 +95,8 @@ main {
     opacity: 0;
     background: var(--glass-color);
     border-radius: 20px;
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
+    backdrop-filter: none; /* Remove blur effect */
+    -webkit-backdrop-filter: none; /* Safari */
     border: 1px solid var(--glass-border);
     transform: translateZ(0);
     animation: fadeInUp 1.5s ease forwards;
@@ -156,10 +153,10 @@ form {
     font-size: var(--input-font-size);
     line-height: 1.8;
     outline: none;
-    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px); /* Safari */
-    transition: background 0.4s ease, box-shadow 0.4s ease, color 0.4s ease;
+    box-shadow: none; /* Remove inner shadow */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none; /* Safari */
+    transition: background 0.4s ease, color 0.4s ease;
 }
 
 .input-container input::placeholder,
@@ -169,8 +166,8 @@ form {
 
 .input-container input:focus,
 .custom-select select:focus {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: none;
 }
 
 .custom-select {
@@ -205,24 +202,23 @@ form {
 
 button {
     padding: var(--button-padding);
-    background: var(--glass-color);
+    background: var(--input-background);
     color: var(--foreground-color);
     border: none;
     border-radius: 15px;
     font-size: var(--button-font-size);
     cursor: pointer;
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur)); /* Safari */
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
-    transition: transform 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none; /* Safari */
+    box-shadow: none;
+    transition: transform 0.4s ease, background 0.4s ease;
     width: 100%;
 }
 
 button:hover,
 button:focus {
     transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.3);
     outline: none;
 }
 
@@ -251,4 +247,15 @@ button:focus {
     button {
         padding: 16px 32px;
     }
+}
+
+/* Safari Specific Styles */
+@media not all and (min-resolution: 0.001dpcm) {
+  @supports (-webkit-appearance: none) {
+    .input-container input,
+    .custom-select select,
+    button {
+      background: rgba(255, 255, 255, 0.3); /* Slightly more opaque */
+    }
+  }
 }

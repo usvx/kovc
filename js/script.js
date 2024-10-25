@@ -110,8 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             shapes.push(mesh);
         }
 
-        // Additional Visual Effects: Particle Trails (Optional)
-        // Commented out for performance on mobile devices
+        // Optional Particle Trails (Commented out for mobile performance)
         /*
         const trailGeometry = new THREE.BufferGeometry();
         const trailCount = particleCount;

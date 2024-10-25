@@ -33,17 +33,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getRandomCharacter() {
-        const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
-        const hangeulMedials = [0x1161, 0x1165, 0x1166, 0x1167, 0x1169, 0x116E, 0x1172, 0x1173, 0x1175];
-        const hangeulFinals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA];
-        const initial = hangeulInitials[Math.floor(Math.random() * hangeulInitials.length)];
-        const medial = hangeulMedials[Math.floor(Math.random() * hangeulMedials.length)];
-        const final = hangeulFinals[Math.floor(Math.random() * hangeulFinals.length)];
-        const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
-        const hangeulChar = String.fromCharCode(syllableCode);
+        const commonSyllables = [
+            '가', '나', '다', '라', '마', '바', '사', '아', '자', '차',
+            '카', '타', '파', '하', '거', '너', '더', '러', '머', '버',
+            '서', '어', '저', '처', '커', '터', '퍼', '허', '고', '노',
+            '도', '로', '모', '보', '소', '오', '조', '초', '코', '토',
+            '포', '호', '과', '과', '과', '과', '과', '과', '과', '과',
+            '교', '과', '권', '기', '길', '김', '나', '남', '내', '논',
+            '다', '담', '당', '대', '도', '동', '라', '류', '마', '민',
+            '반', '박', '배', '서', '선', '성', '소', '송', '수', '신',
+            '안', '양', '엄', '여', '연', '영', '예', '오', '옥', '완',
+            '요', '용', '우', '원', '유', '윤', '은', '을', '이', '임',
+            '장', '전', '정', '조', '주', '지', '진', '찬', '창', '채',
+            '천', '철', '초', '춘', '충', '치', '탁', '태', '택', '판',
+            '포', '표', '하', '학', '한', '해', '현', '형', '혜', '호',
+            '홍', '화', '환', '희'
+        ];
         const cyrillicLetters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
         const isHangeul = Math.random() < 0.5;
-        return isHangeul ? hangeulChar : cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
+        return isHangeul ? commonSyllables[Math.floor(Math.random() * commonSyllables.length)] : cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
     }
 
     function init() {
@@ -55,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        // Ambient and Directional Light with dynamic colors
         const ambientLight = new THREE.AmbientLight(0x00FFFF, 1);
         scene.add(ambientLight);
         const directionalLight = new THREE.DirectionalLight(0x8A2BE2, 1);
@@ -65,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        // Adjust particle count and size based on device
         const particleCount = isMobile ? 800 : 1600;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
@@ -84,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        // Adjust shape count and size based on device
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
         const shapeCount = isMobile ? 60 : 100;
         for (let i = 0; i < shapeCount; i++) {
@@ -109,23 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
-
-        // Optional Particle Trails (Commented out for mobile performance)
-        /*
-        const trailGeometry = new THREE.BufferGeometry();
-        const trailCount = particleCount;
-        const trailPositions = new Float32Array(trailCount * 3);
-        trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
-        const trailMaterial = new THREE.PointsMaterial({
-            color: 0x00FFFF,
-            size: 2,
-            transparent: true,
-            opacity: 0.6,
-            blending: THREE.AdditiveBlending
-        });
-        const trails = new THREE.Points(trailGeometry, trailMaterial);
-        sceneGroup.add(trails);
-        */
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });

@@ -71,12 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
+        // Initialize Particles (Letters)
         const particleCount = isMobile ? 800 : 1600;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter(),
                   texture = createTextTexture(char),
-                  material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending }),
-                  sprite = new THREE.Sprite(material);
+                  material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
+            const sprite = new THREE.Sprite(material);
             sprite.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
             sprite.scale.set(isMobile ? 100 : 200, isMobile ? 100 : 200, 1);
             sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
@@ -87,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
+        // Initialize Enhanced Shapes
         const geometryTypes = [
             THREE.TorusKnotGeometry,
             THREE.SphereGeometry,
@@ -104,12 +106,12 @@ document.addEventListener('DOMContentLoaded', () => {
                       color: getRandomColor(),
                       wireframe: false,
                       transparent: true,
-                      opacity: 0.6,
+                      opacity: 0.3, // Reduced opacity to prevent obstruction
                       emissive: getRandomColor(),
-                      emissiveIntensity: 0.5,
+                      emissiveIntensity: 0.3, // Lower emissive intensity for subtlety
                       side: THREE.DoubleSide,
                       metalness: 0.5,
-                      roughness: 0.5
+                      roughness: 0.7
                   }),
                   mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);

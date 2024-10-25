@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        // Enhanced Particle Count and Size
+        // Adjust particle count and size based on device
         const particleCount = isMobile ? 800 : 1600;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        // Enhanced Shapes with Dynamic Colors
+        // Adjust shape count and size based on device
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
         const shapeCount = isMobile ? 60 : 100;
         for (let i = 0; i < shapeCount; i++) {
@@ -110,7 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
             shapes.push(mesh);
         }
 
-        // Additional Visual Effects: Particle Trails
+        // Additional Visual Effects: Particle Trails (Optional)
+        // Commented out for performance on mobile devices
+        /
         const trailGeometry = new THREE.BufferGeometry();
         const trailCount = particleCount;
         const trailPositions = new Float32Array(trailCount * 3);
@@ -124,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const trails = new THREE.Points(trailGeometry, trailMaterial);
         sceneGroup.add(trails);
+        */
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });

@@ -1,17 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
-    --background-color: #000000;
-    --foreground-color: #FFFFFF;
-    --accent-color: #FF00FF;
-    --secondary-accent: #00FFFF;
+    /* Updated Color Palette */
+    --background-color: #000000; /* Pure Black */
+    --foreground-color: #FFFFFF; /* White for text */
+    --accent-color: #00FFFF; /* Teal */
+    --secondary-accent: #8A2BE2; /* Blue Violet */
+    --tertiary-accent: #4B0082; /* Indigo */
     --font-family: 'Urbanist', sans-serif;
     --gradient-start: #1a1a1a;
     --gradient-mid: #0a0a0a;
     --gradient-end: #1a1a1a;
-    --button-hover: #FF00FF;
+    --button-hover: #8A2BE2;
     --input-focus: #00FFFF;
-    --loader-color: rgba(255, 0, 255, 0.2);
+    --loader-color: rgba(0, 255, 255, 0.2);
     --h1-font-size: clamp(2rem, 5vw, 4rem);
     --form-width: clamp(300px, 80%, 500px);
     --form-padding: clamp(40px, 5vw, 70px);
@@ -102,20 +104,20 @@ main {
     max-width: 100%;
     text-align: center;
     opacity: 0;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1); /* Reduced Blur Effect */
     padding: var(--form-padding);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     transform: translateZ(0);
     animation: fadeInUp 2s ease forwards;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5), 0 0 60px rgba(0, 255, 255, 0.5);
+    backdrop-filter: blur(10px); /* Reduced Blur for Clarity */
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), 0 0 60px rgba(138, 43, 226, 0.5), 0 0 90px rgba(75, 0, 130, 0.5);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .entrance:hover {
     transform: translateZ(10px) scale(1.02);
-    box-shadow: 0 0 50px rgba(255, 0, 255, 0.7), 0 0 100px rgba(0, 255, 255, 0.7);
+    box-shadow: 0 0 50px rgba(0, 255, 255, 0.7), 0 0 100px rgba(138, 43, 226, 0.7), 0 0 150px rgba(75, 0, 130, 0.7);
 }
 
 h1 {
@@ -124,13 +126,13 @@ h1 {
     font-weight: 700;
     letter-spacing: 3px;
     color: var(--accent-color);
-    text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
+    text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent), 0 0 60px var(--tertiary-accent);
     animation: glow 3s infinite alternate;
 }
 
 @keyframes glow {
-    from { text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent); }
-    to { text-shadow: 0 0 30px var(--accent-color), 0 0 60px var(--secondary-accent); }
+    from { text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent), 0 0 60px var(--tertiary-accent); }
+    to { text-shadow: 0 0 30px var(--accent-color), 0 0 60px var(--secondary-accent), 0 0 90px var(--tertiary-accent); }
 }
 
 form {
@@ -156,7 +158,7 @@ form {
     line-height: 1.8;
     outline: none;
     transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), 0 0 40px rgba(138, 43, 226, 0.3), 0 0 60px rgba(75, 0, 130, 0.3);
 }
 
 .input-container input::placeholder,
@@ -168,7 +170,7 @@ form {
 .input-container input:focus,
 .custom-select select:focus {
     background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 30px var(--input-focus), 0 0 50px var(--secondary-accent);
+    box-shadow: 0 0 30px var(--input-focus), 0 0 50px var(--secondary-accent), 0 0 70px var(--tertiary-accent);
     transform: scale(1.02);
 }
 
@@ -205,7 +207,7 @@ form {
 
 .custom-select select:focus {
     background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 30px var(--input-focus), 0 0 50px var(--secondary-accent);
+    box-shadow: 0 0 30px var(--input-focus), 0 0 50px var(--secondary-accent), 0 0 70px var(--tertiary-accent);
     transform: scale(1.02);
 }
 
@@ -224,14 +226,14 @@ button {
     cursor: pointer;
     transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(138, 43, 226, 0.5), 0 0 60px rgba(75, 0, 130, 0.5);
 }
 
 button:hover,
 button:focus {
     transform: scale(1.05);
     background: var(--button-hover);
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.7), 0 0 60px rgba(0, 255, 255, 0.7);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.7), 0 0 60px rgba(138, 43, 226, 0.7), 0 0 90px rgba(75, 0, 130, 0.7);
     outline: none;
 }
 

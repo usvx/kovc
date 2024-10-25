@@ -110,24 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
             shapes.push(mesh);
         }
 
-        // Additional Visual Effects: Particle Trails (Optional)
-        // Commented out for performance on mobile devices
-        /
-        const trailGeometry = new THREE.BufferGeometry();
-        const trailCount = particleCount;
-        const trailPositions = new Float32Array(trailCount * 3);
-        trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
-        const trailMaterial = new THREE.PointsMaterial({
-            color: 0x00FFFF,
-            size: 2,
-            transparent: true,
-            opacity: 0.6,
-            blending: THREE.AdditiveBlending
-        });
-        const trails = new THREE.Points(trailGeometry, trailMaterial);
-        sceneGroup.add(trails);
-        */
-
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);

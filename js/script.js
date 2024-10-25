@@ -21,10 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const gradient = ctx.createLinearGradient(0, 0, size, size);
-        gradient.addColorStop(0, '#FF00FF');
-        gradient.addColorStop(1, '#00FFFF');
+        gradient.addColorStop(0, '#00FFFF');
+        gradient.addColorStop(1, '#8A2BE2');
         ctx.fillStyle = gradient;
-        ctx.shadowColor = '#FFFFFF';
+        ctx.shadowColor = '#4B0082';
         ctx.shadowBlur = isMobile ? 30 : 50;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
@@ -55,15 +55,17 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1);
+        // Ambient and Directional Light with dynamic colors
+        const ambientLight = new THREE.AmbientLight(0x00FFFF, 1);
         scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xFF00FF, 1);
+        const directionalLight = new THREE.DirectionalLight(0x8A2BE2, 1);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(directionalLight);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
+        // Enhanced Particle Count and Size
         const particleCount = isMobile ? 800 : 1600;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
@@ -82,17 +84,18 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
+        // Enhanced Shapes with Dynamic Colors
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
         const shapeCount = isMobile ? 60 : 100;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(isMobile ? 60 : 100, 2);
             const material = new THREE.MeshStandardMaterial({
-                color: 0xFF00FF,
+                color: 0x00FFFF,
                 wireframe: true,
                 transparent: true,
                 opacity: 0.3,
-                emissive: 0x00FFFF,
+                emissive: 0x8A2BE2,
                 emissiveIntensity: 0.8,
                 side: THREE.DoubleSide
             });
@@ -106,6 +109,21 @@ document.addEventListener('DOMContentLoaded', () => {
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
+
+        // Additional Visual Effects: Particle Trails
+        const trailGeometry = new THREE.BufferGeometry();
+        const trailCount = particleCount;
+        const trailPositions = new Float32Array(trailCount * 3);
+        trailGeometry.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
+        const trailMaterial = new THREE.PointsMaterial({
+            color: 0x00FFFF,
+            size: 2,
+            transparent: true,
+            opacity: 0.6,
+            blending: THREE.AdditiveBlending
+        });
+        const trails = new THREE.Points(trailGeometry, trailMaterial);
+        sceneGroup.add(trails);
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });

@@ -149,6 +149,7 @@ form {
 
 .input-container input,
 .custom-select select {
+    /* Existing styles */
     width: 100%;
     padding: 20px;
     background: rgba(255, 255, 255, 0.05);
@@ -160,6 +161,13 @@ form {
     outline: none;
     transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), 0 0 40px rgba(138, 43, 226, 0.3), 0 0 60px rgba(75, 0, 130, 0.3);
+    
+    /* New styles to override iOS defaults */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    font-family: var(--font-family);
+    -webkit-text-size-adjust: 100%;
 }
 
 .input-container input::placeholder,
@@ -303,7 +311,7 @@ button:focus {
         --form-padding: clamp(25px, 4vw, 45px);
         --input-font-size: clamp(0.9rem, 1.4vw, 1rem);
         --button-font-size: clamp(0.9rem, 1.4vw, 1rem);
-        --button-padding: clamp(10px, 2vw, 16px) clamp(20px, 3vw, 25px);
+        --button-padding: clamp(10px, 2vw, 16px) clamp(20px, 2.8vw, 25px);
     }
 }
 

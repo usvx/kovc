@@ -86,7 +86,7 @@ canvas#background {
     height: 100%;
     z-index: 0;
     background: transparent;
-    pointer-events: none;
+    pointer-events: none; /* Prevent canvas from capturing mouse events */
 }
 
 main {
@@ -256,6 +256,19 @@ button:focus {
     }
 }
 
+/* Enhanced Media Queries for Better Responsiveness */
+
+@media (max-width: 1440px) {
+    :root {
+        --h1-font-size: clamp(2rem, 4vw, 3.5rem);
+        --form-width: clamp(280px, 75%, 450px);
+        --form-padding: clamp(35px, 4vw, 60px);
+        --input-font-size: clamp(1rem, 1.8vw, 1.2rem);
+        --button-font-size: clamp(1rem, 1.8vw, 1.2rem);
+        --button-padding: clamp(14px, 2.5vw, 20px) clamp(28px, 4vw, 35px);
+    }
+}
+
 @media (max-width: 1024px) {
     .entrance {
         width: 450px;
@@ -264,6 +277,14 @@ button:focus {
     h1 {
         font-size: 4.5rem;
         margin-bottom: 50px;
+    }
+    :root {
+        --h1-font-size: clamp(1.8rem, 4vw, 3rem);
+        --form-width: clamp(260px, 70%, 400px);
+        --form-padding: clamp(30px, 4vw, 50px);
+        --input-font-size: clamp(1rem, 1.6vw, 1.1rem);
+        --button-font-size: clamp(1rem, 1.6vw, 1.1rem);
+        --button-padding: clamp(12px, 2.2vw, 18px) clamp(24px, 3.5vw, 30px);
     }
 }
 
@@ -276,6 +297,14 @@ button:focus {
         font-size: 4rem;
         margin-bottom: 45px;
     }
+    :root {
+        --h1-font-size: clamp(1.6rem, 4vw, 2.5rem);
+        --form-width: clamp(240px, 65%, 350px);
+        --form-padding: clamp(25px, 4vw, 45px);
+        --input-font-size: clamp(0.9rem, 1.4vw, 1rem);
+        --button-font-size: clamp(0.9rem, 1.4vw, 1rem);
+        --button-padding: clamp(10px, 2vw, 16px) clamp(20px, 3vw, 25px);
+    }
 }
 
 @media (max-width: 480px) {
@@ -286,6 +315,14 @@ button:focus {
     h1 {
         font-size: 3rem;
         margin-bottom: 35px;
+    }
+    :root {
+        --h1-font-size: clamp(1.4rem, 5vw, 2rem);
+        --form-width: clamp(220px, 60%, 300px);
+        --form-padding: clamp(20px, 3vw, 35px);
+        --input-font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+        --button-font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+        --button-padding: clamp(8px, 1.8vw, 14px) clamp(16px, 2.8vw, 20px);
     }
     input,
     .custom-select select,

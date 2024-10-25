@@ -1,18 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('login-form');
-    const preloader = document.getElementById('preloader');
-    let scene, camera, renderer;
-    let particles = [];
-    let shapes = [];
-    let sceneGroup;
-    let mouseX = 0, mouseY = 0;
-    let windowHalfX = window.innerWidth / 2;
-    let windowHalfY = window.innerHeight / 2;
-    let isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+    const form = document.getElementById('login-form'),
+          preloader = document.getElementById('preloader');
+    let scene, camera, renderer,
+        particles = [],
+        shapes = [],
+        sceneGroup,
+        mouseX = 0, mouseY = 0,
+        windowHalfX = window.innerWidth / 2,
+        windowHalfY = window.innerHeight / 2,
+        isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     function createTextTexture(char) {
-        const canvas = document.createElement('canvas');
-        const size = isMobile ? 256 : 512;
+        const canvas = document.createElement('canvas'),
+              size = isMobile ? 256 : 512;
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
@@ -32,26 +32,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return texture;
     }
 
+    function getRandomHangeulCharacter() {
+        const commonInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112],
+              commonMedials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A],
+              commonFinals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA, 0x11C2];
+        const initial = commonInitials[Math.floor(Math.random() * commonInitials.length)],
+              medial = commonMedials[Math.floor(Math.random() * commonMedials.length)],
+              final = commonFinals[Math.floor(Math.random() * commonFinals.length)];
+        const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
+        return String.fromCharCode(syllableCode);
+    }
+
+    function getRandomCyrillicCharacter() {
+        const start = 0x0410,
+              end = 0x042F,
+              code = Math.floor(Math.random() * (end - start + 1)) + start;
+        return String.fromCharCode(code);
+    }
+
     function getRandomCharacter() {
-        const commonSyllables = [
-            '가', '나', '다', '라', '마', '바', '사', '아', '자', '차',
-            '카', '타', '파', '하', '거', '너', '더', '러', '머', '버',
-            '서', '어', '저', '처', '커', '터', '퍼', '허', '고', '노',
-            '도', '로', '모', '보', '소', '오', '조', '초', '코', '토',
-            '포', '호', '과', '과', '과', '과', '과', '과', '과', '과',
-            '교', '과', '권', '기', '길', '김', '나', '남', '내', '논',
-            '다', '담', '당', '대', '도', '동', '라', '류', '마', '민',
-            '반', '박', '배', '서', '선', '성', '소', '송', '수', '신',
-            '안', '양', '엄', '여', '연', '영', '예', '오', '옥', '완',
-            '요', '용', '우', '원', '유', '윤', '은', '을', '이', '임',
-            '장', '전', '정', '조', '주', '지', '진', '찬', '창', '채',
-            '천', '철', '초', '춘', '충', '치', '탁', '태', '택', '판',
-            '포', '표', '하', '학', '한', '해', '현', '형', '혜', '호',
-            '홍', '화', '환', '희'
-        ];
-        const cyrillicLetters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
-        const isHangeul = Math.random() < 0.5;
-        return isHangeul ? commonSyllables[Math.floor(Math.random() * commonSyllables.length)] : cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
+        return Math.random() < 0.7 ? getRandomHangeulCharacter() : getRandomCyrillicCharacter();
     }
 
     function init() {
@@ -63,24 +63,21 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        const ambientLight = new THREE.AmbientLight(0x00FFFF, 1);
-        scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0x8A2BE2, 1);
+        const ambientLight = new THREE.AmbientLight(0x00FFFF, 1),
+              directionalLight = new THREE.DirectionalLight(0x8A2BE2, 1);
         directionalLight.position.set(1, 1, 1).normalize();
-        scene.add(directionalLight);
+        scene.add(ambientLight, directionalLight);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
         const particleCount = isMobile ? 800 : 1600;
         for (let i = 0; i < particleCount; i++) {
-            const char = getRandomCharacter();
-            const texture = createTextTexture(char);
-            const material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending });
-            const sprite = new THREE.Sprite(material);
-            sprite.position.x = (Math.random() - 0.5) * 4000;
-            sprite.position.y = (Math.random() - 0.5) * 4000;
-            sprite.position.z = (Math.random() - 0.5) * 4000;
+            const char = getRandomCharacter(),
+                  texture = createTextTexture(char),
+                  material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending }),
+                  sprite = new THREE.Sprite(material);
+            sprite.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
             sprite.scale.set(isMobile ? 100 : 200, isMobile ? 100 : 200, 1);
             sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
             sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
@@ -90,24 +87,22 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
-        const shapeCount = isMobile ? 60 : 100;
+        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry],
+              shapeCount = isMobile ? 60 : 100;
         for (let i = 0; i < shapeCount; i++) {
-            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(isMobile ? 60 : 100, 2);
-            const material = new THREE.MeshStandardMaterial({
-                color: 0x00FFFF,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.3,
-                emissive: 0x8A2BE2,
-                emissiveIntensity: 0.8,
-                side: THREE.DoubleSide
-            });
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.x = (Math.random() - 0.5) * 4000;
-            mesh.position.y = (Math.random() - 0.5) * 4000;
-            mesh.position.z = (Math.random() - 0.5) * 4000;
+            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)],
+                  geometry = new GeometryClass(isMobile ? 60 : 100, 2),
+                  material = new THREE.MeshStandardMaterial({
+                      color: 0x00FFFF,
+                      wireframe: true,
+                      transparent: true,
+                      opacity: 0.3,
+                      emissive: 0x8A2BE2,
+                      emissiveIntensity: 0.8,
+                      side: THREE.DoubleSide
+                  }),
+                  mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
             mesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
             mesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
             mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
@@ -160,8 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         sceneGroup.rotation.y += 0.003;
         sceneGroup.rotation.x += 0.0025;
-        const targetRotationY = mouseX * 0.1;
-        const targetRotationX = mouseY * 0.1;
+        const targetRotationY = mouseX * 0.1,
+              targetRotationX = mouseY * 0.1;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
         renderer.render(scene, camera);
@@ -175,12 +170,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     form.addEventListener('submit', (event) => {
         event.preventDefault();
-        const username = form.username.value.trim();
-        const domainSelect = form.querySelector('select[name="domain"]');
-        const domain = domainSelect.value;
+        const username = form.username.value.trim(),
+              domainSelect = form.querySelector('select[name="domain"]'),
+              domain = domainSelect.value;
         if (username && domain) {
-            const email = `${username}${domain}`;
-            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
+            const email = `${username}${domain}`,
+                  loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
             window.location.href = loginUrl;
         } else {
             alert('Please enter your username and select a domain.');

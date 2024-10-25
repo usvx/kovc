@@ -87,25 +87,36 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry],
+        const geometryTypes = [
+            THREE.TorusKnotGeometry,
+            THREE.SphereGeometry,
+            THREE.TorusGeometry,
+            THREE.PlaneGeometry,
+            THREE.ConeGeometry,
+            THREE.CylinderGeometry
+        ],
               shapeCount = isMobile ? 60 : 100;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)],
-                  geometry = new GeometryClass(isMobile ? 60 : 100, 2),
+                  geometryParams = getGeometryParams(GeometryClass),
+                  geometry = new GeometryClass(...geometryParams),
                   material = new THREE.MeshStandardMaterial({
-                      color: 0x00FFFF,
-                      wireframe: true,
+                      color: getRandomColor(),
+                      wireframe: false,
                       transparent: true,
-                      opacity: 0.3,
-                      emissive: 0x8A2BE2,
-                      emissiveIntensity: 0.8,
-                      side: THREE.DoubleSide
+                      opacity: 0.6,
+                      emissive: getRandomColor(),
+                      emissiveIntensity: 0.5,
+                      side: THREE.DoubleSide,
+                      metalness: 0.5,
+                      roughness: 0.5
                   }),
                   mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
+            mesh.scale.setScalar(Math.random() * (isMobile ? 50 : 100) + 50);
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
@@ -114,6 +125,30 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
         animate();
+    }
+
+    function getGeometryParams(GeometryClass) {
+        switch (GeometryClass) {
+            case THREE.TorusKnotGeometry:
+                return [Math.random() * 10 + 10, Math.random() * 3 + 2, Math.floor(Math.random() * 100) + 100, Math.floor(Math.random() * 16) + 8];
+            case THREE.SphereGeometry:
+                return [Math.random() * 20 + 20, Math.floor(Math.random() * 32) + 16, Math.floor(Math.random() * 32) + 16];
+            case THREE.TorusGeometry:
+                return [Math.random() * 10 + 10, Math.random() * 3 + 1, 16, 100];
+            case THREE.PlaneGeometry:
+                return [Math.random() * 100 + 50, Math.random() * 100 + 50, 10, 10];
+            case THREE.ConeGeometry:
+                return [Math.random() * 10 + 10, Math.random() * 30 + 30, Math.floor(Math.random() * 32) + 8];
+            case THREE.CylinderGeometry:
+                return [Math.random() * 10 + 5, Math.random() * 10 + 5, Math.random() * 30 + 30, Math.floor(Math.random() * 32) + 8];
+            default:
+                return [10, 10, 10];
+        }
+    }
+
+    function getRandomColor() {
+        const colors = [0xFF5733, 0x33FF57, 0x3357FF, 0xF3FF33, 0xFF33F6, 0x33FFF3];
+        return colors[Math.floor(Math.random() * colors.length)];
     }
 
     function onDocumentMouseMove(event) {

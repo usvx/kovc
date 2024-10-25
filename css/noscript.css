@@ -15,40 +15,40 @@ body {
     justify-content: center;
     min-height: 100vh;
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5), 0 0 60px rgba(0, 255, 255, 0.5);
+    backdrop-filter: blur(10px); /* Reduced Blur for Clarity */
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), 0 0 60px rgba(138, 43, 226, 0.5), 0 0 90px rgba(75, 0, 130, 0.5);
 }
 
 .entrance {
     opacity: 1;
     animation: none;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1); /* Reduced Blur */
     padding: clamp(40px, 5vw, 70px);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5), 0 0 60px rgba(0, 255, 255, 0.5);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), 0 0 60px rgba(138, 43, 226, 0.5), 0 0 90px rgba(75, 0, 130, 0.5);
 }
 
 h1 {
-    text-shadow: 0 0 20px #FF00FF, 0 0 40px #00FFFF;
+    text-shadow: 0 0 20px #00FFFF, 0 0 40px #8A2BE2, 0 0 60px #4B0082;
     font-size: clamp(2rem, 5vw, 4rem);
     margin-bottom: 60px;
     font-weight: 700;
     letter-spacing: 3px;
-    color: #FF00FF;
+    color: #00FFFF;
 }
 
 .input-container input,
 .custom-select select {
     background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), 0 0 40px rgba(138, 43, 226, 0.3), 0 0 60px rgba(75, 0, 130, 0.3);
 }
 
 button {
-    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(138, 43, 226, 0.5), 0 0 60px rgba(75, 0, 130, 0.5);
 }
 
 button:hover,
 button:focus {
-    box-shadow: 0 0 30px rgba(255, 0, 255, 0.7), 0 0 60px rgba(0, 255, 255, 0.7);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.7), 0 0 60px rgba(138, 43, 226, 0.7), 0 0 90px rgba(75, 0, 130, 0.7);
 }

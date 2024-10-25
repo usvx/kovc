@@ -4,8 +4,8 @@
 }
 
 body {
-    background-color: #0a0a0a;
-    color: #00FFD1;
+    background-color: #000000;
+    color: #FFFFFF;
     font-family: 'Urbanist', sans-serif;
 }
 
@@ -14,72 +14,41 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5), 0 0 60px rgba(0, 255, 255, 0.5);
 }
 
 .entrance {
     opacity: 1;
     animation: none;
-    background: rgba(0, 0, 0, 0.6);
-    padding: clamp(35px, 5vw, 60px);
-    border-radius: 25px;
-    border: 2px solid #00FFD1;
-    box-shadow: 0 0 20px rgba(0, 255, 209, 0.5);
+    background: rgba(255, 255, 255, 0.1);
+    padding: clamp(40px, 5vw, 70px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.5), 0 0 60px rgba(0, 255, 255, 0.5);
 }
 
 h1 {
-    text-shadow: none;
-    font-size: clamp(2rem, 5vw, 3rem);
-    margin-bottom: 50px;
+    text-shadow: 0 0 20px #FF00FF, 0 0 40px #00FFFF;
+    font-size: clamp(2rem, 5vw, 4rem);
+    margin-bottom: 60px;
     font-weight: 700;
-    letter-spacing: 2px;
-    color: #00FFD1;
-}
-
-p {
-    margin-bottom: 20px;
-}
-
-.input-container {
-    margin-bottom: 15px;
+    letter-spacing: 3px;
+    color: #FF00FF;
 }
 
 .input-container input,
 .custom-select select {
-    width: 100%;
-    padding: 18px;
     background: rgba(255, 255, 255, 0.05);
-    border: none;
-    border-radius: 12px;
-    color: #00FFD1;
-    font-size: clamp(1rem, 2vw, 1.1rem);
-    line-height: 1.6;
-    outline: none;
-    box-shadow: 0 0 15px rgba(0, 255, 209, 0.3);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3), 0 0 40px rgba(0, 255, 255, 0.3);
 }
 
 button {
-    padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
-    background: #00FFD1;
-    color: #0a0a0a;
-    border: none;
-    border-radius: 12px;
-    font-size: clamp(1rem, 2vw, 1.1rem);
-    cursor: pointer;
-    width: 100%;
-    box-shadow: 0 0 15px rgba(0, 255, 209, 0.5);
-    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.5);
 }
 
 button:hover,
 button:focus {
-    background: #FF00FF;
-    box-shadow: 0 0 25px rgba(0, 255, 209, 0.7);
-    outline: none;
-}
-
-input:focus,
-select:focus,
-button:focus {
-    outline: 2px solid #00FFD1;
-    outline-offset: 2px;
+    box-shadow: 0 0 30px rgba(255, 0, 255, 0.7), 0 0 60px rgba(0, 255, 255, 0.7);
 }

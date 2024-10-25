@@ -17,7 +17,7 @@
     --h1-font-size: clamp(2rem, 5vw, 4rem);
     --form-width: clamp(300px, 80%, 500px);
     --form-padding: clamp(40px, 5vw, 70px);
-    --input-font-size: clamp(1.1rem, 2vw, 1.3rem);
+    --input-font-size: clamp(1rem, 2vw, 1.3rem); /* Increased min font size to 1rem */
     --button-font-size: clamp(1.1rem, 2vw, 1.3rem);
     --button-padding: clamp(16px, 3vw, 22px) clamp(32px, 5vw, 40px);
 }
@@ -174,6 +174,7 @@ form {
 .custom-select select:invalid {
     color: var(--foreground-color);
     opacity: 0.6;
+    font-size: var(--input-font-size); /* Ensure placeholder matches input font size */
 }
 
 .input-container input:focus,
@@ -271,7 +272,7 @@ button:focus {
         --h1-font-size: clamp(2rem, 4vw, 3.5rem);
         --form-width: clamp(280px, 75%, 450px);
         --form-padding: clamp(35px, 4vw, 60px);
-        --input-font-size: clamp(1rem, 1.8vw, 1.2rem);
+        --input-font-size: clamp(1rem, 1.8vw, 1.2rem); /* Adjusted from 1rem to 1.2rem */
         --button-font-size: clamp(1rem, 1.8vw, 1.2rem);
         --button-padding: clamp(14px, 2.5vw, 20px) clamp(28px, 4vw, 35px);
     }
@@ -309,8 +310,8 @@ button:focus {
         --h1-font-size: clamp(1.6rem, 4vw, 2.5rem);
         --form-width: clamp(240px, 65%, 350px);
         --form-padding: clamp(25px, 4vw, 45px);
-        --input-font-size: clamp(0.9rem, 1.4vw, 1rem);
-        --button-font-size: clamp(0.9rem, 1.4vw, 1rem);
+        --input-font-size: clamp(1rem, 1.4vw, 1rem); /* Increased from 0.9rem to 1rem */
+        --button-font-size: clamp(1rem, 1.4vw, 1rem);
         --button-padding: clamp(10px, 2vw, 16px) clamp(20px, 2.8vw, 25px);
     }
 }
@@ -328,8 +329,8 @@ button:focus {
         --h1-font-size: clamp(1.4rem, 5vw, 2rem);
         --form-width: clamp(220px, 60%, 300px);
         --form-padding: clamp(20px, 3vw, 35px);
-        --input-font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-        --button-font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+        --input-font-size: clamp(1rem, 1.2vw, 1.1rem); /* Increased from 0.8rem to 1rem */
+        --button-font-size: clamp(1rem, 1.2vw, 1.1rem);
         --button-padding: clamp(8px, 1.8vw, 14px) clamp(16px, 2.8vw, 20px);
     }
     input,
@@ -340,5 +341,19 @@ button:focus {
     }
     button {
         padding: 16px 32px;
+    }
+}
+
+/* Additional Fixes for iOS/Safari */
+
+@supports (-webkit-touch-callout: none) {
+    /* iOS-specific styles */
+    .input-container input,
+    .custom-select select {
+        font-size: 1rem !important; /* Force font size */
+        -webkit-text-size-adjust: 100% !important;
+    }
+    .input-container input::placeholder {
+        font-size: 1rem !important; /* Ensure placeholder matches input */
     }
 }

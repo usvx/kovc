@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return texture;
     }
 
-    function getRandomHangeulCharacter() {
+    function getRandomHangulCharacter() {
         const commonInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112],
               commonMedials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A],
               commonFinals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA, 0x11C2];
@@ -53,19 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getRandomCharacter() {
-        return Math.random() < 0.7 ? getRandomHangeulCharacter() : getRandomCyrillicCharacter();
-    }
-
-    function createTriangularPrismGeometry() {
-        const shape = new THREE.Shape();
-        shape.moveTo(0, 0);
-        shape.lineTo(1, 0);
-        shape.lineTo(0.5, Math.sqrt(3)/2);
-        shape.lineTo(0, 0);
-        const extrudeSettings = { depth: 1, bevelEnabled: false };
-        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        geometry.scale(100, 100, 100);
-        return geometry;
+        return Math.random() < 0.7 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
     }
 
     function init() {
@@ -85,30 +73,18 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const geometryTypes = [
-            THREE.TetrahedronGeometry,
-            THREE.OctahedronGeometry,
-            THREE.IcosahedronGeometry,
-            THREE.DodecahedronGeometry,
-            THREE.SphereGeometry,
-            THREE.ConeGeometry,
-            THREE.TorusGeometry,
-            createTriangularPrismGeometry
-        ];
+        const geometry = new THREE.SphereGeometry(isMobile ? 80 : 120, 32, 32);
         const shapeCount = isMobile ? 100 : 150;
         for (let i = 0; i < shapeCount; i++) {
-            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)],
-                  geometry = typeof GeometryClass === 'function' ? 
-                      (GeometryClass === createTriangularPrismGeometry ? GeometryClass() : new GeometryClass(isMobile ? 80 : 120, 16, 16)) :
-                      new THREE.BoxGeometry();
-            const material = new THREE.MeshStandardMaterial({
-                color: Math.random() * 0xffffff,
-                wireframe: true,
+            const material = new THREE.MeshPhysicalMaterial({
+                color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+                metalness: 0.1,
+                roughness: 0.1,
+                transmission: 1,
+                opacity: 0.9,
                 transparent: true,
-                opacity: 0.3,
-                emissive: 0x8A2BE2,
-                emissiveIntensity: 0.8,
-                side: THREE.DoubleSide
+                clearcoat: 1,
+                clearcoatRoughness: 0.1
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);

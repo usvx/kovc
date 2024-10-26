@@ -1,3 +1,10 @@
+// Import necessary Three.js modules from CDN
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { BokehPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/BokehPass.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form'),
           preloader = document.getElementById('preloader');
@@ -13,19 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Post-Processing
     function initPostProcessing() {
-        composer = new THREE.EffectComposer(renderer);
-        renderPass = new THREE.RenderPass(scene, camera);
+        composer = new EffectComposer(renderer);
+        renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
 
         // Bloom Effect
-        bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
         bloomPass.threshold = 0;
         bloomPass.strength = 1.5;
         bloomPass.radius = 0;
         composer.addPass(bloomPass);
 
         // Depth of Field Effect
-        depthOfFieldPass = new THREE.BokehPass(scene, camera, {
+        depthOfFieldPass = new BokehPass(scene, camera, {
             focus: 1.0,
             aperture: 0.025,
             maxblur: 0.01,

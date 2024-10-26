@@ -2,12 +2,15 @@
 
 // Import Three.js as an ES Module using absolute URLs
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+// Import additional modules for post-processing
+import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/UnrealBloomPass.js';
 
-// Your code starts here
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form'),
           preloader = document.getElementById('preloader');
-    let scene, camera, renderer,
+    let scene, camera, renderer, composer,
         particles = [],
         shapes = [],
         sceneGroup,
@@ -120,6 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.outputEncoding = THREE.sRGBEncoding; // Ensure correct color encoding
+        renderer.toneMapping = THREE.ACESFilmicToneMapping; // Better tone mapping
+        renderer.toneMappingExposure = 1.5; // Increase exposure for brighter scene
 
         scene = new THREE.Scene();
 
@@ -127,17 +132,17 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.position.z = isMobile ? 800 : 1200;
 
         // Improved Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
-        const pointLight1 = new THREE.PointLight(0xffffff, 1);
-        pointLight1.position.set(500, 500, 500);
-        const pointLight2 = new THREE.PointLight(0xffffff, 1);
-        pointLight2.position.set(-500, -500, -500);
-        scene.add(ambientLight, pointLight1, pointLight2);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Increased ambient light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(1, 1, 1).normalize();
+        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight2.position.set(-1, -1, -1).normalize();
+        scene.add(ambientLight, directionalLight, directionalLight2);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        // Create Gradient Background
+        // Create Gradient Background with subtle colors
         const background = new THREE.PlaneGeometry(10000, 10000);
         const backgroundMaterial = new THREE.ShaderMaterial({
             vertexShader: `
@@ -150,8 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
             fragmentShader: `
                 varying vec2 vUv;
                 void main(){
-                    vec3 topColor = vec3(0.1, 0.2, 0.5); // Dark Blue
-                    vec3 bottomColor = vec3(0.5, 0.8, 1.0); // Light Blue
+                    vec3 topColor = vec3(0.05, 0.1, 0.2); // Darker Blue
+                    vec3 bottomColor = vec3(0.3, 0.5, 0.7); // Lighter Blue
                     gl_FragColor = vec4(mix(bottomColor, topColor, vUv.y), 1.0);
                 }
             `,
@@ -162,22 +167,27 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup.add(backgroundMesh);
 
         // Adjust particle and shape counts based on device type
-        const particleCount = isMobile ? 800 : 1600;
+        const particleCount = isMobile ? 600 : 1200; // Reduced count for performance
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter(),
                   texture = createTextTexture(char),
                   material = new THREE.SpriteMaterial({ 
                       map: texture, 
                       transparent: true, 
-                      blending: THREE.AdditiveBlending 
+                      blending: THREE.AdditiveBlending, 
+                      depthWrite: false // Improve performance and visual blending
                   }),
                   sprite = new THREE.Sprite(material);
-            sprite.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
-            sprite.scale.set(isMobile ? 150 : 200, isMobile ? 150 : 200, 1);
-            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
-            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
-            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.05;
+            sprite.position.set(
+                (Math.random() - 0.5) * 4000, 
+                (Math.random() - 0.5) * 4000, 
+                (Math.random() - 0.5) * 4000
+            );
+            sprite.scale.set(isMobile ? 120 : 180, isMobile ? 120 : 180, 1); // Slightly smaller for better balance
+            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.2 : 2.5);
+            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1.2 : 2.5);
+            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 1.2 : 2.5);
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.04; // Increased rotation speed for dynamism
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
@@ -202,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
             THREE.TorusGeometry,
             THREE.PlaneGeometry
         ],
-        shapeCount = isMobile ? 80 : 120;
+        shapeCount = isMobile ? 60 : 100; // Reduced count for performance
 
         for (let i = 0; i < shapeCount; i++) {
             let geometry;
@@ -254,18 +264,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Enhanced glassy material with physical properties
             const material = new THREE.MeshPhysicalMaterial({
-                color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
-                metalness: 0,
-                roughness: 0,
-                transmission: 1, // Enables glass-like transparency
+                color: new THREE.Color(`hsl(${Math.random() * 360}, 70%, 60%)`), // Softer, more varied colors
+                metalness: 0.1, // Slight metallic sheen
+                roughness: 0.2, // Less rough for better reflections
+                transmission: 0.9, // Slightly less than full transparency for better visibility
                 transparent: true,
-                opacity: 1,
+                opacity: 0.95,
                 clearcoat: 1,
                 clearcoatRoughness: 0,
-                thickness: 2, // Controls refraction
+                thickness: 5, // Increased thickness for better refraction
                 envMap: cubeRenderTarget.texture,
                 envMapIntensity: 1,
-                side: THREE.DoubleSide
+                side: THREE.DoubleSide,
+                reflectivity: 0.9 // Enhanced reflectivity for shinier surfaces
             });
 
             const mesh = new THREE.Mesh(geometry, material);
@@ -276,22 +287,39 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
             // Random scaling for more diversity
-            const scale = Math.random() * 2 + 0.5;
+            const scale = Math.random() * 1.8 + 0.7; // Slightly reduced scale range
             mesh.scale.set(scale, scale, scale);
 
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.015; // Slower rotation for elegance
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.015;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.015;
 
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
+
+        // Initialize post-processing for bloom effect
+        composer = new EffectComposer(renderer);
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5, // strength
+            0.4, // radius
+            0.85 // threshold
+        );
+        bloomPass.threshold = 0.21;
+        bloomPass.strength = 1.2; // Increased strength for more pronounced bloom
+        bloomPass.radius = 0.55;
+        composer.addPass(bloomPass);
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
 
         // Initial cube camera update
+        cubeCamera.position.copy(camera.position);
         cubeCamera.update(renderer, scene);
 
         animate();
@@ -319,6 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
     }
 
     // Animation loop
@@ -329,6 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
             p.material.rotation += p.rotationSpeed;
+            // Boundary check and bounce
             if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
             if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
@@ -346,9 +376,11 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
 
         // Update cube camera for reflections
+        cubeCamera.position.copy(camera.position);
         cubeCamera.update(renderer, scene);
 
-        renderer.render(scene, camera);
+        // Use composer for post-processing
+        composer.render();
     }
 
     // Initialize the scene

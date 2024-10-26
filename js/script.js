@@ -13,15 +13,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const CONFIG = {
         PARTICLE_COUNT: isMobile ? 600 : 1000,
-        SPHERE_COUNT: isMobile ? 40 : 80,
-        MIN_DISTANCE: 300,
+        SPHERE_COUNT: isMobile ? 30 : 60, // Reduced count to prevent screen coverage
+        MIN_DISTANCE: 400, // Increased to ensure more spacing
         PARTICLE_SIZE: isMobile ? 150 : 200,
-        SPHERE_SIZE: isMobile ? 100 : 150,
+        SPHERE_SIZE: isMobile ? 80 : 120, // Reduced size for better distribution
         PARTICLE_SPEED: isMobile ? 1.5 : 2.5,
         ROTATION_SPEED: isMobile ? 0.003 : 0.005,
         TEXTURE_SIZE: isMobile ? 256 : 512,
         SHADOW_BLUR: isMobile ? 15 : 30,
-        LIGHT_INTENSITY: isMobile ? 0.8 : 1.0,
+        LIGHT_INTENSITY: isMobile ? 1.0 : 1.5, // Increased for better illumination
         AMBIENT_COLOR: 0x1E90FF,
         DIRECTIONAL_COLOR: 0x9370DB,
         BACKGROUND_COLOR: 0x0A0A0A,
@@ -29,7 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
         PARTICLE_COLOR_2: 0xBA55D3,
         SPHERE_COLOR: 0xBA55D3,
         EMISSIVE_COLOR: 0x9370DB,
-        MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 3) : Math.min(window.devicePixelRatio, 2)
+        MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 3) : Math.min(window.devicePixelRatio, 2),
+        ENV_MAP_INTENSITY: 1.0
     };
 
     const TEXTURE_CACHE_SIZE = 200;
@@ -82,12 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const getRandomCharacter = () => Math.random() < 0.5 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
 
     const getRandomPosition = (existingSpheres, radius) => {
+        const boundingRadius = 2000; // Limit positions within a sphere of radius 2000
         let position, tooClose, attempts = 0;
         do {
             position = new THREE.Vector3(
-                (Math.random() - 0.5) * 4000,
-                (Math.random() - 0.5) * 4000,
-                (Math.random() - 0.5) * 4000
+                (Math.random() - 0.5) * 2 * boundingRadius,
+                (Math.random() - 0.5) * 2 * boundingRadius,
+                (Math.random() - 0.5) * 2 * boundingRadius
             );
             tooClose = existingSpheres.some(sphere => position.distanceTo(sphere.position) < CONFIG.MIN_DISTANCE + radius);
             attempts++;
@@ -107,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(CONFIG.MAX_PIXEL_RATIO, 3));
         renderer.setClearColor(CONFIG.BACKGROUND_COLOR, 1);
+        renderer.physicallyCorrectLights = true; // Enable physically correct lighting
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
@@ -122,6 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         createParticles();
         createSpheres();
+
+        renderer.sortObjects = true; // Enable sorting for transparent objects
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
@@ -163,14 +168,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const createSpheres = () => {
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
-            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64);
+            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 128, 128); // Increased segments for smoother spheres
             const material = new THREE.MeshPhysicalMaterial({
                 color: CONFIG.SPHERE_COLOR,
                 metalness: 0.0,
                 roughness: 0.05,
                 transmission: 1.0, // Full transmission for glass effect
                 transparent: true,
-                opacity: 0.6,
+                opacity: 0.3, // Reduced opacity for higher transparency
                 emissive: CONFIG.EMISSIVE_COLOR,
                 emissiveIntensity: 0.5,
                 side: THREE.DoubleSide,

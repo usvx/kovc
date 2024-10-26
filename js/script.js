@@ -6,17 +6,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let scene, camera, renderer, sceneGroup;
     const particles = [];
-    const shapes = [];
+    const spheres = [];
     let mouseX = 0, mouseY = 0;
     let windowHalfX = window.innerWidth / 2, windowHalfY = window.innerHeight / 2;
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
         PARTICLE_COUNT: isMobile ? 600 : 1000,
-        SHAPE_COUNT: isMobile ? 60 : 100,
-        MIN_DISTANCE: 200,
+        SPHERE_COUNT: isMobile ? 40 : 80,
+        MIN_DISTANCE: 300,
         PARTICLE_SIZE: isMobile ? 150 : 200,
-        SHAPE_SIZE: isMobile ? 120 : 150,
+        SPHERE_SIZE: isMobile ? 100 : 150,
         PARTICLE_SPEED: isMobile ? 1.5 : 2.5,
         ROTATION_SPEED: isMobile ? 0.003 : 0.005,
         TEXTURE_SIZE: isMobile ? 256 : 512,
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         BACKGROUND_COLOR: 0x0A0A0A,
         PARTICLE_COLOR_1: 0x1E90FF,
         PARTICLE_COLOR_2: 0xBA55D3,
-        SHAPE_COLOR: 0xBA55D3,
+        SPHERE_COLOR: 0xBA55D3,
         EMISSIVE_COLOR: 0x9370DB,
         MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 3) : Math.min(window.devicePixelRatio, 2)
     };
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getRandomCharacter = () => Math.random() < 0.5 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
 
-    const getRandomPosition = (existingShapes, radius) => {
+    const getRandomPosition = (existingSpheres, radius) => {
         let position, tooClose, attempts = 0;
         do {
             position = new THREE.Vector3(
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 (Math.random() - 0.5) * 4000,
                 (Math.random() - 0.5) * 4000
             );
-            tooClose = existingShapes.some(shape => position.distanceTo(shape.position) < CONFIG.MIN_DISTANCE + radius);
+            tooClose = existingSpheres.some(sphere => position.distanceTo(sphere.position) < CONFIG.MIN_DISTANCE + radius);
             attempts++;
             if (attempts > 100) break;
         } while (tooClose);
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scene.add(sceneGroup);
 
         createParticles();
-        createShapes();
+        createSpheres();
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
@@ -161,37 +161,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const createShapes = () => {
-        const geometryTypes = [
-            THREE.TetrahedronGeometry,
-            THREE.OctahedronGeometry,
-            THREE.IcosahedronGeometry,
-            THREE.DodecahedronGeometry
-        ];
-
-        for (let i = 0; i < CONFIG.SHAPE_COUNT; i++) {
-            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(CONFIG.SHAPE_SIZE, 1);
+    const createSpheres = () => {
+        for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
+            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64);
             const material = new THREE.MeshPhysicalMaterial({
-                color: CONFIG.SHAPE_COLOR,
-                metalness: 0.1,
-                roughness: 0.05,
+                color: CONFIG.SPHERE_COLOR,
+                metalness: 0.0,
+                roughness: 0.1,
+                transmission: 1.0,
                 transparent: true,
-                opacity: 0.6,
+                opacity: 0.8,
                 emissive: CONFIG.EMISSIVE_COLOR,
                 emissiveIntensity: 0.5,
                 side: THREE.DoubleSide,
                 reflectivity: 1.0,
                 clearcoat: 1.0,
-                clearcoatRoughness: 0.1
+                clearcoatRoughness: 0.05
             });
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.copy(getRandomPosition(shapes, CONFIG.SHAPE_SIZE));
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.03;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.03;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.03;
-            sceneGroup.add(mesh);
-            shapes.push(mesh);
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.position.copy(getRandomPosition(spheres, CONFIG.SPHERE_SIZE));
+            sphere.rotationSpeedX = (Math.random() - 0.5) * 0.02;
+            sphere.rotationSpeedY = (Math.random() - 0.5) * 0.02;
+            sphere.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+            sceneGroup.add(sphere);
+            spheres.push(sphere);
         }
     };
 
@@ -227,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Math.abs(p.position.y) > 2500) p.speedY *= -1;
             if (Math.abs(p.position.z) > 2500) p.speedZ *= -1;
         });
-        shapes.forEach(s => {
+        spheres.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;

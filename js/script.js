@@ -22,11 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const gradient = ctx.createLinearGradient(0, 0, size, size);
         const hue = (Math.random() * 360) % 360;
-        gradient.addColorStop(0, `hsl(${hue}, 100%, 70%)`);
-        gradient.addColorStop(1, `hsl(${(hue + 60) % 360}, 100%, 50%)`);
+        gradient.addColorStop(0, `hsl(${hue}, 100%, 80%)`);
+        gradient.addColorStop(1, `hsl(${(hue + 60) % 360}, 100%, 60%)`);
         ctx.fillStyle = gradient;
-        ctx.shadowColor = `hsl(${(hue + 180) % 360}, 100%, 30%)`;
-        ctx.shadowBlur = isMobile ? 30 : 50;
+        ctx.shadowColor = `hsl(${(hue + 180) % 360}, 100%, 40%)`;
+        ctx.shadowBlur = isMobile ? 40 : 60;
         ctx.fillText(char, size / 2, size / 2);
 
         const texture = new THREE.Texture(canvas);
@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(ambientLight, directionalLight);
 
@@ -93,17 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < shapeCount; i++) {
             const hue = Math.random() * 360;
             const material = new THREE.MeshPhysicalMaterial({
-                color: new THREE.Color(`hsl(${hue}, 100%, 60%)`),
+                color: new THREE.Color(`hsl(${hue}, 100%, 70%)`),
                 metalness: 0.3,
                 roughness: 0.05,
-                transmission: 0.98,
-                opacity: 0.7,
+                transmission: 0.95,
+                opacity: 0.8,
                 transparent: true,
                 clearcoat: 1,
-                clearcoatRoughness: 0.02,
-                reflectivity: 0.8,
-                ior: 1.6,
-                thickness: 7,
+                clearcoatRoughness: 0.1,
+                reflectivity: 0.9,
+                ior: 1.5,
+                thickness: 8,
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
@@ -154,13 +154,13 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.x += Math.sin(time * p.userData.speed + p.userData.offset) * p.userData.amplitude * 0.1;
             p.position.y += Math.cos(time * p.userData.speed + p.userData.offset) * p.userData.amplitude * 0.1;
             p.lookAt(camera.position);
-            p.material.color.offsetHSL(0.0005, 0, 0); // Subtle color shift
+            p.material.color.offsetHSL(0.0008, 0, 0); // Smooth color shift
         });
 
         shapes.forEach(s => {
             s.position.x += Math.sin(time * s.userData.speed + s.userData.offset) * s.userData.amplitude * 0.1;
             s.position.y += Math.cos(time * s.userData.speed + s.userData.offset) * s.userData.amplitude * 0.1;
-            s.material.color.offsetHSL(0.0003, 0, 0); // Subtle color shift for iridescent feel
+            s.material.color.offsetHSL(0.0005, 0, 0); // Iridescent effect
         });
 
         sceneGroup.rotation.y += 0.003;

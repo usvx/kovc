@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         particles = [],
         shapes = [],
         sceneGroup,
+        envMap,
         mouseX = 0, mouseY = 0,
         windowHalfX = window.innerWidth / 2,
         windowHalfY = window.innerHeight / 2,
@@ -113,11 +114,32 @@ document.addEventListener('DOMContentLoaded', () => {
         return geometry;
     }
 
-    // Function to create a simple gradient background using a large plane
-    function createGradientBackground() {
-        const size = 10000;
-        const geometry = new THREE.PlaneGeometry(size, size);
-        const material = new THREE.ShaderMaterial({
+    function init() {
+        const canvas = document.getElementById('background');
+        renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.outputEncoding = THREE.sRGBEncoding; // Ensure correct color encoding
+
+        scene = new THREE.Scene();
+
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+        camera.position.z = isMobile ? 800 : 1200;
+
+        // Improved Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
+        const pointLight1 = new THREE.PointLight(0xffffff, 1);
+        pointLight1.position.set(500, 500, 500);
+        const pointLight2 = new THREE.PointLight(0xffffff, 1);
+        pointLight2.position.set(-500, -500, -500);
+        scene.add(ambientLight, pointLight1, pointLight2);
+
+        sceneGroup = new THREE.Group();
+        scene.add(sceneGroup);
+
+        // Create Gradient Background
+        const background = new THREE.PlaneGeometry(10000, 10000);
+        const backgroundMaterial = new THREE.ShaderMaterial({
             vertexShader: `
                 varying vec2 vUv;
                 void main(){
@@ -135,35 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
             `,
             side: THREE.BackSide
         });
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.rotation.x = -Math.PI / 2;
-        sceneGroup.add(mesh);
-    }
-
-    function init() {
-        const canvas = document.getElementById('background');
-        renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.outputEncoding = THREE.sRGBEncoding; // Ensure correct color encoding
-        scene = new THREE.Scene();
-        scene.background = null; // We'll use a gradient background instead
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.z = isMobile ? 800 : 1200;
-
-        // Improved Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
-        const pointLight1 = new THREE.PointLight(0xffffff, 1);
-        pointLight1.position.set(500, 500, 500);
-        const pointLight2 = new THREE.PointLight(0xffffff, 1);
-        pointLight2.position.set(-500, -500, -500);
-        scene.add(ambientLight, pointLight1, pointLight2);
-
-        sceneGroup = new THREE.Group();
-        scene.add(sceneGroup);
-
-        // Create Gradient Background
-        createGradientBackground();
+        const backgroundMesh = new THREE.Mesh(background, backgroundMaterial);
+        backgroundMesh.rotation.x = -Math.PI / 2;
+        sceneGroup.add(backgroundMesh);
 
         // Adjust particle and shape counts based on device type
         const particleCount = isMobile ? 800 : 1600;
@@ -186,6 +182,17 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
+        // Generate procedural environment map
+        const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
+            format: THREE.RGBAFormat,
+            generateMipmaps: true,
+            minFilter: THREE.LinearMipmapLinearFilter,
+            encoding: THREE.sRGBEncoding
+        });
+
+        const cubeCamera = new THREE.CubeCamera(1, 10000, cubeRenderTarget);
+        scene.environment = cubeRenderTarget.texture;
+
         // Enhanced geometry types including TorusKnot and Möbius Strip
         const geometryTypes = [
             THREE.TorusKnotGeometry,
@@ -196,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
             THREE.PlaneGeometry
         ],
         shapeCount = isMobile ? 80 : 120;
+
         for (let i = 0; i < shapeCount; i++) {
             let geometry;
             const selectedGeometry = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
@@ -249,12 +257,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
                 metalness: 0,
                 roughness: 0,
-                transmission: 1, // Use transmission for glass effect
+                transmission: 1, // Enables glass-like transparency
                 transparent: true,
                 opacity: 1,
                 clearcoat: 1,
                 clearcoatRoughness: 0,
-                thickness: 2, // Thickness for refraction
+                thickness: 2, // Controls refraction
+                envMap: cubeRenderTarget.texture,
                 envMapIntensity: 1,
                 side: THREE.DoubleSide
             });
@@ -278,23 +287,18 @@ document.addEventListener('DOMContentLoaded', () => {
             shapes.push(mesh);
         }
 
-        // Optional: Add subtle glow effect using shader material (commented out)
-        /*
-        const bloomPass = new THREE.UnrealBloomPass(
-            new THREE.Vector2(window.innerWidth, window.innerHeight),
-            1.5, // strength
-            0.4, // radius
-            0.85 // threshold
-        );
-        composer = new THREE.EffectComposer(renderer);
-        composer.addPass(new THREE.RenderPass(scene, camera));
-        composer.addPass(bloomPass);
-        */
-
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
         animate();
+
+        // Update the cube camera to render the environment
+        function updateCubeCamera() {
+            cubeCamera.update(renderer, scene);
+        }
+
+        // Initial cube camera update
+        updateCubeCamera();
     }
 
     // Function to handle mouse movement
@@ -319,7 +323,6 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        // composer.setSize(window.innerWidth, window.innerHeight);
     }
 
     // Animation loop
@@ -345,8 +348,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetRotationX = mouseY * 0.1;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
+
+        // Update cube camera for reflections
+        cubeCamera.update(renderer, scene);
+
         renderer.render(scene, camera);
-        // composer.render();
     }
 
     // Initialize the scene

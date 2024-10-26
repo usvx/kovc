@@ -62,15 +62,31 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.physicallyCorrectLights = true;
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1),
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5),
               directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(ambientLight, directionalLight);
 
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        pmremGenerator.compileEquirectangularShader();
+
+        new THREE.TextureLoader().load('https://threejs.org/examples/textures/equirectangular/venice_sunset_1k.hdr', (texture) => {
+            const hdrEquirect = texture;
+            hdrEquirect.mapping = THREE.EquirectangularReflectionMapping;
+            scene.environment = hdrEquirect;
+            pmremGenerator.dispose();
+            startAnimation();
+        });
+    }
+
+    function startAnimation() {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
@@ -89,7 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearcoatRoughness: 0,
                 reflectivity: 1,
                 ior: 1.5,
-                thickness: 2
+                thickness: 2,
+                envMapIntensity: 1
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
@@ -119,7 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
                       reflectivity: 1,
                       ior: 1.5,
                       thickness: 2,
-                      side: THREE.DoubleSide
+                      side: THREE.DoubleSide,
+                      envMapIntensity: 1
                   }),
                   mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);

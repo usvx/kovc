@@ -3,7 +3,6 @@
 // Import Three.js as an ES Module using absolute URLs
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
 
-// Your code starts here
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form'),
           preloader = document.getElementById('preloader');
@@ -120,8 +119,10 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.outputEncoding = THREE.sRGBEncoding; // Ensure correct color encoding
+        renderer.physicallyCorrectLights = true; // Enable physically correct lighting
         renderer.toneMapping = THREE.ACESFilmicToneMapping; // Better tone mapping
         renderer.toneMappingExposure = 1.0; // Adjust exposure for balanced brightness
+        renderer.shadowMap.enabled = false; // Disable shadows for performance
 
         scene = new THREE.Scene();
 
@@ -140,28 +141,27 @@ document.addEventListener('DOMContentLoaded', () => {
         scene.add(sceneGroup);
 
         // Create Gradient Background with subtle colors
-        const background = new THREE.PlaneGeometry(10000, 10000);
-        const backgroundMaterial = new THREE.ShaderMaterial({
-            vertexShader: `
-                varying vec2 vUv;
-                void main(){
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-                }
-            `,
-            fragmentShader: `
-                varying vec2 vUv;
-                void main(){
-                    vec3 topColor = vec3(0.05, 0.1, 0.2); // Darker Blue
-                    vec3 bottomColor = vec3(0.3, 0.5, 0.7); // Lighter Blue
-                    gl_FragColor = vec4(mix(bottomColor, topColor, vUv.y), 1.0);
-                }
-            `,
-            side: THREE.BackSide
-        });
-        const backgroundMesh = new THREE.Mesh(background, backgroundMaterial);
-        backgroundMesh.rotation.x = -Math.PI / 2;
-        sceneGroup.add(backgroundMesh);
+        // Instead of using a large plane, use scene.background with a dynamically created gradient
+        const size = 512; // Size of the canvas for gradient
+        const bgCanvas = document.createElement('canvas');
+        bgCanvas.width = 1;
+        bgCanvas.height = size;
+        const bgCtx = bgCanvas.getContext('2d');
+
+        // Create vertical gradient
+        const bgGradient = bgCtx.createLinearGradient(0, 0, 0, size);
+        bgGradient.addColorStop(0, '#0a192f'); // Dark Blue
+        bgGradient.addColorStop(1, '#1e3c72'); // Lighter Blue
+        bgCtx.fillStyle = bgGradient;
+        bgCtx.fillRect(0, 0, 1, size);
+
+        const bgTexture = new THREE.CanvasTexture(bgCanvas);
+        bgTexture.minFilter = THREE.LinearFilter;
+        bgTexture.magFilter = THREE.LinearFilter;
+        bgTexture.wrapS = THREE.ClampToEdgeWrapping;
+        bgTexture.wrapT = THREE.ClampToEdgeWrapping;
+
+        scene.background = bgTexture;
 
         // Adjust particle and shape counts based on device type
         const particleCount = isMobile ? 600 : 1200; // Reduced count for performance
@@ -198,6 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         cubeCamera = new THREE.CubeCamera(1, 10000, cubeRenderTarget);
+        cubeCamera.position.copy(camera.position);
+        scene.add(cubeCamera); // Ensure the cube camera is part of the scene
         scene.environment = cubeRenderTarget.texture;
 
         // Enhanced geometry types including TorusKnot and Möbius Strip
@@ -273,7 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 envMap: cubeRenderTarget.texture,
                 envMapIntensity: 1,
                 side: THREE.DoubleSide,
-                reflectivity: 0.9 // Enhanced reflectivity for shinier surfaces
+                reflectivity: 0.9, // Enhanced reflectivity for shinier surfaces
+                ior: 1.5 // Index of Refraction for glass-like material
             });
 
             const mesh = new THREE.Mesh(geometry, material);

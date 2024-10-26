@@ -19,12 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to create text texture for particles
     function createTextTexture(char) {
         const canvas = document.createElement('canvas'),
-              size = isMobile ? 256 : 512;
+              size = isMobile ? 128 : 256; // Reduced size for performance
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, size, size);
-        ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
+        ctx.font = `${size * 0.5}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const gradient = ctx.createLinearGradient(0, 0, size, size);
@@ -32,10 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
         gradient.addColorStop(1, '#8A2BE2');
         ctx.fillStyle = gradient;
         ctx.shadowColor = '#4B0082';
-        ctx.shadowBlur = isMobile ? 30 : 50;
+        ctx.shadowBlur = isMobile ? 15 : 25; // Reduced blur for performance
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
         return texture;
     }
 
@@ -63,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Function to create Möbius Strip geometry
-    function createMobiusStrip(segments = 100, slices = 16) {
+    function createMobiusStrip(segments = 50, slices = 8) { // Reduced segments and slices for performance
         const geometry = new THREE.BufferGeometry();
         const vertices = [];
         const normals = [];
@@ -125,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.shadowMap.enabled = false; // Disable shadows for performance
 
         scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000); // Set background to black
 
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
@@ -140,31 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        // Create Gradient Background with subtle colors
-        // Instead of using a large plane, use scene.background with a dynamically created gradient
-        const size = 512; // Size of the canvas for gradient
-        const bgCanvas = document.createElement('canvas');
-        bgCanvas.width = 1;
-        bgCanvas.height = size;
-        const bgCtx = bgCanvas.getContext('2d');
-
-        // Create vertical gradient
-        const bgGradient = bgCtx.createLinearGradient(0, 0, 0, size);
-        bgGradient.addColorStop(0, '#0a192f'); // Dark Blue
-        bgGradient.addColorStop(1, '#1e3c72'); // Lighter Blue
-        bgCtx.fillStyle = bgGradient;
-        bgCtx.fillRect(0, 0, 1, size);
-
-        const bgTexture = new THREE.CanvasTexture(bgCanvas);
-        bgTexture.minFilter = THREE.LinearFilter;
-        bgTexture.magFilter = THREE.LinearFilter;
-        bgTexture.wrapS = THREE.ClampToEdgeWrapping;
-        bgTexture.wrapT = THREE.ClampToEdgeWrapping;
-
-        scene.background = bgTexture;
-
         // Adjust particle and shape counts based on device type
-        const particleCount = isMobile ? 600 : 1200; // Reduced count for performance
+        const particleCount = isMobile ? 400 : 800; // Further reduced count for better performance
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter(),
                   texture = createTextTexture(char),
@@ -176,21 +156,21 @@ document.addEventListener('DOMContentLoaded', () => {
                   }),
                   sprite = new THREE.Sprite(material);
             sprite.position.set(
-                (Math.random() - 0.5) * 4000, 
-                (Math.random() - 0.5) * 4000, 
-                (Math.random() - 0.5) * 4000
+                (Math.random() - 0.5) * 2000, // Reduced position range for better clustering
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000
             );
-            sprite.scale.set(isMobile ? 120 : 180, isMobile ? 120 : 180, 1); // Slightly smaller for better balance
-            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.2 : 2.5);
-            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1.2 : 2.5);
-            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 1.2 : 2.5);
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.04; // Increased rotation speed for dynamism
+            sprite.scale.set(isMobile ? 100 : 150, isMobile ? 100 : 150, 1); // Adjusted scale for balance
+            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 0.8 : 1.5); // Reduced speed for smoother movement
+            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 0.8 : 1.5);
+            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 0.8 : 1.5);
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.02; // Adjusted rotation speed
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
 
         // Generate procedural environment map
-        cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
+        cubeRenderTarget = new THREE.WebGLCubeRenderTarget(128, { // Reduced resolution for performance
             format: THREE.RGBAFormat,
             generateMipmaps: true,
             minFilter: THREE.LinearMipmapLinearFilter,
@@ -199,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         cubeCamera = new THREE.CubeCamera(1, 10000, cubeRenderTarget);
         cubeCamera.position.copy(camera.position);
-        scene.add(cubeCamera); // Ensure the cube camera is part of the scene
+        scene.add(cubeCamera);
         scene.environment = cubeRenderTarget.texture;
 
         // Enhanced geometry types including TorusKnot and Möbius Strip
@@ -211,67 +191,67 @@ document.addEventListener('DOMContentLoaded', () => {
             THREE.TorusGeometry,
             THREE.PlaneGeometry
         ],
-        shapeCount = isMobile ? 60 : 100; // Reduced count for performance
+        shapeCount = isMobile ? 40 : 80; // Further reduced count for performance
 
         for (let i = 0; i < shapeCount; i++) {
             let geometry;
             const selectedGeometry = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             if (selectedGeometry === createMobiusStrip) {
-                geometry = selectedGeometry(100, 16); // segments and slices
+                geometry = selectedGeometry(50, 4); // Further reduced segments and slices
             } else {
                 switch(selectedGeometry){
                     case THREE.TorusKnotGeometry:
                         geometry = new THREE.TorusKnotGeometry(
-                            Math.random() * 50 + 30, // radius
-                            Math.random() * 10 + 5,  // tube
-                            Math.floor(Math.random() * 100) + 100, // tubularSegments
-                            Math.floor(Math.random() * 16) + 8,   // radialSegments
-                            Math.floor(Math.random() * 10) + 2,    // p
-                            Math.floor(Math.random() * 10) + 3     // q
+                            Math.random() * 30 + 20, // radius
+                            Math.random() * 5 + 3,   // tube
+                            Math.floor(Math.random() * 80) + 80, // tubularSegments
+                            Math.floor(Math.random() * 12) + 6,   // radialSegments
+                            Math.floor(Math.random() * 6) + 1,    // p
+                            Math.floor(Math.random() * 6) + 1     // q
                         );
                         break;
                     case THREE.SphereGeometry:
                         geometry = new THREE.SphereGeometry(
-                            Math.random() * 50 + 20, // radius
-                            Math.floor(Math.random() * 32) + 16, // widthSegments
-                            Math.floor(Math.random() * 32) + 16  // heightSegments
+                            Math.random() * 30 + 15, // radius
+                            Math.floor(Math.random() * 24) + 12, // widthSegments
+                            Math.floor(Math.random() * 24) + 12  // heightSegments
                         );
                         break;
                     case THREE.DodecahedronGeometry:
-                        geometry = new THREE.DodecahedronGeometry(Math.random() * 30 + 20, 0);
+                        geometry = new THREE.DodecahedronGeometry(Math.random() * 15 + 10, 0);
                         break;
                     case THREE.TorusGeometry:
                         geometry = new THREE.TorusGeometry(
-                            Math.random() * 50 + 20, // radius
-                            Math.random() * 5 + 5,   // tube
-                            Math.floor(Math.random() * 16) + 8, // radialSegments
-                            Math.floor(Math.random() * 16) + 8  // tubularSegments
+                            Math.random() * 30 + 15, // radius
+                            Math.random() * 3 + 2,   // tube
+                            Math.floor(Math.random() * 12) + 6, // radialSegments
+                            Math.floor(Math.random() * 12) + 6  // tubularSegments
                         );
                         break;
                     case THREE.PlaneGeometry:
                         geometry = new THREE.PlaneGeometry(
-                            Math.random() * 100 + 50, // width
-                            Math.random() * 100 + 50, // height
-                            Math.floor(Math.random() * 10) + 1, // widthSegments
-                            Math.floor(Math.random() * 10) + 1  // heightSegments
+                            Math.random() * 50 + 25, // width
+                            Math.random() * 50 + 25, // height
+                            Math.floor(Math.random() * 5) + 1, // widthSegments
+                            Math.floor(Math.random() * 5) + 1  // heightSegments
                         );
                         break;
                     default:
-                        geometry = new THREE.IcosahedronGeometry(isMobile ? 80 : 120, 2);
+                        geometry = new THREE.IcosahedronGeometry(isMobile ? 40 : 60, 1); // Reduced subdivisions
                 }
             }
 
             // Enhanced glassy material with physical properties
             const material = new THREE.MeshPhysicalMaterial({
-                color: new THREE.Color(`hsl(${Math.random() * 360}, 70%, 60%)`), // Softer, more varied colors
+                color: new THREE.Color(`hsl(${Math.random() * 360}, 70%, 50%)`), // Softer, more varied colors
                 metalness: 0.1, // Slight metallic sheen
-                roughness: 0.2, // Less rough for better reflections
-                transmission: 0.9, // Slightly less than full transparency for better visibility
+                roughness: 0.1, // Less rough for better reflections
+                transmission: 0.95, // High transparency for glass-like effect
                 transparent: true,
                 opacity: 0.95,
                 clearcoat: 1,
                 clearcoatRoughness: 0,
-                thickness: 5, // Increased thickness for better refraction
+                thickness: 10, // Increased thickness for better refraction
                 envMap: cubeRenderTarget.texture,
                 envMapIntensity: 1,
                 side: THREE.DoubleSide,
@@ -281,18 +261,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set(
-                (Math.random() - 0.5) * 4000,
-                (Math.random() - 0.5) * 4000,
-                (Math.random() - 0.5) * 4000
+                (Math.random() - 0.5) * 2000, // Reduced position range for better clustering
+                (Math.random() - 0.5) * 2000,
+                (Math.random() - 0.5) * 2000
             );
 
             // Random scaling for more diversity
-            const scale = Math.random() * 1.8 + 0.7; // Slightly reduced scale range
+            const scale = Math.random() * 1.2 + 0.5; // Adjusted scale range
             mesh.scale.set(scale, scale, scale);
 
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.015; // Slower rotation for elegance
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.015;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.015;
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.01; // Slower rotation for elegance
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.01;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.01;
 
             sceneGroup.add(mesh);
             shapes.push(mesh);
@@ -342,21 +322,21 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.z += p.speedZ;
             p.material.rotation += p.rotationSpeed;
             // Boundary check and bounce
-            if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
-            if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
-            if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
+            if (p.position.x > 1000 || p.position.x < -1000) p.speedX *= -1;
+            if (p.position.y > 1000 || p.position.y < -1000) p.speedY *= -1;
+            if (p.position.z > 1000 || p.position.z < -1000) p.speedZ *= -1;
         });
         shapes.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;
         });
-        sceneGroup.rotation.y += 0.003;
-        sceneGroup.rotation.x += 0.0025;
-        const targetRotationY = mouseX * 0.1;
-        const targetRotationX = mouseY * 0.1;
-        sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
-        sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
+        sceneGroup.rotation.y += 0.002; // Reduced rotation speed for smoother performance
+        sceneGroup.rotation.x += 0.0015;
+        const targetRotationY = mouseX * 0.05; // Reduced influence for smoother interaction
+        const targetRotationX = mouseY * 0.05;
+        sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.02; // Slower interpolation
+        sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.02;
 
         // Update cube camera for reflections
         cubeCamera.position.copy(camera.position);

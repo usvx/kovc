@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         windowHalfX = window.innerWidth / 2,
         windowHalfY = window.innerHeight / 2,
         isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-    
+
     function createTextTexture(char) {
         const canvas = document.createElement('canvas'),
               size = isMobile ? 256 : 512;
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return texture;
     }
 
-    function getRandomHangeulCharacter() {
+    function getRandomHangulCharacter() {
         const commonInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112],
               commonMedials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A],
               commonFinals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA, 0x11C2];
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getRandomCharacter() {
-        return Math.random() < 0.7 ? getRandomHangeulCharacter() : getRandomCyrillicCharacter();
+        return Math.random() < 0.7 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
     }
 
     function init() {
@@ -89,11 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry],
-              shapeCount = isMobile ? 80 : 120;
+        const shapeCount = isMobile ? 80 : 120;
         for (let i = 0; i < shapeCount; i++) {
-            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)],
-                  geometry = new GeometryClass(isMobile ? 80 : 120, 2),
+            const geometry = new THREE.SphereGeometry(isMobile ? 80 : 120, 64, 64), // Higher segments for a smoother appearance
                   material = new THREE.MeshStandardMaterial({
                       color: 0x00FFFF,
                       wireframe: true,

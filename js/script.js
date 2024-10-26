@@ -1,4 +1,5 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+// Post-processing scripts should be included in your HTML as shown above.
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form'),
@@ -7,12 +8,19 @@ document.addEventListener('DOMContentLoaded', () => {
         particles = [],
         torusKnotShapes = [],
         sceneGroup,
+        composer, bloomPass,
         mouseX = 0, mouseY = 0,
         windowHalfX = window.innerWidth / 2,
         windowHalfY = window.innerHeight / 2,
         isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const MIN_DISTANCE = 300;
+    let particleCount, shapeCount, shapeRadius;
+
+    function getRandomColor() {
+        const colors = ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF', '#8E44AD', '#FF793F'];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas'),
@@ -21,14 +29,19 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = size;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, size, size);
+
+        // Use a random vibrant gradient
+        const gradient = ctx.createLinearGradient(0, 0, size, size);
+        const color1 = getRandomColor();
+        const color2 = getRandomColor();
+        gradient.addColorStop(0, color1);
+        gradient.addColorStop(1, color2);
+
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        const gradient = ctx.createLinearGradient(0, 0, size, size);
-        gradient.addColorStop(0, '#00FFFF');
-        gradient.addColorStop(1, '#8A2BE2');
         ctx.fillStyle = gradient;
-        ctx.shadowColor = '#4B0082';
+        ctx.shadowColor = color2;
         ctx.shadowBlur = isMobile ? 30 : 50;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
@@ -84,15 +97,31 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        const ambientLight = new THREE.AmbientLight(0x00FFFF, 1),
-              directionalLight = new THREE.DirectionalLight(0x8A2BE2, 1);
-        directionalLight.position.set(1, 1, 1).normalize();
+        // Enhanced Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 10, 7.5);
         scene.add(ambientLight, directionalLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 1, 1000);
+        pointLight.position.set(-50, 50, 50);
+        scene.add(pointLight);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const particleCount = isMobile ? 800 : 1600;
+        // Responsive Counts
+        if (isMobile) {
+            particleCount = 600;
+            shapeCount = 60;
+            shapeRadius = 60;
+        } else {
+            particleCount = 1600;
+            shapeCount = 120;
+            shapeRadius = 120;
+        }
+
+        // Create Particles
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter(),
                   texture = createTextTexture(char),
@@ -113,28 +142,50 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        const shapeCount = isMobile ? 80 : 120;
-        const radius = isMobile ? 80 : 120;
+        // Create Geometric Shapes
         for (let i = 0; i < shapeCount; i++) {
-            const torusKnotGeometry = new THREE.TorusKnotGeometry(radius * 0.5, radius * 0.15, 100, 16),
-                  material = new THREE.MeshStandardMaterial({
-                      color: 0x00FFFF,
-                      wireframe: true,
-                      transparent: true,
-                      opacity: 0.3,
-                      emissive: 0x8A2BE2,
-                      emissiveIntensity: 0.8,
-                      side: THREE.DoubleSide
-                  }),
-                  torusKnotMesh = new THREE.Mesh(torusKnotGeometry, material);
+            let geometry;
+            const shapeType = Math.random();
+            if (shapeType < 0.33) {
+                geometry = new THREE.TorusKnotGeometry(shapeRadius * 0.5, shapeRadius * 0.15, 100, 16);
+            } else if (shapeType < 0.66) {
+                geometry = new THREE.SphereGeometry(shapeRadius * 0.3, 32, 32);
+            } else {
+                geometry = new THREE.BoxGeometry(shapeRadius * 0.4, shapeRadius * 0.4, shapeRadius * 0.4);
+            }
 
-            torusKnotMesh.position.copy(getRandomPosition(torusKnotShapes, radius));
-            torusKnotMesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
-            torusKnotMesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
-            torusKnotMesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
-            sceneGroup.add(torusKnotMesh);
-            torusKnotShapes.push(torusKnotMesh);
+            const material = new THREE.MeshPhongMaterial({
+                color: getRandomColor(),
+                wireframe: false,
+                shininess: 100,
+                emissive: 0x8A2BE2,
+                emissiveIntensity: 0.3,
+                transparent: true,
+                opacity: 0.7,
+                side: THREE.DoubleSide
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.copy(getRandomPosition(torusKnotShapes, shapeRadius));
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+            sceneGroup.add(mesh);
+            torusKnotShapes.push(mesh);
         }
+
+        // Post-Processing Setup
+        composer = new THREE.EffectComposer(renderer);
+        const renderPass = new THREE.RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        bloomPass = new THREE.UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5, // strength
+            0.4, // radius
+            0.85 // threshold
+        );
+        composer.addPass(bloomPass);
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
@@ -161,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
     }
 
     function animate() {
@@ -173,6 +225,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
             if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
+
+            // Interactive movement towards mouse
+            p.position.x += (mouseX * 10 - p.position.x) * 0.001;
+            p.position.y += (-mouseY * 10 - p.position.y) * 0.001;
         });
         torusKnotShapes.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
@@ -185,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetRotationX = mouseY * 0.1;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
-        renderer.render(scene, camera);
+        composer.render();
     }
 
     init();

@@ -71,14 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const particleCount = isMobile ? 800 : 1600; // Adjusted particle count
+        // Adjust particle and shape counts based on device type
+        const particleCount = isMobile ? 800 : 1600;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter(),
                   texture = createTextTexture(char),
                   material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending }),
                   sprite = new THREE.Sprite(material);
             sprite.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
-            sprite.scale.set(isMobile ? 100 : 200, isMobile ? 100 : 200, 1);
+            sprite.scale.set(isMobile ? 150 : 200, isMobile ? 150 : 200, 1); // Increased size for better visibility on mobile
             sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
             sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
             sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
@@ -88,10 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry],
-              shapeCount = isMobile ? 60 : 100; // Adjusted shape count
+              shapeCount = isMobile ? 80 : 120; // Increased shape count for a more immersive experience
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)],
-                  geometry = new GeometryClass(isMobile ? 60 : 100, 2),
+                  geometry = new GeometryClass(isMobile ? 80 : 120, 2),
                   material = new THREE.MeshStandardMaterial({
                       color: 0x00FFFF,
                       wireframe: true,
@@ -155,8 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         sceneGroup.rotation.y += 0.003;
         sceneGroup.rotation.x += 0.0025;
-        const targetRotationY = mouseX * 0.1,
-              targetRotationX = mouseY * 0.1;
+        const targetRotationY = mouseX * 0.1;
+        const targetRotationX = mouseY * 0.1;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
         renderer.render(scene, camera);

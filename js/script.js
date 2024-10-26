@@ -12,16 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 600 : 1000, // Increased particle count for better density
-        SHAPE_COUNT: isMobile ? 60 : 100,      // Increased shape count for more variety
-        MIN_DISTANCE: 200,                      // Reduced minimum distance for closer proximity
-        PARTICLE_SIZE: isMobile ? 150 : 200,    // Increased particle size
-        SHAPE_SIZE: isMobile ? 120 : 150,       // Increased shape size
-        PARTICLE_SPEED: isMobile ? 1.5 : 2.5,   // Slightly increased particle speed
-        ROTATION_SPEED: isMobile ? 0.003 : 0.005, // Increased rotation speed for livelier motion
-        TEXTURE_SIZE: isMobile ? 256 : 512,     // Increased texture size for higher resolution
-        SHADOW_BLUR: isMobile ? 15 : 30,        // Increased shadow blur for a more pronounced glow
-        LIGHT_INTENSITY: isMobile ? 0.8 : 1.0,  // Increased light intensity for better illumination
+        PARTICLE_COUNT: isMobile ? 600 : 1000,
+        SHAPE_COUNT: isMobile ? 60 : 100,
+        MIN_DISTANCE: 200,
+        PARTICLE_SIZE: isMobile ? 150 : 200,
+        SHAPE_SIZE: isMobile ? 120 : 150,
+        PARTICLE_SPEED: isMobile ? 1.5 : 2.5,
+        ROTATION_SPEED: isMobile ? 0.003 : 0.005,
+        TEXTURE_SIZE: isMobile ? 256 : 512,
+        SHADOW_BLUR: isMobile ? 15 : 30,
+        LIGHT_INTENSITY: isMobile ? 0.8 : 1.0,
         AMBIENT_COLOR: 0x1E90FF,
         DIRECTIONAL_COLOR: 0x9370DB,
         BACKGROUND_COLOR: 0x0A0A0A,
@@ -29,10 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
         PARTICLE_COLOR_2: 0xBA55D3,
         SHAPE_COLOR: 0xBA55D3,
         EMISSIVE_COLOR: 0x9370DB,
-        MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 2) : Math.min(window.devicePixelRatio, 2)
+        MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 3) : Math.min(window.devicePixelRatio, 2)
     };
 
-    const TEXTURE_CACHE_SIZE = 100; // Increased cache size to accommodate higher resolution textures
+    const TEXTURE_CACHE_SIZE = 200;
     const textureCache = [];
 
     const createTextTexture = (char) => {
@@ -40,22 +40,23 @@ document.addEventListener('DOMContentLoaded', () => {
             return textureCache[Math.floor(Math.random() * TEXTURE_CACHE_SIZE)];
         }
         const canvas = document.createElement('canvas');
-        const size = CONFIG.TEXTURE_SIZE;
+        const size = CONFIG.TEXTURE_SIZE * window.devicePixelRatio;
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, size, size);
-        const gradient = ctx.createLinearGradient(0, 0, size, size);
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        ctx.clearRect(0, 0, CONFIG.TEXTURE_SIZE, CONFIG.TEXTURE_SIZE);
+        const gradient = ctx.createLinearGradient(0, 0, CONFIG.TEXTURE_SIZE, CONFIG.TEXTURE_SIZE);
         gradient.addColorStop(0, '#1E90FF');
         gradient.addColorStop(1, '#BA55D3');
-        ctx.font = `${size * 0.8}px 'Urbanist', sans-serif`; // Increased font size
+        ctx.font = `${CONFIG.TEXTURE_SIZE * 0.8}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = gradient;
         ctx.shadowColor = '#9370DB';
         ctx.shadowBlur = CONFIG.SHADOW_BLUR;
-        ctx.globalAlpha = 0.9; // Slightly increased opacity for better visibility
-        ctx.fillText(char, size / 2, size / 2);
+        ctx.globalAlpha = 0.9;
+        ctx.fillText(char, CONFIG.TEXTURE_SIZE / 2, CONFIG.TEXTURE_SIZE / 2);
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
         textureCache.push(texture);
@@ -104,12 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
             powerPreference: isMobile ? 'low-power' : 'default'
         });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(CONFIG.MAX_PIXEL_RATIO, 2));
+        renderer.setPixelRatio(Math.min(CONFIG.MAX_PIXEL_RATIO, 3));
         renderer.setClearColor(CONFIG.BACKGROUND_COLOR, 1);
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.z = isMobile ? 1200 : 1800; // Adjusted camera position for better visibility
+        camera.position.z = isMobile ? 1200 : 1800;
 
         const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
         const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
@@ -130,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const createParticles = () => {
-        const uniqueChars = 30; // Increased number of unique characters for variety
+        const uniqueChars = 30;
         const characters = Array.from({ length: uniqueChars }, () => getRandomCharacter());
         characters.forEach(char => textureCache.push(createTextTexture(char)));
 
@@ -142,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 transparent: true,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false,
-                opacity: 0.95 // Increased opacity for better visibility
+                opacity: 0.95
             });
             const sprite = new THREE.Sprite(material);
             sprite.position.set(
@@ -154,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.02; // Increased rotation speed
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
@@ -171,18 +172,22 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < CONFIG.SHAPE_COUNT; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
             const geometry = new GeometryClass(CONFIG.SHAPE_SIZE, 1);
-            const material = new THREE.MeshStandardMaterial({
+            const material = new THREE.MeshPhysicalMaterial({
                 color: CONFIG.SHAPE_COLOR,
-                wireframe: true,
+                metalness: 0.1,
+                roughness: 0.05,
                 transparent: true,
-                opacity: 0.5, // Increased opacity for better visibility
+                opacity: 0.6,
                 emissive: CONFIG.EMISSIVE_COLOR,
-                emissiveIntensity: 0.7, // Increased emissive intensity
-                side: THREE.DoubleSide
+                emissiveIntensity: 0.5,
+                side: THREE.DoubleSide,
+                reflectivity: 1.0,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.1
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.copy(getRandomPosition(shapes, CONFIG.SHAPE_SIZE));
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.03; // Increased rotation speed
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.03;
             mesh.rotationSpeedY = (Math.random() - 0.5) * 0.03;
             mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.03;
             sceneGroup.add(mesh);
@@ -259,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.onload = () => {
         setTimeout(() => {
             preloader.style.display = 'none';
-        }, 800); // Slightly reduced delay for faster visibility
+        }, 800);
     };
 
     form.addEventListener('submit', handleFormSubmit);

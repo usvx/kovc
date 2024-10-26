@@ -14,19 +14,23 @@ document.addEventListener('DOMContentLoaded', () => {
         isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 600 : 1200,
-        TORUS_KNOT_COUNT: isMobile ? 60 : 100,
-        MIN_DISTANCE: 300,
-        PARTICLE_SIZE: isMobile ? 120 : 180,
-        TORUS_KNOT_RADIUS: isMobile ? 70 : 100,
-        PARTICLE_SPEED: isMobile ? 1.2 : 2.5,
-        ROTATION_SPEED: isMobile ? 0.004 : 0.006,
+        PARTICLE_COUNT: isMobile ? 500 : 1000,
+        TORUS_KNOT_COUNT: isMobile ? 50 : 90,
+        MIN_DISTANCE: 250,
+        PARTICLE_SIZE: isMobile ? 100 : 150,
+        TORUS_KNOT_RADIUS: isMobile ? 60 : 90,
+        PARTICLE_SPEED: isMobile ? 1.0 : 2.0,
+        ROTATION_SPEED: isMobile ? 0.003 : 0.005,
         TEXTURE_SIZE: isMobile ? 256 : 512,
-        SHADOW_BLUR: isMobile ? 20 : 40,
-        LIGHT_INTENSITY: isMobile ? 0.8 : 1.0,
-        AMBIENT_COLOR: 0x00BFFF,
-        DIRECTIONAL_COLOR: 0x9370DB,
-        BACKGROUND_COLOR: 0x000000
+        SHADOW_BLUR: isMobile ? 15 : 35,
+        LIGHT_INTENSITY: isMobile ? 0.7 : 0.9,
+        AMBIENT_COLOR: 0x1E90FF,       // DodgerBlue
+        DIRECTIONAL_COLOR: 0x9370DB,   // MediumPurple
+        BACKGROUND_COLOR: 0x0A0A0A,    // Dark Background for better contrast
+        PARTICLE_COLOR_1: 0x1E90FF,     // DodgerBlue
+        PARTICLE_COLOR_2: 0xBA55D3,     // MediumOrchid
+        TORUS_COLOR: 0xBA55D3,          // MediumOrchid
+        EMISSIVE_COLOR: 0x9370DB,       // MediumPurple
     };
 
     // Utility Functions
@@ -50,8 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = gradient;
-        ctx.shadowColor = '#4B0082'; // Indigo
+
+        // Subtle Glow Adjustment
+        ctx.shadowColor = '#9370DB'; // MediumPurple
         ctx.shadowBlur = CONFIG.SHADOW_BLUR;
+        ctx.globalAlpha = 0.85; // Reduced opacity for natural glow
 
         // Draw Text
         ctx.fillText(char, size / 2, size / 2);
@@ -87,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function getRandomPosition(existingShapes, radius) {
         let position;
         let tooClose;
+        let attempts = 0;
         do {
             position = new THREE.Vector3(
                 (Math.random() - 0.5) * 4000,
@@ -97,6 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const distance = position.distanceTo(shape.position);
                 return distance < CONFIG.MIN_DISTANCE + radius;
             });
+            attempts++;
+            if (attempts > 100) break; // Prevent infinite loop
         } while (tooClose);
         return position;
     }
@@ -148,7 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
                       map: texture, 
                       transparent: true, 
                       blending: THREE.AdditiveBlending, 
-                      alphaTest: 0.5
+                      depthWrite: false,
+                      opacity: 0.9
                   }),
                   sprite = new THREE.Sprite(material);
 
@@ -161,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.02; // Slightly increased for smoother rotation
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.015; // Subtle rotation
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
@@ -169,22 +180,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createTorusKnots() {
         for (let i = 0; i < CONFIG.TORUS_KNOT_COUNT; i++) {
-            const torusKnotGeometry = new THREE.TorusKnotGeometry(CONFIG.TORUS_KNOT_RADIUS * 0.5, CONFIG.TORUS_KNOT_RADIUS * 0.1, 100, 16),
+            const torusKnotGeometry = new THREE.TorusKnotGeometry(CONFIG.TORUS_KNOT_RADIUS * 0.5, CONFIG.TORUS_KNOT_RADIUS * 0.08, 150, 20),
                   material = new THREE.MeshStandardMaterial({
-                      color: 0x1E90FF, // DodgerBlue
+                      color: CONFIG.TORUS_COLOR,
                       wireframe: true,
                       transparent: true,
-                      opacity: 0.25,
-                      emissive: 0x9370DB, // MediumPurple
-                      emissiveIntensity: 0.6,
+                      opacity: 0.2,
+                      emissive: CONFIG.EMISSIVE_COLOR,
+                      emissiveIntensity: 0.5,
                       side: THREE.DoubleSide
                   }),
                   torusKnotMesh = new THREE.Mesh(torusKnotGeometry, material);
 
             torusKnotMesh.position.copy(getRandomPosition(torusKnotShapes, CONFIG.TORUS_KNOT_RADIUS));
-            torusKnotMesh.rotationSpeedX = (Math.random() - 0.5) * 0.03;
-            torusKnotMesh.rotationSpeedY = (Math.random() - 0.5) * 0.03;
-            torusKnotMesh.rotationSpeedZ = (Math.random() - 0.5) * 0.03;
+            torusKnotMesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
+            torusKnotMesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
+            torusKnotMesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
             sceneGroup.add(torusKnotMesh);
             torusKnotShapes.push(torusKnotMesh);
         }

@@ -5,14 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
           preloader = document.getElementById('preloader');
     let scene, camera, renderer,
         particles = [],
-        icosahedronShapes = [],
+        torusKnotShapes = [],  // Updated for Torus Knot usage
         sceneGroup,
         mouseX = 0, mouseY = 0,
         windowHalfX = window.innerWidth / 2,
         windowHalfY = window.innerHeight / 2,
         isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
-    const MIN_DISTANCE = 200;  // Set minimum distance between spheres
+    const MIN_DISTANCE = 300;  // Increased minimum distance for more complex shapes
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas'),
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             tooClose = existingShapes.some(shape => {
                 const distance = position.distanceTo(shape.position);
-                return distance < MIN_DISTANCE + radius;  // Check minimum distance
+                return distance < MIN_DISTANCE + radius;
             });
 
         } while (tooClose);
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const shapeCount = isMobile ? 80 : 120;
         const radius = isMobile ? 80 : 120;
         for (let i = 0; i < shapeCount; i++) {
-            const icosahedronGeometry = new THREE.IcosahedronGeometry(radius, 1),
+            const torusKnotGeometry = new THREE.TorusKnotGeometry(radius * 0.5, radius * 0.15, 100, 16),  // Torus Knot parameters
                   material = new THREE.MeshStandardMaterial({
                       color: 0x00FFFF,
                       wireframe: true,
@@ -125,15 +125,14 @@ document.addEventListener('DOMContentLoaded', () => {
                       emissiveIntensity: 0.8,
                       side: THREE.DoubleSide
                   }),
-                  icosahedronMesh = new THREE.Mesh(icosahedronGeometry, material);
+                  torusKnotMesh = new THREE.Mesh(torusKnotGeometry, material);
 
-            // Set a random position that maintains minimum distance from other spheres
-            icosahedronMesh.position.copy(getRandomPosition(icosahedronShapes, radius));
-            icosahedronMesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
-            icosahedronMesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
-            icosahedronMesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
-            sceneGroup.add(icosahedronMesh);
-            icosahedronShapes.push(icosahedronMesh);
+            torusKnotMesh.position.copy(getRandomPosition(torusKnotShapes, radius));
+            torusKnotMesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
+            torusKnotMesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
+            torusKnotMesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
+            sceneGroup.add(torusKnotMesh);
+            torusKnotShapes.push(torusKnotMesh);
         }
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
@@ -174,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
         });
-        icosahedronShapes.forEach(s => {
+        torusKnotShapes.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;

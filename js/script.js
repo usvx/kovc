@@ -5,12 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
           preloader = document.getElementById('preloader');
     let scene, camera, renderer,
         particles = [],
-        icosahedronShapes = [],  // Updated to reflect Icosahedron usage
+        icosahedronShapes = [],
         sceneGroup,
         mouseX = 0, mouseY = 0,
         windowHalfX = window.innerWidth / 2,
         windowHalfY = window.innerHeight / 2,
         isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+
+    const MIN_DISTANCE = 200;  // Set minimum distance between spheres
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas'),
@@ -56,6 +58,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.random() < 0.7 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
     }
 
+    function getRandomPosition(existingShapes, radius) {
+        let position;
+        let tooClose;
+
+        do {
+            position = new THREE.Vector3(
+                (Math.random() - 0.5) * 4000,
+                (Math.random() - 0.5) * 4000,
+                (Math.random() - 0.5) * 4000
+            );
+
+            tooClose = existingShapes.some(shape => {
+                const distance = position.distanceTo(shape.position);
+                return distance < MIN_DISTANCE + radius;  // Check minimum distance
+            });
+
+        } while (tooClose);
+
+        return position;
+    }
+
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -90,8 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const shapeCount = isMobile ? 80 : 120;
+        const radius = isMobile ? 80 : 120;
         for (let i = 0; i < shapeCount; i++) {
-            const icosahedronGeometry = new THREE.IcosahedronGeometry(isMobile ? 80 : 120, 1),  // Icosahedron with detail 1 for a rounded look
+            const icosahedronGeometry = new THREE.IcosahedronGeometry(radius, 1),
                   material = new THREE.MeshStandardMaterial({
                       color: 0x00FFFF,
                       wireframe: true,
@@ -102,12 +126,14 @@ document.addEventListener('DOMContentLoaded', () => {
                       side: THREE.DoubleSide
                   }),
                   icosahedronMesh = new THREE.Mesh(icosahedronGeometry, material);
-            icosahedronMesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+
+            // Set a random position that maintains minimum distance from other spheres
+            icosahedronMesh.position.copy(getRandomPosition(icosahedronShapes, radius));
             icosahedronMesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
             icosahedronMesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
             icosahedronMesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
             sceneGroup.add(icosahedronMesh);
-            icosahedronShapes.push(icosahedronMesh);  // Updated variable name
+            icosahedronShapes.push(icosahedronMesh);
         }
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);

@@ -203,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
+            sprite.renderOrder = 1; // Ensure particles render after spheres
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
@@ -213,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const createSpheres = () => {
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
-            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 128, 128); // Increased segments for smoother spheres
+            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64); // Reduced segments for better performance
             const material = new THREE.MeshPhysicalMaterial({
                 color: CONFIG.SPHERE_COLOR,
                 metalness: 0.0,
@@ -227,13 +228,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 reflectivity: 0.9,
                 clearcoat: 1.0,
                 clearcoatRoughness: 0.05,
-                ior: 1.5 // Index of Refraction for glass
+                ior: 1.5, // Index of Refraction for glass
+                depthWrite: false, // Prevent spheres from blocking particles
+                alphaTest: 0.1 // Helps in correct rendering of transparent objects
             });
             const sphere = new THREE.Mesh(geometry, material);
             sphere.position.copy(getRandomPosition(spheres, CONFIG.SPHERE_SIZE));
             sphere.rotationSpeedX = (Math.random() - 0.5) * 0.02;
             sphere.rotationSpeedY = (Math.random() - 0.5) * 0.02;
             sphere.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+            sphere.renderOrder = 0; // Ensure spheres render before particles
             sceneGroup.add(sphere);
             spheres.push(sphere);
         }

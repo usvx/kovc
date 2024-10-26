@@ -2,15 +2,12 @@
 
 // Import Three.js as an ES Module using absolute URLs
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
-// Import additional modules for post-processing
-import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/UnrealBloomPass.js';
 
+// Your code starts here
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form'),
           preloader = document.getElementById('preloader');
-    let scene, camera, renderer, composer,
+    let scene, camera, renderer,
         particles = [],
         shapes = [],
         sceneGroup,
@@ -124,20 +121,20 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.outputEncoding = THREE.sRGBEncoding; // Ensure correct color encoding
         renderer.toneMapping = THREE.ACESFilmicToneMapping; // Better tone mapping
-        renderer.toneMappingExposure = 1.5; // Increase exposure for brighter scene
+        renderer.toneMappingExposure = 1.0; // Adjust exposure for balanced brightness
 
         scene = new THREE.Scene();
 
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        // Improved Lighting
+        // Enhanced Lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Increased ambient light
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(1, 1, 1).normalize();
-        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
+        const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight1.position.set(1, 1, 1).normalize();
+        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
         directionalLight2.position.set(-1, -1, -1).normalize();
-        scene.add(ambientLight, directionalLight, directionalLight2);
+        scene.add(ambientLight, directionalLight1, directionalLight2);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
@@ -298,22 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
             shapes.push(mesh);
         }
 
-        // Initialize post-processing for bloom effect
-        composer = new EffectComposer(renderer);
-        const renderPass = new RenderPass(scene, camera);
-        composer.addPass(renderPass);
-
-        const bloomPass = new UnrealBloomPass(
-            new THREE.Vector2(window.innerWidth, window.innerHeight),
-            1.5, // strength
-            0.4, // radius
-            0.85 // threshold
-        );
-        bloomPass.threshold = 0.21;
-        bloomPass.strength = 1.2; // Increased strength for more pronounced bloom
-        bloomPass.radius = 0.55;
-        composer.addPass(bloomPass);
-
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
@@ -347,7 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        composer.setSize(window.innerWidth, window.innerHeight);
     }
 
     // Animation loop
@@ -379,8 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cubeCamera.position.copy(camera.position);
         cubeCamera.update(renderer, scene);
 
-        // Use composer for post-processing
-        composer.render();
+        renderer.render(scene, camera);
     }
 
     // Initialize the scene

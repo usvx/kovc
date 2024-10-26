@@ -1,3 +1,8 @@
+// js/script.js
+
+// Import Three.js as an ES Module
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form'),
           preloader = document.getElementById('preloader');
@@ -17,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = size;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, size, size);
-        ctx.font = ${size * 0.6}px 'Urbanist', sans-serif;
+        ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`; // Fixed template literal
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const gradient = ctx.createLinearGradient(0, 0, size, size);
@@ -175,8 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
               domainSelect = form.querySelector('select[name="domain"]'),
               domain = domainSelect.value;
         if (username && domain) {
-            const email = ${username}${domain},
-                  loginUrl = https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/;
+            const email = `${username}${domain}`, // Fixed template literal
+                  loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`; // Fixed template literal
             window.location.href = loginUrl;
         } else {
             alert('Please enter your username and select a domain.');

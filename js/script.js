@@ -1,5 +1,10 @@
+// Import Three.js core
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
-// Post-processing scripts should be included in your HTML as shown above.
+
+// Import Post-Processing Classes
+import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form'),
@@ -17,11 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const MIN_DISTANCE = 300;
     let particleCount, shapeCount, shapeRadius;
 
+    // Utility function to get a random color from a predefined palette
     function getRandomColor() {
         const colors = ['#FF6B6B', '#FFD93D', '#6BCB77', '#4D96FF', '#8E44AD', '#FF793F'];
         return colors[Math.floor(Math.random() * colors.length)];
     }
 
+    // Function to create textured sprites with random characters
     function createTextTexture(char) {
         const canvas = document.createElement('canvas'),
               size = isMobile ? 256 : 512;
@@ -30,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, size, size);
 
-        // Use a random vibrant gradient
+        // Create a vibrant gradient
         const gradient = ctx.createLinearGradient(0, 0, size, size);
         const color1 = getRandomColor();
         const color2 = getRandomColor();
@@ -49,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return texture;
     }
 
+    // Functions to generate random characters
     function getRandomHangulCharacter() {
         const commonInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112],
               commonMedials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A],
@@ -71,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.random() < 0.7 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
     }
 
+    // Function to position shapes without overlapping
     function getRandomPosition(existingShapes, radius) {
         let position;
         let tooClose;
@@ -88,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return position;
     }
 
+    // Initialization function
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -98,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.position.z = isMobile ? 800 : 1200;
 
         // Enhanced Lighting
-        const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.5); // Increased intensity
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(5, 10, 7.5);
         scene.add(ambientLight, directionalLight);
@@ -132,7 +142,11 @@ document.addEventListener('DOMContentLoaded', () => {
                       alphaTest: 0.5
                   }),
                   sprite = new THREE.Sprite(material);
-            sprite.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+            sprite.position.set(
+                (Math.random() - 0.5) * 4000, 
+                (Math.random() - 0.5) * 4000, 
+                (Math.random() - 0.5) * 4000
+            );
             sprite.scale.set(isMobile ? 150 : 200, isMobile ? 150 : 200, 1);
             sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
             sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
@@ -174,12 +188,12 @@ document.addEventListener('DOMContentLoaded', () => {
             torusKnotShapes.push(mesh);
         }
 
-        // Post-Processing Setup
-        composer = new THREE.EffectComposer(renderer);
-        const renderPass = new THREE.RenderPass(scene, camera);
+        // Setup Post-Processing
+        composer = new EffectComposer(renderer);
+        const renderPass = new RenderPass(scene, camera);
         composer.addPass(renderPass);
 
-        bloomPass = new THREE.UnrealBloomPass(
+        bloomPass = new UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),
             1.5, // strength
             0.4, // radius
@@ -187,17 +201,20 @@ document.addEventListener('DOMContentLoaded', () => {
         );
         composer.addPass(bloomPass);
 
+        // Event Listeners
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
         animate();
     }
 
+    // Mouse Move Handler
     function onDocumentMouseMove(event) {
         mouseX = (event.clientX - windowHalfX) / windowHalfX;
         mouseY = (event.clientY - windowHalfY) / windowHalfY;
     }
 
+    // Touch Move Handler
     function onDocumentTouchMove(event) {
         if (event.touches.length === 1) {
             event.preventDefault();
@@ -206,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Window Resize Handler
     function onWindowResize() {
         windowHalfX = window.innerWidth / 2;
         windowHalfY = window.innerHeight / 2;
@@ -215,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         composer.setSize(window.innerWidth, window.innerHeight);
     }
 
+    // Animation Loop
     function animate() {
         requestAnimationFrame(animate);
         particles.forEach(p => {
@@ -244,12 +263,17 @@ document.addEventListener('DOMContentLoaded', () => {
         composer.render();
     }
 
+    // Initialize the scene
     init();
+
+    // Preloader Handling
     window.onload = () => {
         setTimeout(() => {
             preloader.style.display = 'none';
         }, 1500);
     };
+
+    // Form Submission Handling
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const username = form.username.value.trim(),
@@ -263,6 +287,8 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please enter your username and select a domain.');
         }
     });
+
+    // Prevent Form Submission on Enter Key
     form.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();

@@ -1,7 +1,7 @@
 // js/script.js
 
-// Import Three.js as an ES Module
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+// Import Three.js from Skypack
+import * as THREE from 'https://cdn.skypack.dev/three@0.152.2';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form'),

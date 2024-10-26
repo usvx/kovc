@@ -23,10 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const gradient = ctx.createLinearGradient(0, 0, size, size);
-        gradient.addColorStop(0, '#00FFFF');
-        gradient.addColorStop(1, '#8A2BE2');
+        const hue = Math.random() * 360;
+        gradient.addColorStop(0, `hsl(${hue}, 100%, 70%)`);
+        gradient.addColorStop(1, `hsl(${(hue + 60) % 360}, 100%, 50%)`);
         ctx.fillStyle = gradient;
-        ctx.shadowColor = '#4B0082';
+        ctx.shadowColor = `hsl(${(hue + 180) % 360}, 100%, 30%)`;
         ctx.shadowBlur = isMobile ? 30 : 50;
         ctx.fillText(char, size / 2, size / 2);
         const texture = new THREE.Texture(canvas);
@@ -65,26 +66,30 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        const ambientLight = new THREE.AmbientLight(0x00FFFF, 1),
-              directionalLight = new THREE.DirectionalLight(0x8A2BE2, 1);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1),
+              directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(ambientLight, directionalLight);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const geometry = new THREE.SphereGeometry(isMobile ? 80 : 120, 32, 32);
+        const geometry = new THREE.SphereGeometry(isMobile ? 80 : 120, 64, 64);
         const shapeCount = isMobile ? 100 : 150;
         for (let i = 0; i < shapeCount; i++) {
+            const hue = Math.random() * 360;
             const material = new THREE.MeshPhysicalMaterial({
-                color: new THREE.Color(Math.random(), Math.random(), Math.random()),
-                metalness: 0.1,
-                roughness: 0.1,
+                color: new THREE.Color(`hsl(${hue}, 100%, 50%)`),
+                metalness: 0,
+                roughness: 0,
                 transmission: 1,
-                opacity: 0.9,
+                opacity: 1,
                 transparent: true,
                 clearcoat: 1,
-                clearcoatRoughness: 0.1
+                clearcoatRoughness: 0,
+                reflectivity: 1,
+                ior: 1.5,
+                thickness: 2
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
@@ -99,16 +104,33 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter(),
                   texture = createTextTexture(char),
-                  material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending }),
-                  sprite = new THREE.Sprite(material);
-            sprite.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
-            sprite.scale.set(isMobile ? 150 : 200, isMobile ? 150 : 200, 1);
-            sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
-            sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
-            sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.05;
-            sceneGroup.add(sprite);
-            particles.push(sprite);
+                  geometry = new THREE.PlaneGeometry(isMobile ? 150 : 200, isMobile ? 150 : 200),
+                  hue = Math.random() * 360,
+                  material = new THREE.MeshPhysicalMaterial({
+                      map: texture,
+                      color: new THREE.Color(`hsl(${hue}, 100%, 50%)`),
+                      metalness: 0,
+                      roughness: 0,
+                      transmission: 1,
+                      opacity: 1,
+                      transparent: true,
+                      clearcoat: 1,
+                      clearcoatRoughness: 0,
+                      reflectivity: 1,
+                      ior: 1.5,
+                      thickness: 2,
+                      side: THREE.DoubleSide
+                  }),
+                  mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+            mesh.speedX = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
+            mesh.speedY = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
+            mesh.speedZ = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
+            sceneGroup.add(mesh);
+            particles.push(mesh);
         }
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
@@ -144,7 +166,9 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.x += p.speedX;
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
-            p.material.rotation += p.rotationSpeed;
+            p.rotation.x += p.rotationSpeedX;
+            p.rotation.y += p.rotationSpeedY;
+            p.rotation.z += p.rotationSpeedZ;
             if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
             if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;

@@ -36,9 +36,30 @@ document.addEventListener('DOMContentLoaded', () => {
         return texture;
     }
 
+    // Function to get a random Hangul character
+    function getRandomHangulCharacter() {
+        const commonInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
+        const commonMedials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A];
+        const commonFinals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA, 0x11C2];
+        
+        const initial = commonInitials[Math.floor(Math.random() * commonInitials.length)];
+        const medial = commonMedials[Math.floor(Math.random() * commonMedials.length)];
+        const final = commonFinals[Math.floor(Math.random() * commonFinals.length)];
+        
+        const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
+        return String.fromCharCode(syllableCode);
+    }
+
+    // Function to get a random Cyrillic character
+    function getRandomCyrillicCharacter() {
+        const start = 0x0410;
+        const end = 0x042F;
+        const code = Math.floor(Math.random() * (end - start + 1)) + start;
+        return String.fromCharCode(code);
+    }
+
     function getRandomCharacter() {
-        const charSet = Math.random() < 0.7 ? 'Hangul' : 'Cyrillic';
-        return charSet === 'Hangul' ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
+        return Math.random() < 0.7 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
     }
 
     function init() {

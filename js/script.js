@@ -113,29 +113,68 @@ document.addEventListener('DOMContentLoaded', () => {
         return geometry;
     }
 
+    // Function to create a simple gradient background using a large plane
+    function createGradientBackground() {
+        const size = 10000;
+        const geometry = new THREE.PlaneGeometry(size, size);
+        const material = new THREE.ShaderMaterial({
+            vertexShader: `
+                varying vec2 vUv;
+                void main(){
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                }
+            `,
+            fragmentShader: `
+                varying vec2 vUv;
+                void main(){
+                    vec3 topColor = vec3(0.1, 0.2, 0.5); // Dark Blue
+                    vec3 bottomColor = vec3(0.5, 0.8, 1.0); // Light Blue
+                    gl_FragColor = vec4(mix(bottomColor, topColor, vUv.y), 1.0);
+                }
+            `,
+            side: THREE.BackSide
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.rotation.x = -Math.PI / 2;
+        sceneGroup.add(mesh);
+    }
+
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.outputEncoding = THREE.sRGBEncoding; // Ensure correct color encoding
         scene = new THREE.Scene();
+        scene.background = null; // We'll use a gradient background instead
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        const ambientLight = new THREE.AmbientLight(0x00FFFF, 1),
-              directionalLight = new THREE.DirectionalLight(0x8A2BE2, 1);
-        directionalLight.position.set(1, 1, 1).normalize();
-        scene.add(ambientLight, directionalLight);
+        // Improved Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
+        const pointLight1 = new THREE.PointLight(0xffffff, 1);
+        pointLight1.position.set(500, 500, 500);
+        const pointLight2 = new THREE.PointLight(0xffffff, 1);
+        pointLight2.position.set(-500, -500, -500);
+        scene.add(ambientLight, pointLight1, pointLight2);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
+
+        // Create Gradient Background
+        createGradientBackground();
 
         // Adjust particle and shape counts based on device type
         const particleCount = isMobile ? 800 : 1600;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter(),
                   texture = createTextTexture(char),
-                  material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending }),
+                  material = new THREE.SpriteMaterial({ 
+                      map: texture, 
+                      transparent: true, 
+                      blending: THREE.AdditiveBlending 
+                  }),
                   sprite = new THREE.Sprite(material);
             sprite.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
             sprite.scale.set(isMobile ? 150 : 200, isMobile ? 150 : 200, 1);
@@ -205,16 +244,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Enhanced material with varying colors and emissive properties
-            const material = new THREE.MeshStandardMaterial({
+            // Enhanced glassy material with physical properties
+            const material = new THREE.MeshPhysicalMaterial({
                 color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
-                wireframe: false,
+                metalness: 0,
+                roughness: 0,
+                transmission: 1, // Use transmission for glass effect
                 transparent: true,
-                opacity: 0.6,
-                emissive: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
-                emissiveIntensity: 0.5,
-                roughness: 0.1,
-                metalness: 0.9,
+                opacity: 1,
+                clearcoat: 1,
+                clearcoatRoughness: 0,
+                thickness: 2, // Thickness for refraction
+                envMapIntensity: 1,
                 side: THREE.DoubleSide
             });
 
@@ -237,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
             shapes.push(mesh);
         }
 
-        // Add subtle glow effect using shader material (optional)
+        // Optional: Add subtle glow effect using shader material (commented out)
         /*
         const bloomPass = new THREE.UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),

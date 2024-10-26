@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(ambientLight, directionalLight);
@@ -105,19 +105,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function addShape(geometry) {
         const hue = Math.random() * 360;
         const material = new THREE.MeshPhysicalMaterial({
-            color: new THREE.Color(`hsl(${hue}, 100%, 70%)`),
-            emissive: new THREE.Color(`hsl(${(hue + 180) % 360}, 100%, 30%)`),
-            emissiveIntensity: 0.6,
-            metalness: 0.4,
-            roughness: 0.05,
+            color: new THREE.Color(`hsl(${hue}, 100%, 80%)`),
+            emissive: new THREE.Color(`hsl(${(hue + 180) % 360}, 100%, 50%)`),
+            emissiveIntensity: 0.8,
+            metalness: 0.5,
+            roughness: 0.1,
             transmission: 0.95,
-            opacity: 0.85,
+            opacity: 0.7,
             transparent: true,
             clearcoat: 1,
-            clearcoatRoughness: 0.1,
+            clearcoatRoughness: 0.05,
             reflectivity: 1.0,
-            ior: 1.5,
-            thickness: 8,
+            ior: 1.4,
+            thickness: 10,
         });
         const mesh = new THREE.Mesh(geometry, material);
         resetPosition(mesh);
@@ -132,10 +132,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const hue = Math.random() * 360;
         const material = new THREE.MeshPhysicalMaterial({
             map: texture,
-            color: new THREE.Color(`hsl(${hue}, 100%, 60%)`),
-            emissive: new THREE.Color(`hsl(${(hue + 180) % 360}, 100%, 40%)`),
-            emissiveIntensity: 0.5,
-            metalness: 0.3,
+            color: new THREE.Color(`hsl(${hue}, 100%, 70%)`),
+            emissive: new THREE.Color(`hsl(${(hue + 180) % 360}, 100%, 60%)`),
+            emissiveIntensity: 0.8,
+            metalness: 0.4,
             roughness: 0.05,
             transparent: true,
             clearcoat: 1,
@@ -172,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
             p.material.color.offsetHSL(0.0008, 0, 0);
             p.material.emissive.offsetHSL(0.0008, 0, 0);
 
-            // Respawn if the particle is too far from the center
             if (p.position.length() > 2000) {
                 resetPosition(p);
             }
@@ -184,7 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
             s.material.color.offsetHSL(0.0005, 0, 0);
             s.material.emissive.offsetHSL(0.0005, 0, 0);
 
-            // Respawn if the shape is too far from the center
             if (s.position.length() > 2000) {
                 resetPosition(s);
             }

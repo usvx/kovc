@@ -8,35 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
         mouseX = 0, mouseY = 0,
         windowHalfX = window.innerWidth / 2,
         windowHalfY = window.innerHeight / 2,
-        isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent),
-        composer, bloomPass, renderPass, depthOfFieldPass;
-
-    // Initialize Post-Processing
-    function initPostProcessing() {
-        composer = new THREE.EffectComposer(renderer);
-        renderPass = new THREE.RenderPass(scene, camera);
-        composer.addPass(renderPass);
-
-        // Bloom Effect
-        bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-        bloomPass.threshold = 0;
-        bloomPass.strength = 1.5;
-        bloomPass.radius = 0;
-        composer.addPass(bloomPass);
-
-        // Depth of Field Effect
-        depthOfFieldPass = new THREE.BokehPass(scene, camera, {
-            focus: 1.0,
-            aperture: 0.025,
-            maxblur: 0.01,
-
-            width: window.innerWidth,
-            height: window.innerHeight
-        });
-        depthOfFieldPass.renderToScreen = true;
-        composer.addPass(depthOfFieldPass);
-    }
-
+        isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+    
     function createTextTexture(char) {
         const canvas = document.createElement('canvas'),
               size = isMobile ? 256 : 512;
@@ -44,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = size;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, size, size);
-        ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
+        ctx.font = ${size * 0.6}px 'Urbanist', sans-serif;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const gradient = ctx.createLinearGradient(0, 0, size, size);
@@ -86,49 +59,27 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
         scene = new THREE.Scene();
-
-        // Camera Setup with Depth of Field
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        // Advanced Lighting
-        const ambientLight = new THREE.AmbientLight(0x404040, 2); // Soft white light
-        const pointLight1 = new THREE.PointLight(0x00FFFF, 1, 5000);
-        pointLight1.position.set(1000, 2000, 3000);
-        const pointLight2 = new THREE.PointLight(0x8A2BE2, 1, 5000);
-        pointLight2.position.set(-1000, -2000, -3000);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-        directionalLight.position.set(0, 1, 0).normalize();
-        scene.add(ambientLight, pointLight1, pointLight2, directionalLight);
+        const ambientLight = new THREE.AmbientLight(0x00FFFF, 1),
+              directionalLight = new THREE.DirectionalLight(0x8A2BE2, 1);
+        directionalLight.position.set(1, 1, 1).normalize();
+        scene.add(ambientLight, directionalLight);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        // Initialize Post-Processing
-        initPostProcessing();
-
         // Adjust particle and shape counts based on device type
-        const particleCount = isMobile ? 1200 : 2400; // Increased for more density
+        const particleCount = isMobile ? 800 : 1600;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter(),
                   texture = createTextTexture(char),
-                  material = new THREE.SpriteMaterial({ 
-                      map: texture, 
-                      transparent: true, 
-                      blending: THREE.AdditiveBlending,
-                      depthWrite: false // Improve performance with additive blending
-                  }),
+                  material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending }),
                   sprite = new THREE.Sprite(material);
-            sprite.position.set(
-                (Math.random() - 0.5) * 5000, 
-                (Math.random() - 0.5) * 5000, 
-                (Math.random() - 0.5) * 5000
-            );
-            sprite.scale.set(isMobile ? 150 : 200, isMobile ? 150 : 200, 1);
+            sprite.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+            sprite.scale.set(isMobile ? 150 : 200, isMobile ? 150 : 200, 1); // Increased size for better visibility on mobile
             sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
             sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
             sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
@@ -137,44 +88,29 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        const geometryTypes = [
-            THREE.TetrahedronGeometry, 
-            THREE.OctahedronGeometry, 
-            THREE.IcosahedronGeometry, 
-            THREE.DodecahedronGeometry,
-            THREE.BoxGeometry, // Added more geometry types
-            THREE.SphereGeometry
-        ];
-        const shapeCount = isMobile ? 150 : 300; // Increased for more immersion
+        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry],
+              shapeCount = isMobile ? 80 : 120; // Increased shape count for a more immersive experience
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)],
-                  geometry = new GeometryClass(
-                      isMobile ? 80 : 120, 
-                      Math.floor(Math.random() * 3) + 1 // Varying detail levels
-                  ),
+                  geometry = new GeometryClass(isMobile ? 80 : 120, 2),
                   material = new THREE.MeshStandardMaterial({
-                      color: new THREE.Color(Math.random(), Math.random(), Math.random()),
-                      wireframe: Math.random() < 0.5, // Random wireframe toggle
+                      color: 0x00FFFF,
+                      wireframe: true,
                       transparent: true,
-                      opacity: 0.4,
+                      opacity: 0.3,
                       emissive: 0x8A2BE2,
-                      emissiveIntensity: Math.random(),
+                      emissiveIntensity: 0.8,
                       side: THREE.DoubleSide
                   }),
                   mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set(
-                (Math.random() - 0.5) * 5000, 
-                (Math.random() - 0.5) * 5000, 
-                (Math.random() - 0.5) * 5000
-            );
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+            mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
 
-        // Enhanced Interactivity
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
@@ -200,9 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        if (composer) {
-            composer.setSize(window.innerWidth, window.innerHeight);
-        }
     }
 
     function animate() {
@@ -212,11 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
             p.material.rotation += p.rotationSpeed;
-            // Boundary Check with Extended Limits
-            const limit = 2500;
-            if (p.position.x > limit || p.position.x < -limit) p.speedX *= -1;
-            if (p.position.y > limit || p.position.y < -limit) p.speedY *= -1;
-            if (p.position.z > limit || p.position.z < -limit) p.speedZ *= -1;
+            if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
+            if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
+            if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
         });
         shapes.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
@@ -229,12 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetRotationX = mouseY * 0.1;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
-        // Use composer for post-processing
-        if (composer) {
-            composer.render();
-        } else {
-            renderer.render(scene, camera);
-        }
+        renderer.render(scene, camera);
     }
 
     init();
@@ -249,8 +175,8 @@ document.addEventListener('DOMContentLoaded', () => {
               domainSelect = form.querySelector('select[name="domain"]'),
               domain = domainSelect.value;
         if (username && domain) {
-            const email = `${username}${domain}`,
-                  loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
+            const email = ${username}${domain},
+                  loginUrl = https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/;
             window.location.href = loginUrl;
         } else {
             alert('Please enter your username and select a domain.');

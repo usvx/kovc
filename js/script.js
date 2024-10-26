@@ -94,14 +94,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const hue = Math.random() * 360;
             const material = new THREE.MeshPhysicalMaterial({
                 color: new THREE.Color(`hsl(${hue}, 100%, 70%)`),
-                metalness: 0.3,
+                emissive: new THREE.Color(`hsl(${(hue + 180) % 360}, 100%, 30%)`),
+                emissiveIntensity: 0.6,
+                metalness: 0.4,
                 roughness: 0.05,
                 transmission: 0.95,
-                opacity: 0.8,
+                opacity: 0.85,
                 transparent: true,
                 clearcoat: 1,
                 clearcoatRoughness: 0.1,
-                reflectivity: 0.9,
+                reflectivity: 1.0,
                 ior: 1.5,
                 thickness: 8,
             });
@@ -125,7 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const material = new THREE.MeshPhysicalMaterial({
                 map: texture,
                 color: new THREE.Color(`hsl(${hue}, 100%, 60%)`),
-                metalness: 0.2,
+                emissive: new THREE.Color(`hsl(${(hue + 180) % 360}, 100%, 40%)`),
+                emissiveIntensity: 0.5,
+                metalness: 0.3,
                 roughness: 0.05,
                 transparent: true,
                 clearcoat: 1,
@@ -155,12 +159,14 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.y += Math.cos(time * p.userData.speed + p.userData.offset) * p.userData.amplitude * 0.1;
             p.lookAt(camera.position);
             p.material.color.offsetHSL(0.0008, 0, 0); // Smooth color shift
+            p.material.emissive.offsetHSL(0.0008, 0, 0); // Matching emissive color shift
         });
 
         shapes.forEach(s => {
             s.position.x += Math.sin(time * s.userData.speed + s.userData.offset) * s.userData.amplitude * 0.1;
             s.position.y += Math.cos(time * s.userData.speed + s.userData.offset) * s.userData.amplitude * 0.1;
             s.material.color.offsetHSL(0.0005, 0, 0); // Iridescent effect
+            s.material.emissive.offsetHSL(0.0005, 0, 0); // Matching emissive color shift
         });
 
         sceneGroup.rotation.y += 0.003;

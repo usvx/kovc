@@ -46,7 +46,8 @@ html, body {
     width: 100%;
     background-color: var(--background-color);
     color: var(--foreground-color);
-    overflow: hidden;
+    /* Removed overflow: hidden to allow scrolling */
+    /* overflow: hidden; */
     -webkit-user-select: none;
     user-select: none;
     position: relative;
@@ -96,7 +97,8 @@ main {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 0 20px;
+    padding: 20px;
+    overflow-y: auto; /* Allow vertical scrolling */
 }
 
 .entrance {
@@ -170,6 +172,27 @@ form {
     -webkit-text-size-adjust: 100%;
 }
 
+button {
+    padding: var(--button-padding);
+    background: var(--accent-color);
+    color: var(--background-color);
+    border: none;
+    border-radius: 15px;
+    font-size: var(--button-font-size);
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(138, 43, 226, 0.5), 0 0 60px rgba(75, 0, 130, 0.5);
+}
+
+button:hover,
+button:focus {
+    transform: scale(1.05);
+    background: var(--button-hover);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.7), 0 0 60px rgba(138, 43, 226, 0.7), 0 0 90px rgba(75, 0, 130, 0.7);
+    outline: none;
+}
+
 .input-container input::placeholder,
 .custom-select select:invalid {
     color: var(--foreground-color);
@@ -226,27 +249,6 @@ form {
     background: var(--background-color);
 }
 
-button {
-    padding: var(--button-padding);
-    background: var(--accent-color);
-    color: var(--background-color);
-    border: none;
-    border-radius: 15px;
-    font-size: var(--button-font-size);
-    cursor: pointer;
-    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-    width: 100%;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(138, 43, 226, 0.5), 0 0 60px rgba(75, 0, 130, 0.5);
-}
-
-button:hover,
-button:focus {
-    transform: scale(1.05);
-    background: var(--button-hover);
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.7), 0 0 60px rgba(138, 43, 226, 0.7), 0 0 90px rgba(75, 0, 130, 0.7);
-    outline: none;
-}
-
 input:focus,
 select:focus,
 button:focus {
@@ -280,7 +282,8 @@ button:focus {
 
 @media (max-width: 1024px) {
     .entrance {
-        width: 450px;
+        width: 100%;
+        max-width: 450px;
         padding: 60px;
     }
     h1 {
@@ -299,7 +302,8 @@ button:focus {
 
 @media (max-width: 768px) {
     .entrance {
-        width: 400px;
+        width: 100%;
+        max-width: 400px;
         padding: 55px;
     }
     h1 {
@@ -318,7 +322,8 @@ button:focus {
 
 @media (max-width: 480px) {
     .entrance {
-        width: 350px;
+        width: 100%;
+        max-width: 350px;
         padding: 45px;
     }
     h1 {

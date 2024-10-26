@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         particles = [],
         shapes = [],
         sceneGroup,
-        envMap,
+        cubeCamera, cubeRenderTarget,
         mouseX = 0, mouseY = 0,
         windowHalfX = window.innerWidth / 2,
         windowHalfY = window.innerHeight / 2,
@@ -183,14 +183,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Generate procedural environment map
-        const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
+        cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
             format: THREE.RGBAFormat,
             generateMipmaps: true,
             minFilter: THREE.LinearMipmapLinearFilter,
             encoding: THREE.sRGBEncoding
         });
 
-        const cubeCamera = new THREE.CubeCamera(1, 10000, cubeRenderTarget);
+        cubeCamera = new THREE.CubeCamera(1, 10000, cubeRenderTarget);
         scene.environment = cubeRenderTarget.texture;
 
         // Enhanced geometry types including TorusKnot and Möbius Strip
@@ -290,15 +290,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
-        animate();
-
-        // Update the cube camera to render the environment
-        function updateCubeCamera() {
-            cubeCamera.update(renderer, scene);
-        }
 
         // Initial cube camera update
-        updateCubeCamera();
+        cubeCamera.update(renderer, scene);
+
+        animate();
     }
 
     // Function to handle mouse movement

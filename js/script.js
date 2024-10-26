@@ -10,9 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
         windowHalfY = window.innerHeight / 2,
         isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
     
-    // Optionally disable Three.js on very small screens for better performance
-    const shouldEnableThreeJS = !(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && window.innerWidth < 480);
-
     function createTextTexture(char) {
         const canvas = document.createElement('canvas'),
               size = isMobile ? 256 : 512;
@@ -58,8 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function init() {
-        if (!shouldEnableThreeJS) return; // Disable Three.js for very small screens
-
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -76,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const particleCount = isMobile ? 400 : 800; // Reduced for better performance
+        const particleCount = isMobile ? 800 : 1600; // Adjusted particle count
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter(),
                   texture = createTextTexture(char),
@@ -93,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry],
-              shapeCount = isMobile ? 30 : 60; // Reduced for better performance
+              shapeCount = isMobile ? 60 : 100; // Adjusted shape count
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)],
                   geometry = new GeometryClass(isMobile ? 60 : 100, 2),
@@ -137,37 +132,34 @@ document.addEventListener('DOMContentLoaded', () => {
     function onWindowResize() {
         windowHalfX = window.innerWidth / 2;
         windowHalfY = window.innerHeight / 2;
-        if (!shouldEnableThreeJS) return; // Skip resizing if Three.js is disabled
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     function animate() {
-        if (shouldEnableThreeJS) {
-            requestAnimationFrame(animate);
-            particles.forEach(p => {
-                p.position.x += p.speedX;
-                p.position.y += p.speedY;
-                p.position.z += p.speedZ;
-                p.material.rotation += p.rotationSpeed;
-                if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
-                if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
-                if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
-            });
-            shapes.forEach(s => {
-                s.rotation.x += s.rotationSpeedX;
-                s.rotation.y += s.rotationSpeedY;
-                s.rotation.z += s.rotationSpeedZ;
-            });
-            sceneGroup.rotation.y += 0.003;
-            sceneGroup.rotation.x += 0.0025;
-            const targetRotationY = mouseX * 0.1,
-                  targetRotationX = mouseY * 0.1;
-            sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
-            sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
-            renderer.render(scene, camera);
-        }
+        requestAnimationFrame(animate);
+        particles.forEach(p => {
+            p.position.x += p.speedX;
+            p.position.y += p.speedY;
+            p.position.z += p.speedZ;
+            p.material.rotation += p.rotationSpeed;
+            if (p.position.x > 2000 || p.position.x < -2000) p.speedX *= -1;
+            if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
+            if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
+        });
+        shapes.forEach(s => {
+            s.rotation.x += s.rotationSpeedX;
+            s.rotation.y += s.rotationSpeedY;
+            s.rotation.z += s.rotationSpeedZ;
+        });
+        sceneGroup.rotation.y += 0.003;
+        sceneGroup.rotation.x += 0.0025;
+        const targetRotationY = mouseX * 0.1,
+              targetRotationX = mouseY * 0.1;
+        sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
+        sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
+        renderer.render(scene, camera);
     }
 
     init();

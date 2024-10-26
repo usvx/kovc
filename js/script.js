@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.outputEncoding = THREE.sRGBEncoding;
 
         scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x101010);  // Set a dark background for contrast
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createBackgroundGradient() {
         const bgGeometry = new THREE.PlaneGeometry(10000, 10000);
         const bgMaterial = new THREE.MeshBasicMaterial({
-            color: 0x000000,
+            color: 0x333333,
             side: THREE.DoubleSide
         });
         const backgroundPlane = new THREE.Mesh(bgGeometry, bgMaterial);
@@ -97,15 +98,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const hue = Math.random() * 360;
             const material = new THREE.MeshPhysicalMaterial({
                 color: new THREE.Color(`hsl(${hue}, 100%, 50%)`),
-                metalness: 0.1,
-                roughness: 0.05,
-                transmission: 1,
+                metalness: 0.3,
+                roughness: 0.2,
+                transmission: 0.9, // High transmission for glass effect
+                opacity: 0.8,
                 transparent: true,
                 clearcoat: 1,
                 clearcoatRoughness: 0.1,
-                reflectivity: 1,
-                ior: 1.5,
-                thickness: 2
+                reflectivity: 0.5,
+                ior: 1.4,
+                thickness: 5,
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
@@ -122,9 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const material = new THREE.MeshPhysicalMaterial({
                 map: texture,
                 color: new THREE.Color(`hsl(${hue}, 100%, 50%)`),
+                metalness: 0.1,
+                roughness: 0.05,
                 transparent: true,
                 clearcoat: 1,
-                envMapIntensity: 1
+                clearcoatRoughness: 0.1,
+                reflectivity: 1
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);

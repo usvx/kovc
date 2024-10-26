@@ -81,26 +81,7 @@
         </div>
     </noscript>
 
-    <!-- Include Three.js -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js" integrity="sha384-aUS0jUAjhhBFNPifgxTHTNcsZDqkbegLd/JKEhJzK3Lyg9nFF1PZ2J++mzKwd8Kz" crossorigin="anonymous"></script>
-
-    <!-- Include Post-Processing Scripts as ES6 Modules -->
-    <script type="module">
-        // Import necessary Three.js post-processing classes from CDN
-        import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/EffectComposer.js';
-        import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/RenderPass.js';
-        import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/UnrealBloomPass.js';
-        import { BokehPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/BokehPass.js';
-
-        // Make these classes available globally for script.js
-        window.THREE = THREE;
-        window.EffectComposer = EffectComposer;
-        window.RenderPass = RenderPass;
-        window.UnrealBloomPass = UnrealBloomPass;
-        window.BokehPass = BokehPass;
-    </script>
-
-    <!-- Main Script -->
+    <!-- Main Script as ES Module -->
     <script type="module" src="js/script.js"></script>
 </body>
 </html>

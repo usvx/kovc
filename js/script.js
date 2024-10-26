@@ -5,14 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
           preloader = document.getElementById('preloader');
     let scene, camera, renderer,
         particles = [],
-        torusKnotShapes = [],  // Updated for Torus Knot usage
+        torusKnotShapes = [],
         sceneGroup,
         mouseX = 0, mouseY = 0,
         windowHalfX = window.innerWidth / 2,
         windowHalfY = window.innerHeight / 2,
         isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
-    const MIN_DISTANCE = 300;  // Increased minimum distance for more complex shapes
+    const MIN_DISTANCE = 300;
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas'),
@@ -61,21 +61,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function getRandomPosition(existingShapes, radius) {
         let position;
         let tooClose;
-
         do {
             position = new THREE.Vector3(
                 (Math.random() - 0.5) * 4000,
                 (Math.random() - 0.5) * 4000,
                 (Math.random() - 0.5) * 4000
             );
-
             tooClose = existingShapes.some(shape => {
                 const distance = position.distanceTo(shape.position);
                 return distance < MIN_DISTANCE + radius;
             });
-
         } while (tooClose);
-
         return position;
     }
 
@@ -100,7 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter(),
                   texture = createTextTexture(char),
-                  material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending }),
+                  material = new THREE.SpriteMaterial({ 
+                      map: texture, 
+                      transparent: true, 
+                      blending: THREE.AdditiveBlending, 
+                      alphaTest: 0.5  // Fixes black box around letters
+                  }),
                   sprite = new THREE.Sprite(material);
             sprite.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
             sprite.scale.set(isMobile ? 150 : 200, isMobile ? 150 : 200, 1);
@@ -115,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const shapeCount = isMobile ? 80 : 120;
         const radius = isMobile ? 80 : 120;
         for (let i = 0; i < shapeCount; i++) {
-            const torusKnotGeometry = new THREE.TorusKnotGeometry(radius * 0.5, radius * 0.15, 100, 16),  // Torus Knot parameters
+            const torusKnotGeometry = new THREE.TorusKnotGeometry(radius * 0.5, radius * 0.15, 100, 16),
                   material = new THREE.MeshStandardMaterial({
                       color: 0x00FFFF,
                       wireframe: true,

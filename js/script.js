@@ -1,5 +1,6 @@
 // js/script.js
 
+// Import Three.js as an ES Module
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
 import { ParametricBufferGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/geometries/ParametricBufferGeometry.js';
 
@@ -15,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         windowHalfX = window.innerWidth / 2,
         windowHalfY = window.innerHeight / 2,
         isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-    
+
     function createTextTexture(char) {
         const canvas = document.createElement('canvas'),
               size = isMobile ? 256 : 512;
@@ -107,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enhanced geometry types including TorusKnot and Möbius Strip
         const geometryTypes = [
             THREE.TorusKnotGeometry,
-            THREE.ParametricGeometry, // For Möbius Strip
+            ParametricBufferGeometry, // For Möbius Strip
             THREE.SphereGeometry,
             THREE.DodecahedronGeometry,
             THREE.TorusGeometry,
@@ -128,8 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         Math.floor(Math.random() * 10) + 3     // q
                     );
                     break;
-                case THREE.ParametricGeometry:
-                    geometry = new ParametricGeometry(mobiusStrip, 100, 16);
+                case ParametricBufferGeometry:
+                    geometry = new ParametricBufferGeometry(mobiusStrip, 100, 16);
                     break;
                 case THREE.SphereGeometry:
                     geometry = new THREE.SphereGeometry(

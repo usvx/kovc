@@ -1,25 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
-    /* Updated Color Palette */
-    --background-color: #000000; /* Pure Black */
-    --foreground-color: #FFFFFF; /* White for text */
-    --accent-color: #00FFFF; /* Teal */
-    --secondary-accent: #8A2BE2; /* Blue Violet */
-    --tertiary-accent: #4B0082; /* Indigo */
+    /* Color Palette */
+    --background-color: #0e0e0e; /* Darker background for better contrast */
+    --foreground-color: #ffffff; /* White text */
+    --accent-color: rgba(0, 255, 255, 0.5); /* Semi-transparent Teal */
+    --secondary-accent: rgba(138, 43, 226, 0.5); /* Semi-transparent Blue Violet */
+    --tertiary-accent: rgba(75, 0, 130, 0.5); /* Semi-transparent Indigo */
     --font-family: 'Urbanist', sans-serif;
-    --gradient-start: #1a1a1a;
-    --gradient-mid: #0a0a0a;
-    --gradient-end: #1a1a1a;
-    --button-hover: #8A2BE2;
-    --input-focus: #00FFFF;
-    --loader-color: rgba(0, 255, 255, 0.2);
+    
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-blur: 20px;
+    
+    /* Sizes */
     --h1-font-size: clamp(2rem, 5vw, 4rem);
-    --form-width: clamp(300px, 80%, 500px);
-    --form-padding: clamp(40px, 5vw, 70px);
-    --input-font-size: clamp(1rem, 2vw, 1.3rem); /* Increased min font size to 1rem */
-    --button-font-size: clamp(1.1rem, 2vw, 1.3rem);
-    --button-padding: clamp(16px, 3vw, 22px) clamp(32px, 5vw, 40px);
+    --form-width: clamp(280px, 80%, 500px);
+    --form-padding: clamp(30px, 5vw, 60px);
+    --input-font-size: 1rem;
+    --button-font-size: 1.1rem;
+    --button-padding: 16px 32px;
+    
+    /* Shadows and Depth */
+    --shadow-color: rgba(0, 255, 255, 0.2);
+    --hover-shadow-color: rgba(0, 255, 255, 0.4);
 }
 
 * {
@@ -67,11 +72,11 @@ html, body {
 }
 
 .loader {
-    border: 5px solid var(--loader-color);
+    border: 5px solid rgba(255, 255, 255, 0.1);
     border-top: 5px solid var(--accent-color);
     border-radius: 50%;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     animation: spin 1s linear infinite;
 }
 
@@ -107,104 +112,77 @@ main {
     max-width: 100%;
     text-align: center;
     opacity: 0;
-    background: rgba(255, 255, 255, 0.1); /* Reduced Blur Effect */
+    background: var(--glass-bg);
     padding: var(--form-padding);
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--glass-border);
     transform: translateZ(0);
-    animation: fadeInUp 2s ease forwards;
-    backdrop-filter: blur(10px); /* Reduced Blur for Clarity */
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), 0 0 60px rgba(138, 43, 226, 0.5), 0 0 90px rgba(75, 0, 130, 0.5);
+    animation: fadeInUp 1.5s ease forwards;
+    backdrop-filter: blur(var(--glass-blur));
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .entrance:hover {
-    transform: translateZ(10px) scale(1.02);
-    box-shadow: 0 0 50px rgba(0, 255, 255, 0.7), 0 0 100px rgba(138, 43, 226, 0.7), 0 0 150px rgba(75, 0, 130, 0.7);
+    transform: scale(1.02);
+    box-shadow: 0 12px 48px 0 rgba(31, 38, 135, 0.5);
 }
 
 h1 {
     font-size: var(--h1-font-size);
-    margin-bottom: 60px;
+    margin-bottom: 40px;
     font-weight: 700;
     letter-spacing: 3px;
-    color: var(--accent-color);
-    text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent), 0 0 60px var(--tertiary-accent);
+    color: var(--foreground-color);
+    text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent);
     animation: glow 3s infinite alternate;
 }
 
 @keyframes glow {
-    from { text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent), 0 0 60px var(--tertiary-accent); }
-    to { text-shadow: 0 0 30px var(--accent-color), 0 0 60px var(--secondary-accent), 0 0 90px var(--tertiary-accent); }
+    from { text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent); }
+    to { text-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--secondary-accent), 0 0 40px var(--tertiary-accent); }
 }
 
 form {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 40px;
+    align-items: stretch;
+    gap: 20px;
 }
 
 .input-container {
     width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .input-container input,
 .custom-select select {
-    /* Existing styles */
     width: 100%;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.1);
     color: var(--foreground-color);
-    border: none;
-    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
     font-size: var(--input-font-size);
-    line-height: 1.8;
     outline: none;
-    transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), 0 0 40px rgba(138, 43, 226, 0.3), 0 0 60px rgba(75, 0, 130, 0.3);
-    
-    /* New styles to override iOS defaults */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    font-family: var(--font-family);
-    -webkit-text-size-adjust: 100%;
-}
-
-button {
-    padding: var(--button-padding);
-    background: var(--accent-color);
-    color: var(--background-color);
-    border: none;
-    border-radius: 15px;
-    font-size: var(--button-font-size);
-    cursor: pointer;
-    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-    width: 100%;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(138, 43, 226, 0.5), 0 0 60px rgba(75, 0, 130, 0.5);
-}
-
-button:hover,
-button:focus {
-    transform: scale(1.05);
-    background: var(--button-hover);
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.7), 0 0 60px rgba(138, 43, 226, 0.7), 0 0 90px rgba(75, 0, 130, 0.7);
-    outline: none;
+    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .input-container input::placeholder,
 .custom-select select:invalid {
     color: var(--foreground-color);
     opacity: 0.6;
-    font-size: var(--input-font-size); /* Ensure placeholder matches input font size */
+    font-size: var(--input-font-size);
 }
 
 .input-container input:focus,
 .custom-select select:focus {
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 30px var(--input-focus), 0 0 50px var(--secondary-accent), 0 0 70px var(--tertiary-accent);
-    transform: scale(1.02);
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+    transform: translateY(-2px);
 }
 
 .custom-select {
@@ -215,12 +193,11 @@ button:focus {
     content: '▼';
     position: absolute;
     top: 50%;
-    right: 25px;
+    right: 16px;
     transform: translateY(-50%);
-    color: var(--accent-color);
+    color: var(--foreground-color);
     pointer-events: none;
-    font-size: 1.2rem;
-    transition: color 0.3s ease;
+    font-size: 1rem;
 }
 
 .custom-select select {
@@ -228,20 +205,21 @@ button:focus {
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
-    padding-right: 60px;
-    background: rgba(255, 255, 255, 0.05);
+    padding-right: 40px;
+    background: rgba(255, 255, 255, 0.1);
     color: var(--foreground-color);
-    transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
+    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .custom-select select:hover {
-    background: rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .custom-select select:focus {
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 30px var(--input-focus), 0 0 50px var(--secondary-accent), 0 0 70px var(--tertiary-accent);
-    transform: scale(1.02);
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+    transform: translateY(-2px);
 }
 
 .custom-select select option {
@@ -249,10 +227,33 @@ button:focus {
     background: var(--background-color);
 }
 
+button {
+    padding: var(--button-padding);
+    background: var(--accent-color);
+    color: var(--background-color);
+    border: none;
+    border-radius: 10px;
+    font-size: var(--button-font-size);
+    cursor: pointer;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button:hover,
+button:focus {
+    background: var(--secondary-accent);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    outline: none;
+}
+
 input:focus,
 select:focus,
 button:focus {
-    outline: 3px solid var(--input-focus);
+    outline: 2px solid var(--accent-color);
     outline-offset: 2px;
 }
 
@@ -263,7 +264,7 @@ button:focus {
     }
     from {
         opacity: 0;
-        transform: translateY(50px);
+        transform: translateY(20px);
     }
 }
 
@@ -271,12 +272,12 @@ button:focus {
 
 @media (max-width: 1440px) {
     :root {
-        --h1-font-size: clamp(2rem, 4vw, 3.5rem);
-        --form-width: clamp(280px, 75%, 450px);
-        --form-padding: clamp(35px, 4vw, 60px);
-        --input-font-size: clamp(1rem, 1.8vw, 1.2rem); /* Adjusted from 1rem to 1.2rem */
-        --button-font-size: clamp(1rem, 1.8vw, 1.2rem);
-        --button-padding: clamp(14px, 2.5vw, 20px) clamp(28px, 4vw, 35px);
+        --h1-font-size: clamp(1.8rem, 4vw, 3rem);
+        --form-width: clamp(260px, 75%, 450px);
+        --form-padding: clamp(25px, 4vw, 55px);
+        --input-font-size: 1rem;
+        --button-font-size: 1.1rem;
+        --button-padding: 14px 28px;
     }
 }
 
@@ -284,19 +285,14 @@ button:focus {
     .entrance {
         width: 100%;
         max-width: 450px;
-        padding: 60px;
+        padding: 50px 30px;
     }
     h1 {
-        font-size: 4.5rem;
-        margin-bottom: 50px;
+        font-size: 2.5rem;
+        margin-bottom: 30px;
     }
-    :root {
-        --h1-font-size: clamp(1.8rem, 4vw, 3rem);
-        --form-width: clamp(260px, 70%, 400px);
-        --form-padding: clamp(30px, 4vw, 50px);
-        --input-font-size: clamp(1rem, 1.6vw, 1.1rem);
-        --button-font-size: clamp(1rem, 1.6vw, 1.1rem);
-        --button-padding: clamp(12px, 2.2vw, 18px) clamp(24px, 3.5vw, 30px);
+    form {
+        gap: 20px;
     }
 }
 
@@ -304,48 +300,45 @@ button:focus {
     .entrance {
         width: 100%;
         max-width: 400px;
-        padding: 55px;
+        padding: 45px 25px;
     }
     h1 {
-        font-size: 4rem;
-        margin-bottom: 45px;
+        font-size: 2rem;
+        margin-bottom: 25px;
     }
-    :root {
-        --h1-font-size: clamp(1.6rem, 4vw, 2.5rem);
-        --form-width: clamp(240px, 65%, 350px);
-        --form-padding: clamp(25px, 4vw, 45px);
-        --input-font-size: clamp(1rem, 1.4vw, 1rem); /* Increased from 0.9rem to 1rem */
-        --button-font-size: clamp(1rem, 1.4vw, 1rem);
-        --button-padding: clamp(10px, 2vw, 16px) clamp(20px, 2.8vw, 25px);
+    form {
+        gap: 15px;
+    }
+    .custom-select::after {
+        right: 12px;
     }
 }
 
 @media (max-width: 480px) {
     .entrance {
         width: 100%;
-        max-width: 350px;
-        padding: 45px;
+        max-width: 320px;
+        padding: 35px 20px;
     }
     h1 {
-        font-size: 3rem;
-        margin-bottom: 35px;
+        font-size: 1.8rem;
+        margin-bottom: 20px;
     }
-    :root {
-        --h1-font-size: clamp(1.4rem, 5vw, 2rem);
-        --form-width: clamp(220px, 60%, 300px);
-        --form-padding: clamp(20px, 3vw, 35px);
-        --input-font-size: clamp(1rem, 1.2vw, 1.1rem); /* Increased from 0.8rem to 1rem */
-        --button-font-size: clamp(1rem, 1.2vw, 1.1rem);
-        --button-padding: clamp(8px, 1.8vw, 14px) clamp(16px, 2.8vw, 20px);
+    form {
+        gap: 10px;
     }
-    input,
-    .custom-select select,
+    .input-container input,
+    .custom-select select {
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
     button {
+        padding: 12px 24px;
         font-size: 1rem;
-        padding: 16px;
     }
-    button {
-        padding: 16px 32px;
+    .custom-select::after {
+        right: 10px;
+        font-size: 0.9rem;
     }
 }
 

@@ -14,16 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
         isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 500 : 1000,
-        TORUS_KNOT_COUNT: isMobile ? 50 : 90,
+        PARTICLE_COUNT: isMobile ? 300 : 800,
+        TORUS_KNOT_COUNT: isMobile ? 40 : 80,
         MIN_DISTANCE: 250,
         PARTICLE_SIZE: isMobile ? 100 : 150,
         TORUS_KNOT_RADIUS: isMobile ? 60 : 90,
-        PARTICLE_SPEED: isMobile ? 1.0 : 2.0,
-        ROTATION_SPEED: isMobile ? 0.003 : 0.005,
-        TEXTURE_SIZE: isMobile ? 256 : 512,
-        SHADOW_BLUR: isMobile ? 15 : 35,
-        LIGHT_INTENSITY: isMobile ? 0.7 : 0.9,
+        PARTICLE_SPEED: isMobile ? 0.8 : 1.5,
+        ROTATION_SPEED: isMobile ? 0.002 : 0.004,
+        TEXTURE_SIZE: isMobile ? 128 : 256,
+        SHADOW_BLUR: isMobile ? 10 : 25,
+        LIGHT_INTENSITY: isMobile ? 0.6 : 0.8,
         AMBIENT_COLOR: 0x1E90FF,       // DodgerBlue
         DIRECTIONAL_COLOR: 0x9370DB,   // MediumPurple
         BACKGROUND_COLOR: 0x0A0A0A,    // Dark Background for better contrast
@@ -31,10 +31,18 @@ document.addEventListener('DOMContentLoaded', () => {
         PARTICLE_COLOR_2: 0xBA55D3,     // MediumOrchid
         TORUS_COLOR: 0xBA55D3,          // MediumOrchid
         EMISSIVE_COLOR: 0x9370DB,       // MediumPurple
+        MAX_PIXEL_RATIO: isMobile ? 1.0 : window.devicePixelRatio
     };
 
-    // Utility Functions
+    // Pre-generate a limited set of textures to reuse
+    const TEXTURE_CACHE_SIZE = 100;
+    const textureCache = [];
+
     function createTextTexture(char) {
+        if (textureCache.length >= TEXTURE_CACHE_SIZE) {
+            return textureCache[Math.floor(Math.random() * TEXTURE_CACHE_SIZE)];
+        }
+
         const canvas = document.createElement('canvas');
         const size = CONFIG.TEXTURE_SIZE;
         canvas.width = size;
@@ -66,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create Texture
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
+
+        // Cache the texture
+        textureCache.push(texture);
         return texture;
     }
 
@@ -114,9 +125,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialization
     function init() {
         const canvas = document.getElementById('background');
-        renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer = new THREE.WebGLRenderer({ 
+            canvas: canvas, 
+            antialias: !isMobile, // Disable antialiasing on mobile for performance
+            alpha: true, 
+            powerPreference: isMobile ? 'low-power' : 'default' 
+        });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(CONFIG.MAX_PIXEL_RATIO, 1.5)); // Limit pixel ratio on mobile
         renderer.setClearColor(CONFIG.BACKGROUND_COLOR, 1); // Set background color
 
         scene = new THREE.Scene();
@@ -180,17 +196,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createTorusKnots() {
         for (let i = 0; i < CONFIG.TORUS_KNOT_COUNT; i++) {
-            const torusKnotGeometry = new THREE.TorusKnotGeometry(CONFIG.TORUS_KNOT_RADIUS * 0.5, CONFIG.TORUS_KNOT_RADIUS * 0.08, 150, 20),
-                  material = new THREE.MeshStandardMaterial({
-                      color: CONFIG.TORUS_COLOR,
-                      wireframe: true,
-                      transparent: true,
-                      opacity: 0.2,
-                      emissive: CONFIG.EMISSIVE_COLOR,
-                      emissiveIntensity: 0.5,
-                      side: THREE.DoubleSide
-                  }),
-                  torusKnotMesh = new THREE.Mesh(torusKnotGeometry, material);
+            const torusKnotGeometry = new THREE.TorusKnotGeometry(
+                CONFIG.TORUS_KNOT_RADIUS * 0.5, 
+                CONFIG.TORUS_KNOT_RADIUS * 0.08, 
+                isMobile ? 100 : 150, // Lower segments on mobile
+                isMobile ? 12 : 20     // Lower tubular segments on mobile
+            );
+            const material = new THREE.MeshStandardMaterial({
+                color: CONFIG.TORUS_COLOR,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.2,
+                emissive: CONFIG.EMISSIVE_COLOR,
+                emissiveIntensity: 0.5,
+                side: THREE.DoubleSide
+            });
+            const torusKnotMesh = new THREE.Mesh(torusKnotGeometry, material);
 
             torusKnotMesh.position.copy(getRandomPosition(torusKnotShapes, CONFIG.TORUS_KNOT_RADIUS));
             torusKnotMesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;

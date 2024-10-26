@@ -1,5 +1,4 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
-import { RGBELoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/loaders/RGBELoader.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form'),
@@ -63,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.outputEncoding = THREE.sRGBEncoding;
-        
+
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
@@ -73,12 +72,19 @@ document.addEventListener('DOMContentLoaded', () => {
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(ambientLight, directionalLight);
 
-        const rgbeLoader = new RGBELoader();
-        rgbeLoader.load('https://threejs.org/examples/textures/equirectangular/venice_sunset_1k.hdr', (texture) => {
-            texture.mapping = THREE.EquirectangularReflectionMapping;
-            scene.environment = texture;
-            startAnimation();
+        createBackgroundGradient();
+        startAnimation();
+    }
+
+    function createBackgroundGradient() {
+        const bgGeometry = new THREE.PlaneGeometry(10000, 10000);
+        const bgMaterial = new THREE.MeshBasicMaterial({
+            color: 0x000000,
+            side: THREE.DoubleSide
         });
+        const backgroundPlane = new THREE.Mesh(bgGeometry, bgMaterial);
+        backgroundPlane.position.z = -5000;
+        scene.add(backgroundPlane);
     }
 
     function startAnimation() {
@@ -99,8 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearcoatRoughness: 0.1,
                 reflectivity: 1,
                 ior: 1.5,
-                thickness: 2,
-                envMapIntensity: 1.5
+                thickness: 2
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
@@ -133,9 +138,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function animate() {
         requestAnimationFrame(animate);
         particles.forEach(p => {
-            p.position.x += p.speedX;
-            p.position.y += p.speedY;
-            p.position.z += p.speedZ;
+            p.position.x += p.speedX || (Math.random() - 0.5) * 2;
+            p.position.y += p.speedY || (Math.random() - 0.5) * 2;
+            p.position.z += p.speedZ || (Math.random() - 0.5) * 2;
         });
         sceneGroup.rotation.y += 0.003;
         sceneGroup.rotation.x += 0.0025;

@@ -167,16 +167,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const material = new THREE.MeshPhysicalMaterial({
                 color: CONFIG.SPHERE_COLOR,
                 metalness: 0.0,
-                roughness: 0.1,
-                transmission: 1.0,
+                roughness: 0.05,
+                transmission: 1.0, // Full transmission for glass effect
                 transparent: true,
-                opacity: 0.8,
+                opacity: 0.6,
                 emissive: CONFIG.EMISSIVE_COLOR,
                 emissiveIntensity: 0.5,
                 side: THREE.DoubleSide,
-                reflectivity: 1.0,
+                reflectivity: 0.9,
                 clearcoat: 1.0,
-                clearcoatRoughness: 0.05
+                clearcoatRoughness: 0.05,
+                ior: 1.5 // Index of Refraction for glass
             });
             const sphere = new THREE.Mesh(geometry, material);
             sphere.position.copy(getRandomPosition(spheres, CONFIG.SPHERE_SIZE));

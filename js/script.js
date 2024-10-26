@@ -25,11 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // URLs for Three.js r149 and post-processing scripts
-    const threeJSURL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r149/three.min.js';
-    const effectComposerURL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r149/examples/js/postprocessing/EffectComposer.js';
-    const renderPassURL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r149/examples/js/postprocessing/RenderPass.js';
-    const unrealBloomPassURL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r149/examples/js/postprocessing/UnrealBloomPass.js';
+    // URLs for Three.js r149 and post-processing scripts from jsDelivr
+    const threeJSURL = 'https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js';
+    const effectComposerURL = 'https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/postprocessing/EffectComposer.js';
+    const renderPassURL = 'https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/postprocessing/RenderPass.js';
+    const unrealBloomPassURL = 'https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/postprocessing/UnrealBloomPass.js';
 
     // Load all scripts sequentially
     loadScript(threeJSURL)

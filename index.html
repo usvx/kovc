@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Lumina</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- Updated Content Security Policy -->
+    <!-- Updated Content Security Policy without 'frame-ancestors' -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' https://cdn.skypack.dev;
@@ -13,7 +13,6 @@
         font-src 'self' https://fonts.gstatic.com data:;
         connect-src 'self';
         object-src 'none';
-        frame-ancestors 'none';
         base-uri 'self';
     ">
     <meta name="referrer" content="no-referrer">
@@ -84,6 +83,16 @@
             </main>
         </div>
     </noscript>
-<script src="https://cdn.skypack.dev/three@0.152.2" integrity="sha384-dpoPC7BS45M4H34EzgUjRQByLEDzfxpMqz5ynIKBSelmFh/9SYC6fxf+XLG05ZMn" crossorigin="anonymous"></script>
+    <!-- 
+        Updated Script Tag:
+        - Removed deprecated three.min.js from jsDelivr.
+        - Added script.js as a module.
+        - Removed 'integrity' attribute.
+    -->
+    <script 
+        type="module" 
+        src="js/script.js" 
+        crossorigin="anonymous">
+    </script>
 </body>
 </html>

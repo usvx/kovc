@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const shapeCount = isMobile ? 80 : 120;
         for (let i = 0; i < shapeCount; i++) {
-            const geometry = new THREE.SphereGeometry(isMobile ? 80 : 120, 64, 64), // Higher segments for a smoother appearance
+            const geometry = new THREE.SphereGeometry(isMobile ? 80 : 120, 16, 16), // Lower segment count for better performance
                   material = new THREE.MeshStandardMaterial({
                       color: 0x00FFFF,
                       wireframe: true,

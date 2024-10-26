@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.outputEncoding = THREE.sRGBEncoding;
 
         scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x101010);  // Set a dark background for contrast
+        scene.background = new THREE.Color(0x101010);  // Dark background for contrast
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
@@ -98,10 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const hue = Math.random() * 360;
             const material = new THREE.MeshPhysicalMaterial({
                 color: new THREE.Color(`hsl(${hue}, 100%, 50%)`),
-                metalness: 0.3,
-                roughness: 0.2,
-                transmission: 0.9, // High transmission for glass effect
-                opacity: 0.8,
+                metalness: 0.2,
+                roughness: 0.1,
+                transmission: 0.9,
+                opacity: 0.6,
                 transparent: true,
                 clearcoat: 1,
                 clearcoatRoughness: 0.1,
@@ -111,6 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+            mesh.userData = {
+                amplitude: Math.random() * 20 + 10,
+                speed: Math.random() * 0.02 + 0.01,
+                offset: Math.random() * Math.PI * 2
+            };
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
@@ -133,8 +138,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
-            sceneGroup.add(mesh);
+            mesh.userData = {
+                amplitude: Math.random() * 20 + 10,
+                speed: Math.random() * 0.02 + 0.01,
+                offset: Math.random() * Math.PI * 2
+            };
+            mesh.rotation.x = 0;
+            mesh.rotation.y = 0;
             particles.push(mesh);
+            sceneGroup.add(mesh);
         }
 
         animate();
@@ -142,13 +154,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animate() {
         requestAnimationFrame(animate);
+        
+        const time = Date.now() * 0.001;
+
+        // Sinusoidal motion for particles and shapes
         particles.forEach(p => {
-            p.position.x += p.speedX || (Math.random() - 0.5) * 2;
-            p.position.y += p.speedY || (Math.random() - 0.5) * 2;
-            p.position.z += p.speedZ || (Math.random() - 0.5) * 2;
+            p.position.x += Math.sin(time * p.userData.speed + p.userData.offset) * p.userData.amplitude;
+            p.position.y += Math.cos(time * p.userData.speed + p.userData.offset) * p.userData.amplitude;
+            p.lookAt(camera.position); // Keep text readable and facing the camera
         });
-        sceneGroup.rotation.y += 0.003;
-        sceneGroup.rotation.x += 0.0025;
+
+        shapes.forEach(s => {
+            s.position.x += Math.sin(time * s.userData.speed + s.userData.offset) * s.userData.amplitude;
+            s.position.y += Math.cos(time * s.userData.speed + s.userData.offset) * s.userData.amplitude;
+        });
+
+        sceneGroup.rotation.y += 0.0025; // Slight rotation for added depth
+        sceneGroup.rotation.x += 0.0015;
         renderer.render(scene, camera);
     }
 

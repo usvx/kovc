@@ -25,11 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // URLs for Three.js and post-processing scripts
-    const threeJSURL = 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js';
-    const effectComposerURL = 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/postprocessing/EffectComposer.js';
-    const renderPassURL = 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/postprocessing/RenderPass.js';
-    const unrealBloomPassURL = 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/postprocessing/UnrealBloomPass.js';
+    // URLs for Three.js r149 and post-processing scripts
+    const threeJSURL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r149/three.min.js';
+    const effectComposerURL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r149/examples/js/postprocessing/EffectComposer.js';
+    const renderPassURL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r149/examples/js/postprocessing/RenderPass.js';
+    const unrealBloomPassURL = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r149/examples/js/postprocessing/UnrealBloomPass.js';
 
     // Load all scripts sequentially
     loadScript(threeJSURL)
@@ -121,8 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialization function
     function initializeScene() {
-        const canvas = document.getElementById('background');
-        renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('background'), antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         scene = new THREE.Scene();
@@ -314,5 +313,4 @@ document.addEventListener('DOMContentLoaded', () => {
             form.dispatchEvent(new Event('submit'));
         }
     });
-
 });

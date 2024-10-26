@@ -1,8 +1,9 @@
 // js/script.js
 
-// Import Three.js from Skypack as an ES Module
-import * as THREE from 'https://cdn.skypack.dev/three@0.152.2';
+// Import Three.js from esm.sh as an ES Module
+import * as THREE from 'https://esm.sh/three@0.152.2';
 
+// Your code starts here
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form'),
           preloader = document.getElementById('preloader');
@@ -22,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = size;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, size, size);
-        ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`; // Fixed template literal
+        ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         const gradient = ctx.createLinearGradient(0, 0, size, size);
@@ -84,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   material = new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending }),
                   sprite = new THREE.Sprite(material);
             sprite.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
-            sprite.scale.set(isMobile ? 150 : 200, isMobile ? 150 : 200, 1); // Increased size for better visibility on mobile
+            sprite.scale.set(isMobile ? 150 : 200, isMobile ? 150 : 200, 1);
             sprite.speedX = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
             sprite.speedY = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
             sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 1.5 : 3);
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry],
-              shapeCount = isMobile ? 80 : 120; // Increased shape count for a more immersive experience
+              shapeCount = isMobile ? 80 : 120;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)],
                   geometry = new GeometryClass(isMobile ? 80 : 120, 2),
@@ -180,8 +181,8 @@ document.addEventListener('DOMContentLoaded', () => {
               domainSelect = form.querySelector('select[name="domain"]'),
               domain = domainSelect.value;
         if (username && domain) {
-            const email = `${username}${domain}`, // Fixed template literal
-                  loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`; // Fixed template literal
+            const email = `${username}${domain}`,
+                  loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
             window.location.href = loginUrl;
         } else {
             alert('Please enter your username and select a domain.');

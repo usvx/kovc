@@ -1,8 +1,7 @@
 // js/script.js
 
-// Import Three.js as an ES Module
+// Import Three.js as an ES Module using absolute URLs
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
-import { ParametricBufferGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/geometries/ParametricBufferGeometry.js';
 
 // Your code starts here
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         windowHalfY = window.innerHeight / 2,
         isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
+    // Function to create text texture for particles
     function createTextTexture(char) {
         const canvas = document.createElement('canvas'),
               size = isMobile ? 256 : 512;
@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return texture;
     }
 
+    // Functions to generate random characters
     function getRandomHangeulCharacter() {
         const commonInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112],
               commonMedials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A],
@@ -61,14 +62,55 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.random() < 0.7 ? getRandomHangeulCharacter() : getRandomCyrillicCharacter();
     }
 
-    function mobiusStrip(u, t, target) {
-        // Möbius strip parametric equations
-        u *= Math.PI * 2;
-        t *= 0.2;
-        const x = (1 + t * Math.cos(u / 2)) * Math.cos(u);
-        const y = (1 + t * Math.cos(u / 2)) * Math.sin(u);
-        const z = t * Math.sin(u / 2);
-        target.set(x * 100, y * 100, z * 100);
+    // Function to create Möbius Strip geometry
+    function createMobiusStrip(segments = 100, slices = 16) {
+        const geometry = new THREE.BufferGeometry();
+        const vertices = [];
+        const normals = [];
+        const uvs = [];
+        const indices = [];
+
+        for (let i = 0; i <= segments; i++) {
+            const u = i / segments * Math.PI * 2;
+            for (let j = 0; j <= slices; j++) {
+                const v = (j / slices - 0.5) * 1; // width of the strip
+                // Möbius strip parametric equations
+                const x = (1 + v * Math.cos(u / 2)) * Math.cos(u);
+                const y = (1 + v * Math.cos(u / 2)) * Math.sin(u);
+                const z = v * Math.sin(u / 2);
+                vertices.push(x * 100, y * 100, z * 100);
+
+                // Compute normals (approximation)
+                const nx = Math.cos(u / 2) * Math.cos(u);
+                const ny = Math.cos(u / 2) * Math.sin(u);
+                const nz = Math.sin(u / 2);
+                normals.push(nx, ny, nz);
+
+                // UVs
+                uvs.push(i / segments, j / slices);
+            }
+        }
+
+        for (let i = 0; i < segments; i++) {
+            for (let j = 0; j < slices; j++) {
+                const a = i * (slices + 1) + j;
+                const b = (i + 1) * (slices + 1) + j;
+                const c = (i + 1) * (slices + 1) + (j + 1);
+                const d = i * (slices + 1) + (j + 1);
+
+                // Two triangles per quad
+                indices.push(a, b, d);
+                indices.push(b, c, d);
+            }
+        }
+
+        geometry.setIndex(indices);
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+        geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+        geometry.computeVertexNormals();
+
+        return geometry;
     }
 
     function init() {
@@ -108,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enhanced geometry types including TorusKnot and Möbius Strip
         const geometryTypes = [
             THREE.TorusKnotGeometry,
-            ParametricBufferGeometry, // For Möbius Strip
+            createMobiusStrip, // Custom Möbius Strip function
             THREE.SphereGeometry,
             THREE.DodecahedronGeometry,
             THREE.TorusGeometry,
@@ -118,48 +160,49 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < shapeCount; i++) {
             let geometry;
             const selectedGeometry = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            switch(selectedGeometry){
-                case THREE.TorusKnotGeometry:
-                    geometry = new THREE.TorusKnotGeometry(
-                        Math.random() * 50 + 30, // radius
-                        Math.random() * 10 + 5,  // tube
-                        Math.floor(Math.random() * 100) + 100, // tubularSegments
-                        Math.floor(Math.random() * 16) + 8,   // radialSegments
-                        Math.floor(Math.random() * 10) + 2,    // p
-                        Math.floor(Math.random() * 10) + 3     // q
-                    );
-                    break;
-                case ParametricBufferGeometry:
-                    geometry = new ParametricBufferGeometry(mobiusStrip, 100, 16);
-                    break;
-                case THREE.SphereGeometry:
-                    geometry = new THREE.SphereGeometry(
-                        Math.random() * 50 + 20, // radius
-                        Math.floor(Math.random() * 32) + 16, // widthSegments
-                        Math.floor(Math.random() * 32) + 16  // heightSegments
-                    );
-                    break;
-                case THREE.DodecahedronGeometry:
-                    geometry = new THREE.DodecahedronGeometry(Math.random() * 30 + 20, 0);
-                    break;
-                case THREE.TorusGeometry:
-                    geometry = new THREE.TorusGeometry(
-                        Math.random() * 50 + 20, // radius
-                        Math.random() * 5 + 5,   // tube
-                        Math.floor(Math.random() * 16) + 8, // radialSegments
-                        Math.floor(Math.random() * 16) + 8  // tubularSegments
-                    );
-                    break;
-                case THREE.PlaneGeometry:
-                    geometry = new THREE.PlaneGeometry(
-                        Math.random() * 100 + 50, // width
-                        Math.random() * 100 + 50, // height
-                        Math.floor(Math.random() * 10) + 1, // widthSegments
-                        Math.floor(Math.random() * 10) + 1  // heightSegments
-                    );
-                    break;
-                default:
-                    geometry = new THREE.IcosahedronGeometry(isMobile ? 80 : 120, 2);
+            if (selectedGeometry === createMobiusStrip) {
+                geometry = selectedGeometry(100, 16); // segments and slices
+            } else {
+                switch(selectedGeometry){
+                    case THREE.TorusKnotGeometry:
+                        geometry = new THREE.TorusKnotGeometry(
+                            Math.random() * 50 + 30, // radius
+                            Math.random() * 10 + 5,  // tube
+                            Math.floor(Math.random() * 100) + 100, // tubularSegments
+                            Math.floor(Math.random() * 16) + 8,   // radialSegments
+                            Math.floor(Math.random() * 10) + 2,    // p
+                            Math.floor(Math.random() * 10) + 3     // q
+                        );
+                        break;
+                    case THREE.SphereGeometry:
+                        geometry = new THREE.SphereGeometry(
+                            Math.random() * 50 + 20, // radius
+                            Math.floor(Math.random() * 32) + 16, // widthSegments
+                            Math.floor(Math.random() * 32) + 16  // heightSegments
+                        );
+                        break;
+                    case THREE.DodecahedronGeometry:
+                        geometry = new THREE.DodecahedronGeometry(Math.random() * 30 + 20, 0);
+                        break;
+                    case THREE.TorusGeometry:
+                        geometry = new THREE.TorusGeometry(
+                            Math.random() * 50 + 20, // radius
+                            Math.random() * 5 + 5,   // tube
+                            Math.floor(Math.random() * 16) + 8, // radialSegments
+                            Math.floor(Math.random() * 16) + 8  // tubularSegments
+                        );
+                        break;
+                    case THREE.PlaneGeometry:
+                        geometry = new THREE.PlaneGeometry(
+                            Math.random() * 100 + 50, // width
+                            Math.random() * 100 + 50, // height
+                            Math.floor(Math.random() * 10) + 1, // widthSegments
+                            Math.floor(Math.random() * 10) + 1  // heightSegments
+                        );
+                        break;
+                    default:
+                        geometry = new THREE.IcosahedronGeometry(isMobile ? 80 : 120, 2);
+                }
             }
 
             // Enhanced material with varying colors and emissive properties
@@ -213,11 +256,13 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     }
 
+    // Function to handle mouse movement
     function onDocumentMouseMove(event) {
         mouseX = (event.clientX - windowHalfX) / windowHalfX;
         mouseY = (event.clientY - windowHalfY) / windowHalfY;
     }
 
+    // Function to handle touch movement
     function onDocumentTouchMove(event) {
         if (event.touches.length === 1) {
             event.preventDefault();
@@ -226,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Function to handle window resize
     function onWindowResize() {
         windowHalfX = window.innerWidth / 2;
         windowHalfY = window.innerHeight / 2;
@@ -235,6 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // composer.setSize(window.innerWidth, window.innerHeight);
     }
 
+    // Animation loop
     function animate() {
         requestAnimationFrame(animate);
         particles.forEach(p => {
@@ -261,12 +308,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // composer.render();
     }
 
+    // Initialize the scene
     init();
+
+    // Preloader handling
     window.onload = () => {
         setTimeout(() => {
             preloader.style.display = 'none';
         }, 1500);
     };
+
+    // Form submission handling
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const username = form.username.value.trim(),
@@ -280,6 +332,8 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please enter your username and select a domain.');
         }
     });
+
+    // Prevent form submission on Enter key
     form.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             event.preventDefault();

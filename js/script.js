@@ -4,13 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
 
-    let scene, camera, renderer;
-    let particles = [];
-    let shapes = [];
-    let sceneGroup;
+    let scene, camera, renderer, sceneGroup;
+    const particles = [];
+    const shapes = [];
     let mouseX = 0, mouseY = 0;
-    let windowHalfX = window.innerWidth / 2;
-    let windowHalfY = window.innerHeight / 2;
+    let windowHalfX = window.innerWidth / 2, windowHalfY = window.innerHeight / 2;
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
@@ -34,41 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
         MAX_PIXEL_RATIO: isMobile ? 1.0 : Math.min(window.devicePixelRatio, 2)
     };
 
-    const textureCache = [];
     const TEXTURE_CACHE_SIZE = 50;
+    const textureCache = [];
 
-    function initRenderer() {
-        const canvas = document.getElementById('background');
-        renderer = new THREE.WebGLRenderer({ 
-            canvas: canvas, 
-            antialias: !isMobile, 
-            alpha: true, 
-            powerPreference: isMobile ? 'low-power' : 'default' 
-        });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(CONFIG.MAX_PIXEL_RATIO);
-        renderer.setClearColor(CONFIG.BACKGROUND_COLOR, 1);
-    }
-
-    function initScene() {
-        scene = new THREE.Scene();
-        sceneGroup = new THREE.Group();
-        scene.add(sceneGroup);
-    }
-
-    function initCamera() {
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.z = isMobile ? 1000 : 1500;
-    }
-
-    function addLighting() {
-        const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
-        const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
-        directionalLight.position.set(1, 1, 1).normalize();
-        scene.add(ambientLight, directionalLight);
-    }
-
-    function createTextTexture(char) {
+    const createTextTexture = (char) => {
         if (textureCache.length >= TEXTURE_CACHE_SIZE) {
             return textureCache[Math.floor(Math.random() * TEXTURE_CACHE_SIZE)];
         }
@@ -77,11 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, size, size);
         const gradient = ctx.createLinearGradient(0, 0, size, size);
         gradient.addColorStop(0, '#1E90FF');
         gradient.addColorStop(1, '#BA55D3');
-
-        ctx.clearRect(0, 0, size, size);
         ctx.font = `${size * 0.6}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -90,47 +56,100 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.shadowBlur = CONFIG.SHADOW_BLUR;
         ctx.globalAlpha = 0.85;
         ctx.fillText(char, size / 2, size / 2);
-
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
         textureCache.push(texture);
         return texture;
-    }
+    };
 
-    function getRandomCharacter() {
-        return Math.random() < 0.5 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
-    }
+    const getRandomHangulCharacter = () => {
+        const initials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
+        const medials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A];
+        const finals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA, 0x11C2];
+        const initial = initials[Math.floor(Math.random() * initials.length)];
+        const medial = medials[Math.floor(Math.random() * medials.length)];
+        const final = finals[Math.floor(Math.random() * finals.length)];
+        const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
+        return String.fromCharCode(syllableCode);
+    };
 
-    function getRandomHangulCharacter() {
-        const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
-        const hangeulMedials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A];
-        const hangeulFinals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA, 0x11C2];
-        const initial = hangeulInitials[Math.floor(Math.random() * hangeulInitials.length)];
-        const medial = hangeulMedials[Math.floor(Math.random() * hangeulMedials.length)];
-        const final = hangeulFinals[Math.floor(Math.random() * hangeulFinals.length)];
-        return String.fromCharCode(0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0));
-    }
+    const getRandomCyrillicCharacter = () => {
+        const letters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
+        return letters[Math.floor(Math.random() * letters.length)];
+    };
 
-    function getRandomCyrillicCharacter() {
-        const cyrillicLetters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
-        return cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
-    }
+    const getRandomCharacter = () => Math.random() < 0.5 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
 
-    function createParticles() {
+    const getRandomPosition = (existingShapes, radius) => {
+        let position, tooClose, attempts = 0;
+        do {
+            position = new THREE.Vector3(
+                (Math.random() - 0.5) * 4000,
+                (Math.random() - 0.5) * 4000,
+                (Math.random() - 0.5) * 4000
+            );
+            tooClose = existingShapes.some(shape => position.distanceTo(shape.position) < CONFIG.MIN_DISTANCE + radius);
+            attempts++;
+            if (attempts > 100) break;
+        } while (tooClose);
+        return position;
+    };
+
+    const init = () => {
+        const canvas = document.getElementById('background');
+        renderer = new THREE.WebGLRenderer({
+            canvas,
+            antialias: !isMobile,
+            alpha: true,
+            powerPreference: isMobile ? 'low-power' : 'default'
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(CONFIG.MAX_PIXEL_RATIO, 2));
+        renderer.setClearColor(CONFIG.BACKGROUND_COLOR, 1);
+
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+        camera.position.z = isMobile ? 1000 : 1500;
+
+        const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
+        const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
+        directionalLight.position.set(1, 1, 1).normalize();
+        scene.add(ambientLight, directionalLight);
+
+        sceneGroup = new THREE.Group();
+        scene.add(sceneGroup);
+
+        createParticles();
+        createShapes();
+
+        document.addEventListener('mousemove', onDocumentMouseMove, false);
+        document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
+        window.addEventListener('resize', onWindowResize, false);
+
+        animate();
+    };
+
+    const createParticles = () => {
         const uniqueChars = 20;
-        const characters = Array.from({ length: uniqueChars }, getRandomCharacter);
+        const characters = Array.from({ length: uniqueChars }, () => getRandomCharacter());
+        characters.forEach(char => textureCache.push(createTextTexture(char)));
+
         for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
             const char = characters[Math.floor(Math.random() * uniqueChars)];
             const texture = createTextTexture(char);
-            const material = new THREE.SpriteMaterial({ 
-                map: texture, 
-                transparent: true, 
-                blending: THREE.AdditiveBlending, 
+            const material = new THREE.SpriteMaterial({
+                map: texture,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
                 depthWrite: false,
                 opacity: 0.9
             });
             const sprite = new THREE.Sprite(material);
-            sprite.position.set((Math.random() - 0.5) * 5000, (Math.random() - 0.5) * 5000, (Math.random() - 0.5) * 5000);
+            sprite.position.set(
+                (Math.random() - 0.5) * 5000,
+                (Math.random() - 0.5) * 5000,
+                (Math.random() - 0.5) * 5000
+            );
             sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
             sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
@@ -139,9 +158,60 @@ document.addEventListener('DOMContentLoaded', () => {
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
-    }
+    };
 
-    function animate() {
+    const createShapes = () => {
+        const geometryTypes = [
+            THREE.TetrahedronGeometry,
+            THREE.OctahedronGeometry,
+            THREE.IcosahedronGeometry,
+            THREE.DodecahedronGeometry
+        ];
+
+        for (let i = 0; i < CONFIG.SHAPE_COUNT; i++) {
+            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
+            const geometry = new GeometryClass(CONFIG.SHAPE_SIZE, 1);
+            const material = new THREE.MeshStandardMaterial({
+                color: CONFIG.SHAPE_COLOR,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.4,
+                emissive: CONFIG.EMISSIVE_COLOR,
+                emissiveIntensity: 0.5,
+                side: THREE.DoubleSide
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.copy(getRandomPosition(shapes, CONFIG.SHAPE_SIZE));
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+            sceneGroup.add(mesh);
+            shapes.push(mesh);
+        }
+    };
+
+    const onDocumentMouseMove = (event) => {
+        mouseX = (event.clientX - windowHalfX) / windowHalfX;
+        mouseY = (event.clientY - windowHalfY) / windowHalfY;
+    };
+
+    const onDocumentTouchMove = (event) => {
+        if (event.touches.length === 1) {
+            event.preventDefault();
+            mouseX = (event.touches[0].pageX - windowHalfX) / windowHalfX;
+            mouseY = (event.touches[0].pageY - windowHalfY) / windowHalfY;
+        }
+    };
+
+    const onWindowResize = () => {
+        windowHalfX = window.innerWidth / 2;
+        windowHalfY = window.innerHeight / 2;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    const animate = () => {
         requestAnimationFrame(animate);
         particles.forEach(p => {
             p.position.x += p.speedX;
@@ -152,27 +222,51 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Math.abs(p.position.y) > 2500) p.speedY *= -1;
             if (Math.abs(p.position.z) > 2500) p.speedZ *= -1;
         });
+        shapes.forEach(s => {
+            s.rotation.x += s.rotationSpeedX;
+            s.rotation.y += s.rotationSpeedY;
+            s.rotation.z += s.rotationSpeedZ;
+        });
         sceneGroup.rotation.y += CONFIG.ROTATION_SPEED;
         sceneGroup.rotation.x += CONFIG.ROTATION_SPEED * 0.75;
+        const targetRotationY = mouseX * 0.05;
+        const targetRotationX = mouseY * 0.05;
+        sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
+        sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
         renderer.render(scene, camera);
-    }
+    };
 
-    function initSceneAndStart() {
-        initRenderer();
-        initScene();
-        initCamera();
-        addLighting();
-        createParticles();
-        animate();
-    }
+    const handleFormSubmit = (event) => {
+        event.preventDefault();
+        const username = form.username.value.trim();
+        const domainSelect = form.querySelector('select[name="domain"]');
+        const domain = domainSelect.value;
+        if (username && domain) {
+            const email = `${username}${domain}`;
+            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
+            window.location.href = loginUrl;
+        } else {
+            alert('Please enter your username and select a domain.');
+        }
+    };
 
-    initSceneAndStart();
+    const initializeScene = () => {
+        init();
+    };
 
-    window.addEventListener('resize', () => {
-        windowHalfX = window.innerWidth / 2;
-        windowHalfY = window.innerHeight / 2;
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+    initializeScene();
+
+    window.onload = () => {
+        setTimeout(() => {
+            preloader.style.display = 'none';
+        }, 1000);
+    };
+
+    form.addEventListener('submit', handleFormSubmit);
+    form.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            form.dispatchEvent(new Event('submit'));
+        }
     });
 });

@@ -1,7 +1,7 @@
 // js/script.js
 
 // Import Three.js from esm.sh as an ES Module
-import * as THREE from 'https://esm.sh/three@0.152.2';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
 
 // Your code starts here
 document.addEventListener('DOMContentLoaded', () => {

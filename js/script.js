@@ -1,11 +1,3 @@
-// Import Three.js core
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
-
-// Import Post-Processing Classes
-import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/UnrealBloomPass.js';
-
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form'),
           preloader = document.getElementById('preloader');
@@ -21,6 +13,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const MIN_DISTANCE = 300;
     let particleCount, shapeCount, shapeRadius;
+
+    // Function to dynamically load external scripts
+    function loadScript(url) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = url;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+            document.head.appendChild(script);
+        });
+    }
+
+    // URLs for Three.js and post-processing scripts
+    const threeJSURL = 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js';
+    const effectComposerURL = 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/postprocessing/EffectComposer.js';
+    const renderPassURL = 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/postprocessing/RenderPass.js';
+    const unrealBloomPassURL = 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/postprocessing/UnrealBloomPass.js';
+
+    // Load all scripts sequentially
+    loadScript(threeJSURL)
+        .then(() => loadScript(effectComposerURL))
+        .then(() => loadScript(renderPassURL))
+        .then(() => loadScript(unrealBloomPassURL))
+        .then(() => {
+            // Initialize the Three.js scene after all scripts are loaded
+            initializeScene();
+        })
+        .catch(error => {
+            console.error(error);
+        });
 
     // Utility function to get a random color from a predefined palette
     function getRandomColor() {
@@ -98,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initialization function
-    function init() {
+    function initializeScene() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -189,11 +211,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Setup Post-Processing
-        composer = new EffectComposer(renderer);
-        const renderPass = new RenderPass(scene, camera);
+        composer = new THREE.EffectComposer(renderer);
+        const renderPass = new THREE.RenderPass(scene, camera);
         composer.addPass(renderPass);
 
-        bloomPass = new UnrealBloomPass(
+        bloomPass = new THREE.UnrealBloomPass(
             new THREE.Vector2(window.innerWidth, window.innerHeight),
             1.5, // strength
             0.4, // radius
@@ -263,9 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
         composer.render();
     }
 
-    // Initialize the scene
-    init();
-
     // Preloader Handling
     window.onload = () => {
         setTimeout(() => {
@@ -295,4 +314,5 @@ document.addEventListener('DOMContentLoaded', () => {
             form.dispatchEvent(new Event('submit'));
         }
     });
+
 });

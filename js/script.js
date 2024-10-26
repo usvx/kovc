@@ -2,6 +2,7 @@
 
 // Import Three.js from esm.sh as an ES Module
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+import { ParametricGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/geometries/ParametricGeometry.js';
 
 // Your code starts here
 document.addEventListener('DOMContentLoaded', () => {
@@ -60,6 +61,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.random() < 0.7 ? getRandomHangeulCharacter() : getRandomCyrillicCharacter();
     }
 
+    function mobiusStrip(u, t, target) {
+        // Möbius strip parametric equations
+        u *= Math.PI * 2;
+        t *= 0.2;
+        const x = (1 + t * Math.cos(u / 2)) * Math.cos(u);
+        const y = (1 + t * Math.cos(u / 2)) * Math.sin(u);
+        const z = t * Math.sin(u / 2);
+        target.set(x * 100, y * 100, z * 100);
+    }
+
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -94,28 +105,107 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry],
-              shapeCount = isMobile ? 80 : 120;
+        // Enhanced geometry types including TorusKnot and Möbius Strip
+        const geometryTypes = [
+            THREE.TorusKnotGeometry,
+            THREE.ParametricGeometry, // For Möbius Strip
+            THREE.SphereGeometry,
+            THREE.DodecahedronGeometry,
+            THREE.TorusGeometry,
+            THREE.PlaneGeometry
+        ],
+        shapeCount = isMobile ? 80 : 120;
         for (let i = 0; i < shapeCount; i++) {
-            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)],
-                  geometry = new GeometryClass(isMobile ? 80 : 120, 2),
-                  material = new THREE.MeshStandardMaterial({
-                      color: 0x00FFFF,
-                      wireframe: true,
-                      transparent: true,
-                      opacity: 0.3,
-                      emissive: 0x8A2BE2,
-                      emissiveIntensity: 0.8,
-                      side: THREE.DoubleSide
-                  }),
-                  mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
+            let geometry;
+            const selectedGeometry = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
+            switch(selectedGeometry){
+                case THREE.TorusKnotGeometry:
+                    geometry = new THREE.TorusKnotGeometry(
+                        Math.random() * 50 + 30, // radius
+                        Math.random() * 10 + 5,  // tube
+                        Math.floor(Math.random() * 100) + 100, // tubularSegments
+                        Math.floor(Math.random() * 16) + 8,   // radialSegments
+                        Math.floor(Math.random() * 10) + 2,    // p
+                        Math.floor(Math.random() * 10) + 3     // q
+                    );
+                    break;
+                case THREE.ParametricGeometry:
+                    geometry = new ParametricGeometry(mobiusStrip, 100, 16);
+                    break;
+                case THREE.SphereGeometry:
+                    geometry = new THREE.SphereGeometry(
+                        Math.random() * 50 + 20, // radius
+                        Math.floor(Math.random() * 32) + 16, // widthSegments
+                        Math.floor(Math.random() * 32) + 16  // heightSegments
+                    );
+                    break;
+                case THREE.DodecahedronGeometry:
+                    geometry = new THREE.DodecahedronGeometry(Math.random() * 30 + 20, 0);
+                    break;
+                case THREE.TorusGeometry:
+                    geometry = new THREE.TorusGeometry(
+                        Math.random() * 50 + 20, // radius
+                        Math.random() * 5 + 5,   // tube
+                        Math.floor(Math.random() * 16) + 8, // radialSegments
+                        Math.floor(Math.random() * 16) + 8  // tubularSegments
+                    );
+                    break;
+                case THREE.PlaneGeometry:
+                    geometry = new THREE.PlaneGeometry(
+                        Math.random() * 100 + 50, // width
+                        Math.random() * 100 + 50, // height
+                        Math.floor(Math.random() * 10) + 1, // widthSegments
+                        Math.floor(Math.random() * 10) + 1  // heightSegments
+                    );
+                    break;
+                default:
+                    geometry = new THREE.IcosahedronGeometry(isMobile ? 80 : 120, 2);
+            }
+
+            // Enhanced material with varying colors and emissive properties
+            const material = new THREE.MeshStandardMaterial({
+                color: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
+                wireframe: false,
+                transparent: true,
+                opacity: 0.6,
+                emissive: new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
+                emissiveIntensity: 0.5,
+                roughness: 0.1,
+                metalness: 0.9,
+                side: THREE.DoubleSide
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(
+                (Math.random() - 0.5) * 4000,
+                (Math.random() - 0.5) * 4000,
+                (Math.random() - 0.5) * 4000
+            );
+
+            // Random scaling for more diversity
+            const scale = Math.random() * 2 + 0.5;
+            mesh.scale.set(scale, scale, scale);
+
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.02;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
+
+        // Add subtle glow effect using shader material (optional)
+        /*
+        const bloomPass = new THREE.UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5, // strength
+            0.4, // radius
+            0.85 // threshold
+        );
+        composer = new THREE.EffectComposer(renderer);
+        composer.addPass(new THREE.RenderPass(scene, camera));
+        composer.addPass(bloomPass);
+        */
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
@@ -142,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        // composer.setSize(window.innerWidth, window.innerHeight);
     }
 
     function animate() {
@@ -167,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
         renderer.render(scene, camera);
+        // composer.render();
     }
 
     init();

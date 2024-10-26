@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
           preloader = document.getElementById('preloader');
     let scene, camera, renderer,
         particles = [],
-        shapes = [],
+        icosahedronShapes = [],  // Updated to reflect Icosahedron usage
         sceneGroup,
         mouseX = 0, mouseY = 0,
         windowHalfX = window.innerWidth / 2,
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const shapeCount = isMobile ? 80 : 120;
         for (let i = 0; i < shapeCount; i++) {
-            const geometry = new THREE.SphereGeometry(isMobile ? 80 : 120, 16, 16), // Lower segment count for better performance
+            const icosahedronGeometry = new THREE.IcosahedronGeometry(isMobile ? 80 : 120, 1),  // Icosahedron with detail 1 for a rounded look
                   material = new THREE.MeshStandardMaterial({
                       color: 0x00FFFF,
                       wireframe: true,
@@ -101,13 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
                       emissiveIntensity: 0.8,
                       side: THREE.DoubleSide
                   }),
-                  mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
-            sceneGroup.add(mesh);
-            shapes.push(mesh);
+                  icosahedronMesh = new THREE.Mesh(icosahedronGeometry, material);
+            icosahedronMesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+            icosahedronMesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
+            icosahedronMesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
+            icosahedronMesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
+            sceneGroup.add(icosahedronMesh);
+            icosahedronShapes.push(icosahedronMesh);  // Updated variable name
         }
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (p.position.y > 2000 || p.position.y < -2000) p.speedY *= -1;
             if (p.position.z > 2000 || p.position.z < -2000) p.speedZ *= -1;
         });
-        shapes.forEach(s => {
+        icosahedronShapes.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;

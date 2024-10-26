@@ -56,6 +56,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.random() < 0.7 ? getRandomHangeulCharacter() : getRandomCyrillicCharacter();
     }
 
+    function createTriangularPrismGeometry() {
+        const shape = new THREE.Shape();
+        shape.moveTo(0, 0);
+        shape.lineTo(1, 0);
+        shape.lineTo(0.5, Math.sqrt(3)/2);
+        shape.lineTo(0, 0);
+        const extrudeSettings = { depth: 1, bevelEnabled: false };
+        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        geometry.scale(100, 100, 100);
+        return geometry;
+    }
+
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -73,6 +85,40 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
+        const geometryTypes = [
+            THREE.TetrahedronGeometry,
+            THREE.OctahedronGeometry,
+            THREE.IcosahedronGeometry,
+            THREE.DodecahedronGeometry,
+            THREE.SphereGeometry,
+            THREE.ConeGeometry,
+            THREE.TorusGeometry,
+            createTriangularPrismGeometry
+        ];
+        const shapeCount = isMobile ? 100 : 150;
+        for (let i = 0; i < shapeCount; i++) {
+            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)],
+                  geometry = typeof GeometryClass === 'function' ? 
+                      (GeometryClass === createTriangularPrismGeometry ? GeometryClass() : new GeometryClass(isMobile ? 80 : 120, 16, 16)) :
+                      new THREE.BoxGeometry();
+            const material = new THREE.MeshStandardMaterial({
+                color: Math.random() * 0xffffff,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3,
+                emissive: 0x8A2BE2,
+                emissiveIntensity: 0.8,
+                side: THREE.DoubleSide
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
+            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
+            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
+            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
+            sceneGroup.add(mesh);
+            shapes.push(mesh);
+        }
+
         const particleCount = isMobile ? 800 : 1600;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter(),
@@ -87,29 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.rotationSpeed = (Math.random() - 0.5) * 0.05;
             sceneGroup.add(sprite);
             particles.push(sprite);
-        }
-
-        const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry],
-              shapeCount = isMobile ? 80 : 120;
-        for (let i = 0; i < shapeCount; i++) {
-            const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)],
-                  geometry = new GeometryClass(isMobile ? 80 : 120, 2),
-                  material = new THREE.MeshStandardMaterial({
-                      color: 0x00FFFF,
-                      wireframe: true,
-                      transparent: true,
-                      opacity: 0.3,
-                      emissive: 0x8A2BE2,
-                      emissiveIntensity: 0.8,
-                      side: THREE.DoubleSide
-                  }),
-                  mesh = new THREE.Mesh(geometry, material);
-            mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
-            mesh.rotationSpeedX = (Math.random() - 0.5) * 0.05;
-            mesh.rotationSpeedY = (Math.random() - 0.5) * 0.05;
-            mesh.rotationSpeedZ = (Math.random() - 0.5) * 0.05;
-            sceneGroup.add(mesh);
-            shapes.push(mesh);
         }
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);

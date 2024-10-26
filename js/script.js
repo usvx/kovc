@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const shapes = [];
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
-    // Creates a texture from a character for the particle material
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
         const size = isMobile ? 256 : 512;
@@ -22,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textBaseline = 'middle';
 
         const gradient = ctx.createLinearGradient(0, 0, size, size);
-        const hue = Math.random() * 360;
+        const hue = (Math.random() * 360) % 360;
         gradient.addColorStop(0, `hsl(${hue}, 100%, 70%)`);
         gradient.addColorStop(1, `hsl(${(hue + 60) % 360}, 100%, 50%)`);
         ctx.fillStyle = gradient;
@@ -35,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return texture;
     }
 
-    // Generates a random Hangul character
     function getRandomHangulCharacter() {
         const initials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
         const medials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A];
@@ -44,12 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const initial = initials[Math.floor(Math.random() * initials.length)];
         const medial = medials[Math.floor(Math.random() * medials.length)];
         const final = finals[Math.floor(Math.random() * finals.length)];
-        
+
         const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
         return String.fromCharCode(syllableCode);
     }
 
-    // Generates a random Cyrillic character
     function getRandomCyrillicCharacter() {
         const start = 0x0410;
         const end = 0x042F;
@@ -57,12 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return String.fromCharCode(code);
     }
 
-    // Randomly selects between Hangul and Cyrillic characters
     function getRandomCharacter() {
         return Math.random() < 0.7 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
     }
 
-    // Initializes the scene, camera, and renderer
     function init() {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -74,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 800 : 1200;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight.position.set(1, 1, 1).normalize();
         scene.add(ambientLight, directionalLight);
 
@@ -83,48 +78,44 @@ document.addEventListener('DOMContentLoaded', () => {
         window.addEventListener('resize', onWindowResize, false);
     }
 
-    // Handles window resizing
     function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
-    // Initializes shapes and particles and starts the animation loop
     function startAnimation() {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        // Adding shapes to the scene
-        const geometry = new THREE.SphereGeometry(isMobile ? 80 : 120, 64, 64);
+        const geometry = new THREE.SphereGeometry(isMobile ? 100 : 140, 64, 64);
         const shapeCount = isMobile ? 50 : 100;
         for (let i = 0; i < shapeCount; i++) {
             const hue = Math.random() * 360;
             const material = new THREE.MeshPhysicalMaterial({
-                color: new THREE.Color(`hsl(${hue}, 100%, 50%)`),
-                metalness: 0.2,
-                roughness: 0.1,
-                transmission: 0.9,
-                opacity: 0.6,
+                color: new THREE.Color(`hsl(${hue}, 100%, 60%)`),
+                metalness: 0.3,
+                roughness: 0.05,
+                transmission: 0.98,
+                opacity: 0.7,
                 transparent: true,
                 clearcoat: 1,
-                clearcoatRoughness: 0.1,
-                reflectivity: 0.5,
-                ior: 1.4,
-                thickness: 5,
+                clearcoatRoughness: 0.02,
+                reflectivity: 0.8,
+                ior: 1.6,
+                thickness: 7,
             });
             const mesh = new THREE.Mesh(geometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
             mesh.userData = {
                 amplitude: Math.random() * 20 + 10,
-                speed: Math.random() * 0.02 + 0.01,
+                speed: Math.random() * 0.02 + 0.005,
                 offset: Math.random() * Math.PI * 2
             };
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
 
-        // Adding particles to the scene
         const particleCount = isMobile ? 400 : 800;
         for (let i = 0; i < particleCount; i++) {
             const char = getRandomCharacter();
@@ -133,19 +124,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const hue = Math.random() * 360;
             const material = new THREE.MeshPhysicalMaterial({
                 map: texture,
-                color: new THREE.Color(`hsl(${hue}, 100%, 50%)`),
-                metalness: 0.1,
+                color: new THREE.Color(`hsl(${hue}, 100%, 60%)`),
+                metalness: 0.2,
                 roughness: 0.05,
                 transparent: true,
                 clearcoat: 1,
-                clearcoatRoughness: 0.1,
-                reflectivity: 1
+                clearcoatRoughness: 0.05,
+                reflectivity: 0.9
             });
             const mesh = new THREE.Mesh(particleGeometry, material);
             mesh.position.set((Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000, (Math.random() - 0.5) * 4000);
             mesh.userData = {
                 amplitude: Math.random() * 20 + 10,
-                speed: Math.random() * 0.02 + 0.01,
+                speed: Math.random() * 0.015 + 0.005,
                 offset: Math.random() * Math.PI * 2
             };
             particles.push(mesh);
@@ -155,31 +146,30 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     }
 
-    // Animation loop for rendering scene and updating objects
     function animate() {
         requestAnimationFrame(animate);
         const time = Date.now() * 0.001;
 
-        // Sinusoidal motion for particles and shapes
         particles.forEach(p => {
             p.position.x += Math.sin(time * p.userData.speed + p.userData.offset) * p.userData.amplitude * 0.1;
             p.position.y += Math.cos(time * p.userData.speed + p.userData.offset) * p.userData.amplitude * 0.1;
             p.lookAt(camera.position);
+            p.material.color.offsetHSL(0.0005, 0, 0); // Subtle color shift
         });
 
         shapes.forEach(s => {
             s.position.x += Math.sin(time * s.userData.speed + s.userData.offset) * s.userData.amplitude * 0.1;
             s.position.y += Math.cos(time * s.userData.speed + s.userData.offset) * s.userData.amplitude * 0.1;
+            s.material.color.offsetHSL(0.0003, 0, 0); // Subtle color shift for iridescent feel
         });
 
-        sceneGroup.rotation.y += 0.0025;
-        sceneGroup.rotation.x += 0.0015;
+        sceneGroup.rotation.y += 0.003;
+        sceneGroup.rotation.x += 0.0018;
         renderer.render(scene, camera);
     }
 
     init();
 
-    // Hide preloader once page has fully loaded
     window.onload = () => {
         setTimeout(() => {
             preloader.style.display = 'none';

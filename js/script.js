@@ -3,8 +3,6 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.m
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
 
     let scene, camera, renderer, sceneGroup;
     const particles = [];
@@ -14,13 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 300 : 600, // Reduced for performance
-        SPHERE_COUNT: isMobile ? 15 : 30,    // Reduced for performance
+        PARTICLE_COUNT: isMobile ? 300 : 600, // Optimized for performance
+        SPHERE_COUNT: isMobile ? 15 : 30,    // Optimized for performance
         MIN_DISTANCE: 400,
-        PARTICLE_SIZE: isMobile ? 120 : 180,  // Adjusted size
-        SPHERE_SIZE: isMobile ? 60 : 100,     // Adjusted size
-        PARTICLE_SPEED: isMobile ? 1.2 : 2.0, // Reduced speed for smoother motion
-        ROTATION_SPEED: isMobile ? 0.002 : 0.004, // Reduced for smoother rotation
+        PARTICLE_SIZE: isMobile ? 120 : 180,  // Adjusted size for visibility
+        SPHERE_SIZE: isMobile ? 60 : 100,     // Adjusted size for balance
+        PARTICLE_SPEED: isMobile ? 1.2 : 2.0, // Optimized speed for smooth motion
+        ROTATION_SPEED: isMobile ? 0.002 : 0.004, // Optimized rotation speed
         TEXTURE_SIZE: isMobile ? 128 : 256,    // Reduced texture size for performance
         SHADOW_BLUR: isMobile ? 10 : 20,
         LIGHT_INTENSITY: isMobile ? 0.8 : 1.2,
@@ -379,46 +377,4 @@ document.addEventListener('DOMContentLoaded', () => {
             form.dispatchEvent(new Event('submit'));
         }
     });
-
-    // Theme Toggle Functionality
-    const setTheme = (theme) => {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        if (theme === 'dark') {
-            themeIcon.innerHTML = `
-                <!-- Moon Icon -->
-                <path d="M21 12.79A9 9 0 0112.21 3 7 7 0 0012 17a7 7 0 009-4.21z"/>
-            `;
-        } else {
-            themeIcon.innerHTML = `
-                <!-- Sun Icon -->
-                <circle cx="12" cy="12" r="5" fill="currentColor"/>
-                <g stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="1" x2="12" y2="3"/>
-                    <line x1="12" y1="21" x2="12" y2="23"/>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                    <line x1="1" y1="12" x2="3" y2="12"/>
-                    <line x1="21" y1="12" x2="23" y2="12"/>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                </g>
-            `;
-        }
-    };
-
-    const toggleTheme = () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        if (currentTheme === 'dark') {
-            setTheme('light');
-        } else {
-            setTheme('dark');
-        }
-    };
-
-    themeToggle.addEventListener('click', toggleTheme);
-
-    // Initialize theme based on user preference or default
-    const savedTheme = localStorage.getItem('theme') || 'dark'; // Default to dark
-    setTheme(savedTheme);
 });

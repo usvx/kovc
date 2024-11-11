@@ -237,3 +237,32 @@ button:focus {
         font-size: 1rem !important;
     }
 }
+
+/* Micro-Interactions */
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollbar Styling */
+body::-webkit-scrollbar {
+    width: 12px;
+}
+
+body::-webkit-scrollbar-track {
+    background: var(--background-color);
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 6px;
+    border: 3px solid var(--background-color);
+}
+
+/* Enhanced Accessibility */
+input:focus,
+select:focus,
+button:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}

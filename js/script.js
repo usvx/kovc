@@ -1,16 +1,9 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // ============================
-    // === DOM ELEMENTS ============
-    // ============================
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
-    const canvas = document.getElementById('background');
 
-    // ============================
-    // === SCENE VARIABLES =========
-    // ============================
     let scene, camera, renderer, sceneGroup;
     const particles = [];
     const spheres = [];
@@ -18,9 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let windowHalfX = window.innerWidth / 2, windowHalfY = window.innerHeight / 2;
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
-    // ============================
-    // === CONFIGURATION ============
-    // ============================
     const CONFIG = {
         PARTICLE_COUNT: isMobile ? 600 : 1000,
         SPHERE_COUNT: isMobile ? 30 : 60, // Reduced count to prevent screen coverage
@@ -45,9 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
         MAX_SPHERE_SIZE: isMobile ? 100 : 150, // Maximum sphere size to prevent excessive scaling
     };
 
-    // ============================
-    // === TEXTURE CACHE ===========
-    // ============================
     const TEXTURE_CACHE_SIZE = 200;
     const textureCache = [];
 
@@ -67,33 +54,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
         ctx.clearRect(0, 0, CONFIG.TEXTURE_SIZE, CONFIG.TEXTURE_SIZE);
-
-        // Create a dynamic gradient
-        const gradient = ctx.createRadialGradient(
-            CONFIG.TEXTURE_SIZE / 2,
-            CONFIG.TEXTURE_SIZE / 2,
-            CONFIG.TEXTURE_SIZE * 0.1,
-            CONFIG.TEXTURE_SIZE / 2,
-            CONFIG.TEXTURE_SIZE / 2,
-            CONFIG.TEXTURE_SIZE * 0.8
-        );
+        const gradient = ctx.createLinearGradient(0, 0, CONFIG.TEXTURE_SIZE, CONFIG.TEXTURE_SIZE);
         gradient.addColorStop(0, '#1E90FF');
         gradient.addColorStop(1, '#BA55D3');
-        ctx.fillStyle = gradient;
-
-        // Enhanced text styling with glow
-        ctx.font = `${CONFIG.TEXTURE_SIZE * 0.8}px 'Urbanist', sans-serif`;
+        ctx.font = ${CONFIG.TEXTURE_SIZE * 0.8}px 'Urbanist', sans-serif;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
+        ctx.fillStyle = gradient;
         ctx.shadowColor = '#9370DB';
         ctx.shadowBlur = CONFIG.SHADOW_BLUR;
+        ctx.globalAlpha = 0.9;
         ctx.fillText(char, CONFIG.TEXTURE_SIZE / 2, CONFIG.TEXTURE_SIZE / 2);
-
-        // Optional: Add a subtle stroke for better contrast
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 2;
-        ctx.strokeText(char, CONFIG.TEXTURE_SIZE / 2, CONFIG.TEXTURE_SIZE / 2);
-
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
         textureCache.push(texture);
@@ -165,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * Initializes the Three.js scene, camera, renderer, particles, and spheres.
      */
     const init = () => {
+        const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({
             canvas,
             antialias: !isMobile,
@@ -177,21 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.physicallyCorrectLights = true; // Enable physically correct lighting
         renderer.outputEncoding = THREE.sRGBEncoding; // Improved color accuracy
         renderer.toneMapping = THREE.ReinhardToneMapping; // Better tone mapping for realistic lighting
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
         scene = new THREE.Scene();
-        scene.background = CONFIG.BACKGROUND_COLOR; // Ensure dark background
-
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1200 : 1800;
 
         const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
         const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
         directionalLight.position.set(1, 1, 1).normalize();
-        directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 2048;
-        directionalLight.shadow.mapSize.height = 2048;
         scene.add(ambientLight, directionalLight);
 
         sceneGroup = new THREE.Group();
@@ -225,8 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 transparent: true,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false,
-                opacity: 0.95,
-                color: CONFIG.PARTICLE_COLOR_1
+                opacity: 0.95
             });
             const sprite = new THREE.Sprite(material);
             sprite.position.set(
@@ -273,8 +237,6 @@ document.addEventListener('DOMContentLoaded', () => {
             sphere.rotationSpeedX = (Math.random() - 0.5) * 0.02;
             sphere.rotationSpeedY = (Math.random() - 0.5) * 0.02;
             sphere.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
-            sphere.castShadow = true;
-            sphere.receiveShadow = true;
             sphere.renderOrder = 0; // Ensure spheres render before particles
             sceneGroup.add(sphere);
             spheres.push(sphere);
@@ -351,8 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const domainSelect = form.querySelector('select[name="domain"]');
         const domain = domainSelect.value;
         if (username && domain) {
-            const email = `${username}${domain}`;
-            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
+            const email = ${username}${domain};
+            const loginUrl = https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/;
             window.location.href = loginUrl;
         } else {
             alert('Please enter your username and select a domain.');
@@ -372,11 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hide preloader after a short delay
     window.onload = () => {
         setTimeout(() => {
-            preloader.style.opacity = '0';
-            preloader.style.transition = 'opacity 1s ease';
-            setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 1000);
+            preloader.style.display = 'none';
         }, 800);
     };
 
@@ -389,3 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+ChatGPT
+

@@ -14,16 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 600 : 1000,
-        SPHERE_COUNT: isMobile ? 30 : 60,
+        PARTICLE_COUNT: isMobile ? 300 : 600, // Reduced for performance
+        SPHERE_COUNT: isMobile ? 15 : 30,    // Reduced for performance
         MIN_DISTANCE: 400,
-        PARTICLE_SIZE: isMobile ? 150 : 200,
-        SPHERE_SIZE: isMobile ? 80 : 120,
-        PARTICLE_SPEED: isMobile ? 1.5 : 2.5,
-        ROTATION_SPEED: isMobile ? 0.003 : 0.005,
-        TEXTURE_SIZE: isMobile ? 256 : 512,
-        SHADOW_BLUR: isMobile ? 15 : 30,
-        LIGHT_INTENSITY: isMobile ? 1.0 : 1.5,
+        PARTICLE_SIZE: isMobile ? 120 : 180,  // Adjusted size
+        SPHERE_SIZE: isMobile ? 60 : 100,     // Adjusted size
+        PARTICLE_SPEED: isMobile ? 1.2 : 2.0, // Reduced speed for smoother motion
+        ROTATION_SPEED: isMobile ? 0.002 : 0.004, // Reduced for smoother rotation
+        TEXTURE_SIZE: isMobile ? 128 : 256,    // Reduced texture size for performance
+        SHADOW_BLUR: isMobile ? 10 : 20,
+        LIGHT_INTENSITY: isMobile ? 0.8 : 1.2,
         AMBIENT_COLOR: 0x1E90FF,
         DIRECTIONAL_COLOR: 0x9370DB,
         BACKGROUND_COLOR: 0x0A0A0A,
@@ -31,13 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
         PARTICLE_COLOR_2: 0xBA55D3,
         SPHERE_COLOR: 0xBA55D3,
         EMISSIVE_COLOR: 0x9370DB,
-        MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 3) : Math.min(window.devicePixelRatio, 2),
+        MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 2.5) : Math.min(window.devicePixelRatio, 2),
         ENV_MAP_INTENSITY: 1.0,
-        MIN_CAMERA_DISTANCE: 500,
-        MAX_SPHERE_SIZE: isMobile ? 100 : 150,
+        MIN_CAMERA_DISTANCE: 400,
+        MAX_SPHERE_SIZE: isMobile ? 90 : 130,
     };
 
-    const TEXTURE_CACHE_SIZE = 200;
+    const TEXTURE_CACHE_SIZE = 100;
     const textureCache = [];
 
     /**
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {THREE.Vector3} - A random position vector.
      */
     const getRandomPosition = (existingSpheres, radius) => {
-        const boundingRadius = 2000; // Limit positions within a sphere of radius 2000
+        const boundingRadius = 1500; // Reduced for better performance
         const minDistanceFromCamera = CONFIG.MIN_CAMERA_DISTANCE + radius;
         let position, tooClose, attempts = 0;
         do {
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.z = isMobile ? 1200 : 1800;
+        camera.position.z = isMobile ? 1000 : 1500;
 
         // Ambient Light
         const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
@@ -204,9 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const sprite = new THREE.Sprite(material);
             sprite.position.set(
-                (Math.random() - 0.5) * 5000,
-                (Math.random() - 0.5) * 5000,
-                (Math.random() - 0.5) * 5000
+                (Math.random() - 0.5) * 3000, // Reduced range for better performance
+                (Math.random() - 0.5) * 3000,
+                (Math.random() - 0.5) * 3000
             );
             sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
             sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const createSpheres = () => {
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
-            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64);
+            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 32, 32); // Reduced segments for performance
             const material = new THREE.MeshPhysicalMaterial({
                 color: CONFIG.SPHERE_COLOR,
                 metalness: 0.0,
@@ -295,9 +295,10 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
             p.material.rotation += p.rotationSpeed;
-            if (Math.abs(p.position.x) > 2500) p.speedX *= -1;
-            if (Math.abs(p.position.y) > 2500) p.speedY *= -1;
-            if (Math.abs(p.position.z) > 2500) p.speedZ *= -1;
+            // Boundary Check
+            if (Math.abs(p.position.x) > 1500) p.speedX *= -1;
+            if (Math.abs(p.position.y) > 1500) p.speedY *= -1;
+            if (Math.abs(p.position.z) > 1500) p.speedZ *= -1;
         });
         spheres.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
@@ -361,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize the Scene
     initializeScene();
 
-    // Hide preloader after a short delay
+    // Hide preloader after assets are loaded
     window.onload = () => {
         setTimeout(() => {
             preloader.style.opacity = '0';

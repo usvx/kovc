@@ -7,7 +7,7 @@
     <!-- Enhanced Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' https://cdn.jsdelivr.net 'unsafe-eval';
+        script-src 'self' https://cdn.jsdelivr.net https://unpkg.com;
         style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
         img-src 'self' data:;
         font-src 'self' https://fonts.gstatic.com data:;
@@ -26,67 +26,79 @@
     <noscript>
         <link rel="stylesheet" href="css/noscript.css">
     </noscript>
-    <!-- Dark Mode Toggle -->
-    <script>
-        // Detect user preference for dark mode
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.classList.toggle('dark-mode', prefersDark);
-    </script>
 </head>
 <body>
-    <button id="theme-toggle" aria-label="Toggle Dark Mode">
-        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Theme Toggle Button -->
+    <button id="theme-toggle" aria-label="Toggle Theme" class="theme-toggle">
+        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
             <!-- Sun Icon -->
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            <circle cx="12" cy="12" r="5" fill="currentColor"/>
+            <g stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </g>
         </svg>
     </button>
 
+    <!-- Enhanced Preloader with Progress Bar -->
     <div id="preloader" aria-label="Loading">
-        <div class="loader"></div>
+        <div class="preloader-content">
+            <div class="loader"></div>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+            <span class="loading-text">Loading...</span>
+        </div>
     </div>
+
+    <!-- 3D Background Canvas -->
     <canvas id="background" aria-hidden="true" loading="lazy"></canvas>
+
     <main>
-        <section class="entrance" role="main">
-            <h1>Lumina</h1>
-            <form id="login-form" aria-label="Login Form" novalidate>
-                <div class="input-group">
-                    <label for="username" class="visually-hidden">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username" aria-required="true">
-                </div>
-                <div class="input-group">
-                    <label for="domain" class="visually-hidden">Domain</label>
-                    <div class="custom-select">
-                        <select id="domain" name="domain" required autocomplete="off" aria-required="true">
-                            <option value="" disabled selected>Select Domain</option>
-                            <option value="@gj.to">@gj.to</option>
-                            <option value="@ko.vc">@ko.vc</option>
-                            <option value="@yv.is">@yv.is</option>
-                        </select>
+        <section class="hero">
+            <div class="entrance">
+                <h1>Lumina</h1>
+                <form id="login-form" aria-label="Login Form" novalidate>
+                    <div class="input-container">
+                        <label for="username" class="visually-hidden">Username</label>
+                        <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username" aria-required="true">
+                        <span class="error-message" aria-live="polite"></span>
                     </div>
-                </div>
-                <button type="submit" aria-label="Enter">Enter</button>
-            </form>
+                    <div class="input-container">
+                        <label for="domain" class="visually-hidden">Domain</label>
+                        <div class="custom-select">
+                            <select id="domain" name="domain" required autocomplete="off" aria-required="true">
+                                <option value="" disabled selected>Select Domain</option>
+                                <option value="@gj.to">@gj.to</option>
+                                <option value="@ko.vc">@ko.vc</option>
+                                <option value="@yv.is">@yv.is</option>
+                            </select>
+                        </div>
+                        <span class="error-message" aria-live="polite"></span>
+                    </div>
+                    <button type="submit" aria-label="Enter">Enter</button>
+                </form>
+            </div>
         </section>
     </main>
+
     <noscript>
         <div id="noscript-wrapper">
             <main>
-                <section class="entrance">
+                <div class="entrance">
                     <h1>Lumina</h1>
-                    <form action="https://accounts.google.com/AccountChooser" method="get" aria-label="Login Form">
-                        <div class="input-group">
+                    <form action="https://accounts.google.com/AccountChooser" method="get">
+                        <div class="input-container">
                             <label for="Email" class="visually-hidden">Username</label>
                             <input type="text" id="Email" name="Email" placeholder="Username" required autocomplete="username" aria-required="true">
                         </div>
-                        <div class="input-group">
+                        <div class="input-container">
                             <label for="domain-noscript" class="visually-hidden">Domain</label>
                             <div class="custom-select">
                                 <select id="domain-noscript" name="domain" required autocomplete="off" aria-required="true">
@@ -100,45 +112,16 @@
                         <input type="hidden" name="continue" value="https://mail.google.com/a/">
                         <button type="submit" aria-label="Enter">Enter</button>
                     </form>
-                </section>
+                </div>
             </main>
         </div>
     </noscript>
-    <!-- Defer non-critical scripts -->
-    <script type="module" src="js/script.js" defer crossorigin="anonymous"></script>
-    <!-- Theme Toggle Script -->
-    <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
 
-        themeToggle.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark-mode');
-            if (document.documentElement.classList.contains('dark-mode')) {
-                themeIcon.innerHTML = `
-                    <path d="M12 3v1"></path>
-                    <path d="M12 20v1"></path>
-                    <path d="M4.22 4.22l.7.7"></path>
-                    <path d="M18.36 18.36l.7.7"></path>
-                    <path d="M1 12h1"></path>
-                    <path d="M20 12h1"></path>
-                    <path d="M4.22 19.78l.7-.7"></path>
-                    <path d="M18.36 5.64l.7-.7"></path>
-                    <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="2"></circle>
-                `;
-            } else {
-                themeIcon.innerHTML = `
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                `;
-            }
-        });
+    <!-- Enhanced Script Tag -->
+    <script 
+        type="module" 
+        src="js/script.js" 
+        crossorigin="anonymous">
     </script>
 </body>
 </html>

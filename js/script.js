@@ -12,16 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 600 : 1000,
-        SPHERE_COUNT: isMobile ? 30 : 60, // Reduced count to prevent screen coverage
-        MIN_DISTANCE: 400, // Increased to ensure more spacing
+        PARTICLE_COUNT: isMobile ? 600 : 800, // Balanced count for performance
+        SPHERE_COUNT: isMobile ? 30 : 50,
+        MIN_DISTANCE: 400,
         PARTICLE_SIZE: isMobile ? 150 : 200,
-        SPHERE_SIZE: isMobile ? 80 : 120, // Reduced size for better distribution
-        PARTICLE_SPEED: isMobile ? 1.5 : 2.5,
-        ROTATION_SPEED: isMobile ? 0.003 : 0.005,
+        SPHERE_SIZE: isMobile ? 80 : 100, // Further reduced for better distribution
+        PARTICLE_SPEED: isMobile ? 1.5 : 2.0, // Slight adjustment for smoother motion
+        ROTATION_SPEED: isMobile ? 0.002 : 0.004, // Balanced rotation speed
         TEXTURE_SIZE: isMobile ? 256 : 512,
-        SHADOW_BLUR: isMobile ? 15 : 30,
-        LIGHT_INTENSITY: isMobile ? 1.0 : 1.5, // Increased for better illumination
+        SHADOW_BLUR: isMobile ? 15 : 25,
+        LIGHT_INTENSITY: isMobile ? 1.0 : 1.3,
         AMBIENT_COLOR: 0x1E90FF,
         DIRECTIONAL_COLOR: 0x9370DB,
         BACKGROUND_COLOR: 0x0A0A0A,
@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
         EMISSIVE_COLOR: 0x9370DB,
         MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 3) : Math.min(window.devicePixelRatio, 2),
         ENV_MAP_INTENSITY: 1.0,
-        MIN_CAMERA_DISTANCE: 500, // Minimum distance from camera to any sphere
-        MAX_SPHERE_SIZE: isMobile ? 100 : 150, // Maximum sphere size to prevent excessive scaling
+        MIN_CAMERA_DISTANCE: 500,
+        MAX_SPHERE_SIZE: isMobile ? 100 : 120,
     };
 
     const TEXTURE_CACHE_SIZE = 200;
@@ -146,13 +146,13 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(CONFIG.MAX_PIXEL_RATIO, 3));
         renderer.setClearColor(CONFIG.BACKGROUND_COLOR, 1);
-        renderer.physicallyCorrectLights = true; // Enable physically correct lighting
-        renderer.outputEncoding = THREE.sRGBEncoding; // Improved color accuracy
-        renderer.toneMapping = THREE.ReinhardToneMapping; // Better tone mapping for realistic lighting
+        renderer.physicallyCorrectLights = true;
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ReinhardToneMapping;
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.z = isMobile ? 1200 : 1800;
+        camera.position.z = isMobile ? 1200 : 1500; // Adjusted for better depth
 
         const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
         const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         createParticles();
         createSpheres();
 
-        renderer.sortObjects = true; // Enable sorting for transparent objects
+        renderer.sortObjects = true;
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const createParticles = () => {
         const uniqueChars = 30;
         const characters = Array.from({ length: uniqueChars }, () => getRandomCharacter());
-        characters.forEach(char => textureCache.push(createTextTexture(char)));
+        characters.forEach(char => createTextTexture(char));
 
         for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
             const char = characters[Math.floor(Math.random() * uniqueChars)];
@@ -190,20 +190,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 transparent: true,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false,
-                opacity: 0.95
+                opacity: 0.9
             });
             const sprite = new THREE.Sprite(material);
             sprite.position.set(
-                (Math.random() - 0.5) * 5000,
-                (Math.random() - 0.5) * 5000,
-                (Math.random() - 0.5) * 5000
+                (Math.random() - 0.5) * 4000,
+                (Math.random() - 0.5) * 4000,
+                (Math.random() - 0.5) * 4000
             );
             sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
             sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
-            sprite.renderOrder = 1; // Ensure particles render after spheres
+            sprite.renderOrder = 1;
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
@@ -214,30 +214,30 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const createSpheres = () => {
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
-            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64); // Reduced segments for better performance
+            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64);
             const material = new THREE.MeshPhysicalMaterial({
                 color: CONFIG.SPHERE_COLOR,
                 metalness: 0.0,
                 roughness: 0.05,
-                transmission: 1.0, // Full transmission for glass effect
+                transmission: 1.0,
                 transparent: true,
-                opacity: 0.3, // Reduced opacity for higher transparency
+                opacity: 0.3,
                 emissive: CONFIG.EMISSIVE_COLOR,
                 emissiveIntensity: 0.5,
                 side: THREE.DoubleSide,
                 reflectivity: 0.9,
                 clearcoat: 1.0,
                 clearcoatRoughness: 0.05,
-                ior: 1.5, // Index of Refraction for glass
-                depthWrite: false, // Prevent spheres from blocking particles
-                alphaTest: 0.1 // Helps in correct rendering of transparent objects
+                ior: 1.5,
+                depthWrite: false,
+                alphaTest: 0.1
             });
             const sphere = new THREE.Mesh(geometry, material);
             sphere.position.copy(getRandomPosition(spheres, CONFIG.SPHERE_SIZE));
             sphere.rotationSpeedX = (Math.random() - 0.5) * 0.02;
             sphere.rotationSpeedY = (Math.random() - 0.5) * 0.02;
             sphere.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
-            sphere.renderOrder = 0; // Ensure spheres render before particles
+            sphere.renderOrder = 0;
             sceneGroup.add(sphere);
             spheres.push(sphere);
         }
@@ -285,9 +285,9 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
             p.material.rotation += p.rotationSpeed;
-            if (Math.abs(p.position.x) > 2500) p.speedX *= -1;
-            if (Math.abs(p.position.y) > 2500) p.speedY *= -1;
-            if (Math.abs(p.position.z) > 2500) p.speedZ *= -1;
+            if (Math.abs(p.position.x) > 2000) p.speedX *= -1;
+            if (Math.abs(p.position.y) > 2000) p.speedY *= -1;
+            if (Math.abs(p.position.z) > 2000) p.speedZ *= -1;
         });
         spheres.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
@@ -334,7 +334,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hide preloader after a short delay
     window.onload = () => {
         setTimeout(() => {
-            preloader.style.display = 'none';
+            preloader.style.opacity = '0';
+            preloader.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
         }, 800);
     };
 

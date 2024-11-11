@@ -1,51 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
-/* CSS Variables for Dark Theme */
 :root {
-    /* Dark Theme Colors */
-    --background-color: #0e0e0e;
-    --foreground-color: #ffffff;
-    --accent-color: rgba(0, 255, 255, 0.8);
-    --secondary-accent: rgba(138, 43, 226, 0.8);
-    --tertiary-accent: rgba(75, 0, 130, 0.8);
-    --button-hover-color: rgba(147, 112, 219, 0.8);
-    --input-background: rgba(255, 255, 255, 0.1);
-    --input-border: rgba(255, 255, 255, 0.3);
-    --error-color: #ff4d4d;
-    --success-color: #4dff4d;
-
-    /* Common Variables */
+    /* Color Palette */
+    --background-color: #0e0e0e; /* Darker background for better contrast */
+    --foreground-color: #ffffff; /* White text */
+    --accent-color: rgba(0, 255, 255, 0.5); /* Semi-transparent Teal */
+    --secondary-accent: rgba(138, 43, 226, 0.5); /* Semi-transparent Blue Violet */
+    --tertiary-accent: rgba(75, 0, 130, 0.5); /* Semi-transparent Indigo */
     --font-family: 'Urbanist', sans-serif;
+    
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-blur: 20px;
+    
+    /* Sizes */
     --h1-font-size: clamp(2rem, 5vw, 4rem);
     --form-width: clamp(280px, 80%, 500px);
     --form-padding: clamp(30px, 5vw, 60px);
     --input-font-size: 1rem;
     --button-font-size: 1.1rem;
     --button-padding: 16px 32px;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-blur: 20px;
+    
+    /* Shadows and Depth */
     --shadow-color: rgba(0, 255, 255, 0.2);
     --hover-shadow-color: rgba(0, 255, 255, 0.4);
-    --transition-speed: 0.3s;
 }
 
-/* Global Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: var(--font-family);
-}
-
-html, body {
-    height: 100%;
-    width: 100%;
-    background-color: var(--background-color);
-    color: var(--foreground-color);
-    overflow-x: hidden;
-    position: relative;
-    transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 .visually-hidden {
@@ -60,7 +46,18 @@ html, body {
     border: 0;
 }
 
-/* Preloader Styles */
+html, body {
+    height: 100%;
+    width: 100%;
+    background-color: var(--background-color);
+    color: var(--foreground-color);
+    /* Removed overflow: hidden to allow scrolling */
+    /* overflow: hidden; */
+    -webkit-user-select: none;
+    user-select: none;
+    position: relative;
+}
+
 #preloader {
     position: fixed;
     top: 0;
@@ -72,14 +69,6 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-}
-
-.preloader-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 .loader {
@@ -89,45 +78,12 @@ html, body {
     width: 60px;
     height: 60px;
     animation: spin 1s linear infinite;
-    margin-bottom: 20px;
-}
-
-.progress-bar {
-    width: 200px;
-    height: 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    overflow: hidden;
-    margin-bottom: 10px;
-}
-
-.progress {
-    width: 0%;
-    height: 100%;
-    background: var(--accent-color);
-    animation: loadProgress 3s forwards;
-}
-
-.loading-text {
-    font-size: 1rem;
-    color: var(--foreground-color);
-    animation: fadeIn 2s ease-in-out infinite alternate;
 }
 
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
 
-@keyframes loadProgress {
-    to { width: 100%; }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0.5; }
-    to { opacity: 1; }
-}
-
-/* Canvas Background */
 canvas#background {
     position: fixed;
     top: 0;
@@ -136,10 +92,9 @@ canvas#background {
     height: 100%;
     z-index: 0;
     background: transparent;
-    pointer-events: none;
+    pointer-events: none; /* Prevent canvas from capturing mouse events */
 }
 
-/* Main Content Styles */
 main {
     position: relative;
     z-index: 1;
@@ -148,14 +103,7 @@ main {
     justify-content: center;
     min-height: 100vh;
     padding: 20px;
-    overflow-y: auto;
-}
-
-.hero {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow-y: auto; /* Allow vertical scrolling */
 }
 
 .entrance {
@@ -172,7 +120,7 @@ main {
     animation: fadeInUp 1.5s ease forwards;
     backdrop-filter: blur(var(--glass-blur));
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, background var(--transition-speed) ease, border var(--transition-speed) ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .entrance:hover {
@@ -206,20 +154,19 @@ form {
     width: 100%;
     display: flex;
     flex-direction: column;
-    position: relative;
 }
 
 .input-container input,
 .custom-select select {
     width: 100%;
     padding: 12px 16px;
-    background: var(--input-background);
+    background: rgba(255, 255, 255, 0.1);
     color: var(--foreground-color);
-    border: 1px solid var(--input-border);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
     font-size: var(--input-font-size);
     outline: none;
-    transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
+    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -259,9 +206,9 @@ form {
     -moz-appearance: none;
     cursor: pointer;
     padding-right: 40px;
-    background: var(--input-background);
+    background: rgba(255, 255, 255, 0.1);
     color: var(--foreground-color);
-    transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
+    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .custom-select select:hover {
@@ -276,8 +223,8 @@ form {
 }
 
 .custom-select select option {
-    color: #ffffff;
-    background: #0e0e0e;
+    color: var(--foreground-color);
+    background: var(--background-color);
 }
 
 button {
@@ -288,7 +235,7 @@ button {
     border-radius: 10px;
     font-size: var(--button-font-size);
     cursor: pointer;
-    transition: background var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, color var(--transition-speed) ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -297,7 +244,7 @@ button {
 
 button:hover,
 button:focus {
-    background: var(--button-hover-color);
+    background: var(--secondary-accent);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
     outline: none;
@@ -308,32 +255,6 @@ select:focus,
 button:focus {
     outline: 2px solid var(--accent-color);
     outline-offset: 2px;
-}
-
-.error-message {
-    color: var(--error-color);
-    font-size: 0.9rem;
-    margin-top: 5px;
-    height: 1rem;
-    opacity: 0;
-    transition: opacity var(--transition-speed) ease;
-}
-
-.error-visible {
-    opacity: 1;
-}
-
-.success-message {
-    color: var(--success-color);
-    font-size: 0.9rem;
-    margin-top: 5px;
-    height: 1rem;
-    opacity: 0;
-    transition: opacity var(--transition-speed) ease;
-}
-
-.success-visible {
-    opacity: 1;
 }
 
 @keyframes fadeInUp {
@@ -347,7 +268,8 @@ button:focus {
     }
 }
 
-/* Responsive Design Enhancements */
+/* Enhanced Media Queries for Better Responsiveness */
+
 @media (max-width: 1440px) {
     :root {
         --h1-font-size: clamp(1.8rem, 4vw, 3rem);
@@ -421,43 +343,15 @@ button:focus {
 }
 
 /* Additional Fixes for iOS/Safari */
+
 @supports (-webkit-touch-callout: none) {
     /* iOS-specific styles */
     .input-container input,
     .custom-select select {
-        font-size: 1rem !important;
+        font-size: 1rem !important; /* Force font size */
         -webkit-text-size-adjust: 100% !important;
     }
     .input-container input::placeholder {
-        font-size: 1rem !important;
+        font-size: 1rem !important; /* Ensure placeholder matches input */
     }
-}
-
-/* Micro-Interactions */
-button:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Scrollbar Styling */
-body::-webkit-scrollbar {
-    width: 12px;
-}
-
-body::-webkit-scrollbar-track {
-    background: var(--background-color);
-}
-
-body::-webkit-scrollbar-thumb {
-    background-color: var(--accent-color);
-    border-radius: 6px;
-    border: 3px solid var(--background-color);
-}
-
-/* Enhanced Accessibility */
-input:focus,
-select:focus,
-button:focus {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
 }

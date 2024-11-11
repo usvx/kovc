@@ -4,11 +4,9 @@
 }
 
 body {
-    background-color: #0e0e0e;
-    color: #ffffff;
+    background-color: #121212; /* Dark background for noscript */
+    color: #e0e0e0; /* Light text for contrast */
     font-family: 'Urbanist', sans-serif;
-    overflow: auto;
-    scroll-behavior: smooth;
 }
 
 #noscript-wrapper {
@@ -16,75 +14,59 @@ body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     padding: 20px;
+    overflow-y: auto;
 }
 
 .entrance {
-    width: clamp(300px, 80%, 600px);
+    opacity: 1;
+    animation: none;
     background: rgba(255, 255, 255, 0.1);
-    padding: clamp(40px, 5vw, 70px);
+    padding: clamp(30px, 5vw, 60px);
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
 h1 {
-    font-size: clamp(2.5rem, 5vw, 4.5rem);
-    margin-bottom: 50px;
+    font-size: clamp(2rem, 5vw, 4rem);
+    margin-bottom: 40px;
     font-weight: 700;
+    letter-spacing: 3px;
     color: #ffffff;
-    text-shadow: 0 0 15px #0ff, 0 0 30px #8a2be2;
-    animation: neonGlow 2s infinite alternate;
-}
-
-@keyframes neonGlow {
-    from {
-        text-shadow: 0 0 15px #0ff, 0 0 30px #8a2be2;
-    }
-    to {
-        text-shadow: 0 0 25px #0ff, 0 0 40px #8a2be2;
-    }
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
-
-.input-group {
-    position: relative;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(138, 43, 226, 0.5), 0 0 30px rgba(75, 0, 130, 0.5);
 }
 
 .input-group input,
 .custom-select select {
     width: 100%;
-    padding: 15px 20px;
-    background: rgba(255, 255, 255, 0.15);
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
     color: #ffffff;
-    border: none;
-    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
     font-size: 1rem;
     outline: none;
-    backdrop-filter: blur(10px);
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2),
-                inset -8px -8px 15px rgba(255, 255, 255, 0.1);
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .input-group input::placeholder,
 .custom-select select:invalid {
-    color: rgba(255, 255, 255, 0.7);
+    color: #ffffff;
+    opacity: 0.6;
+    font-size: 1rem;
 }
 
 .input-group input:focus,
 .custom-select select:focus {
-    background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.02);
-    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.1),
-                inset -4px -4px 10px rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+    transform: translateY(-2px);
 }
 
 .custom-select {
@@ -92,50 +74,106 @@ form {
 }
 
 .custom-select::after {
-    content: '';
+    content: '▼';
     position: absolute;
     top: 50%;
-    right: 20px;
-    width: 10px;
-    height: 10px;
-    border: solid #ffffff;
-    border-width: 0 2px 2px 0;
-    transform: translateY(-50%) rotate(45deg);
+    right: 16px;
+    transform: translateY(-50%);
+    color: #ffffff;
     pointer-events: none;
+    font-size: 1rem;
 }
 
 .custom-select select {
     appearance: none;
-    padding-right: 50px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     cursor: pointer;
+    padding-right: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.custom-select select:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.custom-select select:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.custom-select select option {
+    color: #ffffff;
+    background: #0e0e0e;
 }
 
 button {
-    padding: 18px 36px;
-    background: linear-gradient(45deg, #0ff, #8a2be2);
-    color: #ffffff;
+    padding: 16px 32px;
+    background: rgba(0, 255, 255, 0.5);
+    color: #0e0e0e;
     border: none;
-    border-radius: 30px;
-    font-size: 1.2rem;
+    border-radius: 10px;
+    font-size: 1.1rem;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-button:hover {
-    box-shadow: 0 6px 20px rgba(0, 255, 255, 0.5);
-    transform: translateY(-3px);
+button:hover,
+button:focus {
+    background: rgba(138, 43, 226, 0.5);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+input:focus,
+select:focus,
+button:focus {
+    outline: 2px solid rgba(0, 255, 255, 0.5);
+    outline-offset: 2px;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+/* Enhanced Media Queries for Better Responsiveness */
+
+@media (max-width: 1440px) {
+    :root {
+        --h1-font-size: clamp(1.8rem, 4vw, 3rem);
+        --form-width: clamp(260px, 75%, 450px);
+        --form-padding: clamp(25px, 4vw, 55px);
+        --input-font-size: 1rem;
+        --button-font-size: 1.1rem;
+        --button-padding: 14px 28px;
+    }
 }
 
 @media (max-width: 1024px) {
     .entrance {
-        width: 90%;
-        max-width: 500px;
+        width: 100%;
+        max-width: 450px;
         padding: 50px 30px;
     }
     h1 {
-        font-size: 3rem;
-        margin-bottom: 40px;
+        font-size: 2.5rem;
+        margin-bottom: 30px;
     }
     form {
         gap: 20px;
@@ -144,62 +182,110 @@ button:hover {
 
 @media (max-width: 768px) {
     .entrance {
-        width: 95%;
-        max-width: 450px;
-        padding: 40px 25px;
+        width: 100%;
+        max-width: 400px;
+        padding: 45px 25px;
     }
     h1 {
-        font-size: 2.5rem;
-        margin-bottom: 35px;
+        font-size: 2rem;
+        margin-bottom: 25px;
     }
     form {
         gap: 15px;
     }
     .custom-select::after {
-        right: 15px;
+        right: 12px;
     }
 }
 
 @media (max-width: 480px) {
-    h1 {
-        font-size: 2rem;
-    }
     .entrance {
-        padding: 30px 20px;
+        width: 100%;
+        max-width: 320px;
+        padding: 35px 20px;
+    }
+    h1 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+    form {
+        gap: 10px;
     }
     .input-group input,
     .custom-select select {
-        padding: 12px 18px;
+        padding: 10px 14px;
         font-size: 0.9rem;
     }
     button {
-        padding: 14px 28px;
+        padding: 12px 24px;
         font-size: 1rem;
     }
     .custom-select::after {
-        right: 12px;
-        width: 8px;
-        height: 8px;
+        right: 10px;
+        font-size: 0.9rem;
     }
 }
 
-/* Focus States for Accessibility */
-input:focus,
-select:focus,
-button:focus {
-    outline: 2px solid #0ff;
-    outline-offset: 2px;
+/* Additional Fixes for iOS/Safari */
+
+@supports (-webkit-touch-callout: none) {
+    /* iOS-specific styles */
+    .input-group input,
+    .custom-select select {
+        font-size: 1rem !important; /* Force font size */
+        -webkit-text-size-adjust: 100% !important;
+    }
+    .input-group input::placeholder {
+        font-size: 1rem !important; /* Ensure placeholder matches input */
+    }
 }
 
-/* Neumorphism Effect for Input Fields */
-.input-group input,
-.custom-select select {
-    box-shadow: inset 8px 8px 15px rgba(0, 0, 0, 0.2),
-                inset -8px -8px 15px rgba(255, 255, 255, 0.1);
+/* Dark Mode Specific Styles */
+.dark-mode body {
+    background-color: var(--dark-background-color);
+    color: var(--dark-foreground-color);
 }
 
-.input-group input:focus,
-.custom-select select:focus {
-    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.1),
-                inset -4px -4px 10px rgba(255, 255, 255, 0.05);
+.dark-mode .entrance {
+    background: var(--dark-glass-bg);
+    border: 1px solid var(--dark-glass-border);
+}
+
+.dark-mode h1 {
+    text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent);
+}
+
+.dark-mode .custom-select select {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    z-index: 10000;
+}
+
+#theme-toggle:hover,
+#theme-toggle:focus {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    outline: none;
+}
+
+#theme-toggle svg {
+    width: 24px;
+    height: 24px;
+    stroke: var(--foreground-color);
+    transition: stroke 0.3s ease;
+}
+
+.dark-mode #theme-toggle svg {
+    stroke: var(--accent-color);
 }

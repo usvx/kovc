@@ -16,34 +16,40 @@
         base-uri 'self';
     ">
     <meta name="referrer" content="no-referrer">
+    <!-- Favicon and Icons -->
     <link rel="icon" href="favicons/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
     <link rel="manifest" href="favicons/site.webmanifest">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean" rel="stylesheet">
+    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
     <noscript>
         <link rel="stylesheet" href="css/noscript.css">
     </noscript>
 </head>
 <body>
+    <!-- Preloader -->
     <div id="preloader" aria-label="Loading">
         <div class="loader"></div>
     </div>
-    <canvas id="background" aria-hidden="true"></canvas>
+    <!-- Three.js Background -->
+    <canvas id="background" aria-hidden="true" loading="lazy"></canvas>
+    <!-- Main Content -->
     <main>
-        <div class="entrance">
+        <section class="entrance" role="main">
             <h1>Lumina</h1>
             <form id="login-form" aria-label="Login Form" novalidate>
-                <div class="input-container">
+                <div class="input-group">
                     <label for="username" class="visually-hidden">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username">
+                    <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username" aria-required="true">
                 </div>
-                <div class="input-container">
+                <div class="input-group">
                     <label for="domain" class="visually-hidden">Domain</label>
                     <div class="custom-select">
-                        <select id="domain" name="domain" required autocomplete="off">
+                        <select id="domain" name="domain" required autocomplete="off" aria-required="true">
                             <option value="" disabled selected>Select Domain</option>
                             <option value="@gj.to">@gj.to</option>
                             <option value="@ko.vc">@ko.vc</option>
@@ -53,22 +59,23 @@
                 </div>
                 <button type="submit" aria-label="Enter">Enter</button>
             </form>
-        </div>
+        </section>
     </main>
+    <!-- No-JavaScript Fallback -->
     <noscript>
         <div id="noscript-wrapper">
             <main>
-                <div class="entrance">
+                <section class="entrance">
                     <h1>Lumina</h1>
-                    <form action="https://accounts.google.com/AccountChooser" method="get">
-                        <div class="input-container">
+                    <form action="https://accounts.google.com/AccountChooser" method="get" aria-label="Login Form">
+                        <div class="input-group">
                             <label for="Email" class="visually-hidden">Username</label>
-                            <input type="text" id="Email" name="Email" placeholder="Username" required autocomplete="username">
+                            <input type="text" id="Email" name="Email" placeholder="Username" required autocomplete="username" aria-required="true">
                         </div>
-                        <div class="input-container">
+                        <div class="input-group">
                             <label for="domain-noscript" class="visually-hidden">Domain</label>
                             <div class="custom-select">
-                                <select id="domain-noscript" name="domain" required autocomplete="off">
+                                <select id="domain-noscript" name="domain" required autocomplete="off" aria-required="true">
                                     <option value="" disabled selected>Select Domain</option>
                                     <option value="@gj.to">@gj.to</option>
                                     <option value="@ko.vc">@ko.vc</option>
@@ -79,11 +86,11 @@
                         <input type="hidden" name="continue" value="https://mail.google.com/a/">
                         <button type="submit" aria-label="Enter">Enter</button>
                     </form>
-                </div>
+                </section>
             </main>
         </div>
     </noscript>
-    <!-- Updated Script Tag -->
-    <script type="module" src="js/script.js" crossorigin="anonymous"></script>
+    <!-- Main Script -->
+    <script type="module" src="js/script.js" defer crossorigin="anonymous"></script>
 </body>
 </html>

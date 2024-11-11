@@ -27,10 +27,7 @@
     --glass-blur: 20px;
     --shadow-color: rgba(0, 255, 255, 0.2);
     --hover-shadow-color: rgba(0, 255, 255, 0.4);
-}
-
-[data-theme="dark"] {
-    /* If you decide to add more themes in the future */
+    --transition-speed: 0.3s;
 }
 
 /* Global Styles */
@@ -77,7 +74,7 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition: background var(--transition-speed) ease, transform var(--transition-speed) ease;
     z-index: 1000;
 }
 
@@ -88,7 +85,7 @@ html, body {
 
 #theme-icon {
     fill: var(--foreground-color);
-    transition: fill 0.5s ease;
+    transition: fill var(--transition-speed) ease;
 }
 
 /* Preloader Styles */
@@ -203,7 +200,7 @@ main {
     animation: fadeInUp 1.5s ease forwards;
     backdrop-filter: blur(var(--glass-blur));
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s ease, border 0.5s ease;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, background var(--transition-speed) ease, border var(--transition-speed) ease;
 }
 
 .entrance:hover {
@@ -250,7 +247,7 @@ form {
     border-radius: 10px;
     font-size: var(--input-font-size);
     outline: none;
-    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -292,7 +289,7 @@ form {
     padding-right: 40px;
     background: var(--input-background);
     color: var(--foreground-color);
-    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
 
 .custom-select select:hover {
@@ -319,7 +316,7 @@ button {
     border-radius: 10px;
     font-size: var(--button-font-size);
     cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, color 0.3s ease;
+    transition: background var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, color var(--transition-speed) ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -347,7 +344,7 @@ button:focus {
     margin-top: 5px;
     height: 1rem;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity var(--transition-speed) ease;
 }
 
 .error-visible {
@@ -360,7 +357,7 @@ button:focus {
     margin-top: 5px;
     height: 1rem;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity var(--transition-speed) ease;
 }
 
 .success-visible {
@@ -463,3 +460,33 @@ button:focus {
         font-size: 1rem !important;
     }
 }
+
+/* Micro-Interactions */
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollbar Styling */
+body::-webkit-scrollbar {
+    width: 12px;
+}
+
+body::-webkit-scrollbar-track {
+    background: var(--background-color);
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 6px;
+    border: 3px solid var(--background-color);
+}
+
+/* Enhanced Accessibility */
+input:focus,
+select:focus,
+button:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+

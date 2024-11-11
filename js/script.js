@@ -180,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Scene Initialization
         scene = new THREE.Scene();
+        scene.background = CONFIG.BACKGROUND_COLOR; // Ensure dark background
 
         // Camera Setup with Smooth Controls
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
@@ -202,19 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const pointLight2 = new THREE.PointLight(0xFFFFFF, 0.8, 1000);
         pointLight2.position.set(1500, -800, 1500);
         scene.add(pointLight2);
-
-        // Environment Mapping for Realistic Reflections
-        const envTexture = new THREE.CubeTextureLoader().load([
-            'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
-            'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
-            'https://threejs.org/examples/textures/cube/Bridge2/posy.jpg',
-            'https://threejs.org/examples/textures/cube/Bridge2/negy.jpg',
-            'https://threejs.org/examples/textures/cube/Bridge2/posz.jpg',
-            'https://threejs.org/examples/textures/cube/Bridge2/negz.jpg',
-        ]);
-        envTexture.encoding = THREE.sRGBEncoding;
-        scene.background = CONFIG.BACKGROUND_COLOR; // Ensure dark background
-        scene.environment = envTexture;
 
         // Group to Hold All Scene Objects for Collective Transformations
         sceneGroup = new THREE.Group();

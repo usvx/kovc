@@ -12,16 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 300 : 600, // Optimized for performance
-        SPHERE_COUNT: isMobile ? 15 : 30,    // Optimized for performance
-        MIN_DISTANCE: 400,
-        PARTICLE_SIZE: isMobile ? 120 : 180,  // Adjusted size for visibility
-        SPHERE_SIZE: isMobile ? 60 : 100,     // Adjusted size for balance
-        PARTICLE_SPEED: isMobile ? 1.2 : 2.0, // Optimized speed for smooth motion
-        ROTATION_SPEED: isMobile ? 0.002 : 0.004, // Optimized rotation speed
-        TEXTURE_SIZE: isMobile ? 128 : 256,    // Reduced texture size for performance
-        SHADOW_BLUR: isMobile ? 10 : 20,
-        LIGHT_INTENSITY: isMobile ? 0.8 : 1.2,
+        PARTICLE_COUNT: isMobile ? 600 : 1000,
+        SPHERE_COUNT: isMobile ? 30 : 60, // Reduced count to prevent screen coverage
+        MIN_DISTANCE: 400, // Increased to ensure more spacing
+        PARTICLE_SIZE: isMobile ? 150 : 200,
+        SPHERE_SIZE: isMobile ? 80 : 120, // Reduced size for better distribution
+        PARTICLE_SPEED: isMobile ? 1.5 : 2.5,
+        ROTATION_SPEED: isMobile ? 0.003 : 0.005,
+        TEXTURE_SIZE: isMobile ? 256 : 512,
+        SHADOW_BLUR: isMobile ? 15 : 30,
+        LIGHT_INTENSITY: isMobile ? 1.0 : 1.5, // Increased for better illumination
         AMBIENT_COLOR: 0x1E90FF,
         DIRECTIONAL_COLOR: 0x9370DB,
         BACKGROUND_COLOR: 0x0A0A0A,
@@ -29,13 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
         PARTICLE_COLOR_2: 0xBA55D3,
         SPHERE_COLOR: 0xBA55D3,
         EMISSIVE_COLOR: 0x9370DB,
-        MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 2.5) : Math.min(window.devicePixelRatio, 2),
+        MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 3) : Math.min(window.devicePixelRatio, 2),
         ENV_MAP_INTENSITY: 1.0,
-        MIN_CAMERA_DISTANCE: 400,
-        MAX_SPHERE_SIZE: isMobile ? 90 : 130,
+        MIN_CAMERA_DISTANCE: 500, // Minimum distance from camera to any sphere
+        MAX_SPHERE_SIZE: isMobile ? 100 : 150, // Maximum sphere size to prevent excessive scaling
     };
 
-    const TEXTURE_CACHE_SIZE = 100;
+    const TEXTURE_CACHE_SIZE = 200;
     const textureCache = [];
 
     /**
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {THREE.Vector3} - A random position vector.
      */
     const getRandomPosition = (existingSpheres, radius) => {
-        const boundingRadius = 1500; // Reduced for better performance
+        const boundingRadius = 2000; // Limit positions within a sphere of radius 2000
         const minDistanceFromCamera = CONFIG.MIN_CAMERA_DISTANCE + radius;
         let position, tooClose, attempts = 0;
         do {
@@ -152,33 +152,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.z = isMobile ? 1000 : 1500;
+        camera.position.z = isMobile ? 1200 : 1800;
 
-        // Ambient Light
         const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
-        scene.add(ambientLight);
-
-        // Directional Light
         const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
         directionalLight.position.set(1, 1, 1).normalize();
-        scene.add(directionalLight);
+        scene.add(ambientLight, directionalLight);
 
-        // Scene Group
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        // Create Particles and Spheres
         createParticles();
         createSpheres();
 
         renderer.sortObjects = true; // Enable sorting for transparent objects
 
-        // Event Listeners
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
 
-        // Start Animation
         animate();
     };
 
@@ -202,9 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const sprite = new THREE.Sprite(material);
             sprite.position.set(
-                (Math.random() - 0.5) * 3000, // Reduced range for better performance
-                (Math.random() - 0.5) * 3000,
-                (Math.random() - 0.5) * 3000
+                (Math.random() - 0.5) * 5000,
+                (Math.random() - 0.5) * 5000,
+                (Math.random() - 0.5) * 5000
             );
             sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
             sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
@@ -222,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const createSpheres = () => {
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
-            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 32, 32); // Reduced segments for performance
+            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64); // Reduced segments for better performance
             const material = new THREE.MeshPhysicalMaterial({
                 color: CONFIG.SPHERE_COLOR,
                 metalness: 0.0,
@@ -252,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Handles mouse movement to influence scene rotation.
+     * Handles mouse movement to rotate the scene.
      * @param {MouseEvent} event 
      */
     const onDocumentMouseMove = (event) => {
@@ -261,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Handles touch movement to influence scene rotation.
+     * Handles touch movement to rotate the scene.
      * @param {TouchEvent} event 
      */
     const onDocumentTouchMove = (event) => {
@@ -293,10 +285,9 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
             p.material.rotation += p.rotationSpeed;
-            // Boundary Check
-            if (Math.abs(p.position.x) > 1500) p.speedX *= -1;
-            if (Math.abs(p.position.y) > 1500) p.speedY *= -1;
-            if (Math.abs(p.position.z) > 1500) p.speedZ *= -1;
+            if (Math.abs(p.position.x) > 2500) p.speedX *= -1;
+            if (Math.abs(p.position.y) > 2500) p.speedY *= -1;
+            if (Math.abs(p.position.z) > 2500) p.speedZ *= -1;
         });
         spheres.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
@@ -321,32 +312,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = form.username.value.trim();
         const domainSelect = form.querySelector('select[name="domain"]');
         const domain = domainSelect.value;
-        const usernameError = form.querySelector('#username + .error-message');
-        const domainError = form.querySelector('#domain + .error-message');
-        let valid = true;
-
-        // Reset error messages
-        usernameError.textContent = '';
-        domainError.textContent = '';
-        usernameError.classList.remove('error-visible');
-        domainError.classList.remove('error-visible');
-
-        if (!username) {
-            usernameError.textContent = 'Username is required.';
-            usernameError.classList.add('error-visible');
-            valid = false;
-        }
-
-        if (!domain) {
-            domainError.textContent = 'Please select a domain.';
-            domainError.classList.add('error-visible');
-            valid = false;
-        }
-
-        if (valid) {
+        if (username && domain) {
             const email = `${username}${domain}`;
             const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
             window.location.href = loginUrl;
+        } else {
+            alert('Please enter your username and select a domain.');
         }
     };
 
@@ -360,13 +331,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize the Scene
     initializeScene();
 
-    // Hide preloader after assets are loaded
+    // Hide preloader after a short delay
     window.onload = () => {
         setTimeout(() => {
-            preloader.style.opacity = '0';
-            preloader.style.visibility = 'hidden';
-            document.body.style.overflow = 'auto';
-        }, 3000); // Adjust timing as needed
+            preloader.style.display = 'none';
+        }, 800);
     };
 
     // Form Handling

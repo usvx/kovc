@@ -1,30 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
-/* CSS Variables for Theming */
+/* CSS Variables for Dark Theme */
 :root {
-    /* Light Theme Colors */
-    --background-color: #f0f0f0;
-    --foreground-color: #1a1a1a;
-    --accent-color: #00ffff;
-    --secondary-accent: #8a2be2;
-    --tertiary-accent: #4b0082;
-    --button-hover-color: #9370db;
-    --input-background: rgba(255, 255, 255, 0.8);
-    --input-border: rgba(0, 0, 0, 0.2);
+    /* Dark Theme Colors */
+    --background-color: #0e0e0e;
+    --foreground-color: #ffffff;
+    --accent-color: rgba(0, 255, 255, 0.8);
+    --secondary-accent: rgba(138, 43, 226, 0.8);
+    --tertiary-accent: rgba(75, 0, 130, 0.8);
+    --button-hover-color: rgba(147, 112, 219, 0.8);
+    --input-background: rgba(255, 255, 255, 0.1);
+    --input-border: rgba(255, 255, 255, 0.3);
     --error-color: #ff4d4d;
     --success-color: #4dff4d;
-
-    /* Dark Theme Colors */
-    --dark-background-color: #0e0e0e;
-    --dark-foreground-color: #ffffff;
-    --dark-accent-color: rgba(0, 255, 255, 0.8);
-    --dark-secondary-accent: rgba(138, 43, 226, 0.8);
-    --dark-tertiary-accent: rgba(75, 0, 130, 0.8);
-    --dark-button-hover-color: rgba(147, 112, 219, 0.8);
-    --dark-input-background: rgba(255, 255, 255, 0.1);
-    --dark-input-border: rgba(255, 255, 255, 0.3);
-    --dark-error-color: #ff6666;
-    --dark-success-color: #66ff66;
 
     /* Common Variables */
     --font-family: 'Urbanist', sans-serif;
@@ -42,18 +30,10 @@
 }
 
 [data-theme="dark"] {
-    --background-color: var(--dark-background-color);
-    --foreground-color: var(--dark-foreground-color);
-    --accent-color: var(--dark-accent-color);
-    --secondary-accent: var(--dark-secondary-accent);
-    --tertiary-accent: var(--dark-tertiary-accent);
-    --button-hover-color: var(--dark-button-hover-color);
-    --input-background: var(--dark-input-background);
-    --input-border: var(--dark-input-border);
-    --error-color: var(--dark-error-color);
-    --success-color: var(--dark-success-color);
+    /* If you decide to add more themes in the future */
 }
 
+/* Global Styles */
 * {
     margin: 0;
     padding: 0;
@@ -83,6 +63,7 @@ html, body {
     border: 0;
 }
 
+/* Theme Toggle Button */
 #theme-toggle {
     position: fixed;
     top: 20px;
@@ -110,6 +91,7 @@ html, body {
     transition: fill 0.5s ease;
 }
 
+/* Preloader Styles */
 #preloader {
     position: fixed;
     top: 0;
@@ -122,6 +104,7 @@ html, body {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
 .preloader-content {
@@ -131,7 +114,7 @@ html, body {
 }
 
 .loader {
-    border: 5px solid rgba(0, 0, 0, 0.1);
+    border: 5px solid rgba(255, 255, 255, 0.1);
     border-top: 5px solid var(--accent-color);
     border-radius: 50%;
     width: 60px;
@@ -143,7 +126,7 @@ html, body {
 .progress-bar {
     width: 200px;
     height: 10px;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 5px;
     overflow: hidden;
     margin-bottom: 10px;
@@ -175,6 +158,7 @@ html, body {
     to { opacity: 1; }
 }
 
+/* Canvas Background */
 canvas#background {
     position: fixed;
     top: 0;
@@ -186,6 +170,7 @@ canvas#background {
     pointer-events: none;
 }
 
+/* Main Content Styles */
 main {
     position: relative;
     z-index: 1;
@@ -278,7 +263,7 @@ form {
 
 .input-container input:focus,
 .custom-select select:focus {
-    background: var(--input-background);
+    background: rgba(255, 255, 255, 0.15);
     border: 1px solid var(--accent-color);
     box-shadow: 0 0 8px var(--accent-color);
     transform: translateY(-2px);
@@ -471,10 +456,10 @@ button:focus {
     /* iOS-specific styles */
     .input-container input,
     .custom-select select {
-        font-size: 1rem !important; /* Force font size */
+        font-size: 1rem !important;
         -webkit-text-size-adjust: 100% !important;
     }
     .input-container input::placeholder {
-        font-size: 1rem !important; /* Ensure placeholder matches input */
+        font-size: 1rem !important;
     }
 }

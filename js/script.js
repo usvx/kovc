@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'https://threejs.org/examples/textures/cube/Bridge2/negz.jpg',
         ]);
         envTexture.encoding = THREE.sRGBEncoding;
-        scene.background = CONFIG.BACKGROUND_COLOR;
+        scene.background = CONFIG.BACKGROUND_COLOR; // Ensure dark background
         scene.environment = envTexture;
 
         // Group to Hold All Scene Objects for Collective Transformations
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const createSpheres = () => {
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
-            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 128, 128); // Higher segments for smoother spheres
+            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 128, 128); // Higher segments for ultra-smooth spheres
             const material = new THREE.MeshPhysicalMaterial({
                 color: CONFIG.SPHERE_COLOR,
                 metalness: 0.0,
@@ -417,8 +417,8 @@ document.addEventListener('DOMContentLoaded', () => {
             sphere.rotation.z += sphere.rotationSpeed.z;
         });
 
-        // Rotate the Entire Scene Based on Mouse/Touchtime
-        const targetRotationY = mouseX * 0.1; // Increased sensitivity
+        // Rotate the Entire Scene Based on Mouse/Touch Input
+        const targetRotationY = mouseX * 0.1; // Increased sensitivity for more dynamic rotation
         const targetRotationX = mouseY * 0.1;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;

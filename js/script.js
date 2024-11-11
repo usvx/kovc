@@ -156,23 +156,31 @@ document.addEventListener('DOMContentLoaded', () => {
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1200 : 1800;
 
+        // Ambient Light
         const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
+        scene.add(ambientLight);
+
+        // Directional Light
         const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
         directionalLight.position.set(1, 1, 1).normalize();
-        scene.add(ambientLight, directionalLight);
+        scene.add(directionalLight);
 
+        // Scene Group
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
+        // Create Particles and Spheres
         createParticles();
         createSpheres();
 
         renderer.sortObjects = true; // Enable sorting for transparent objects
 
+        // Event Listeners
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
 
+        // Start Animation
         animate();
     };
 
@@ -410,6 +418,6 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggle.addEventListener('click', toggleTheme);
 
     // Initialize theme based on user preference or default
-    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'dark'); // Default to dark
+    const savedTheme = localStorage.getItem('theme') || 'dark'; // Default to dark
     setTheme(savedTheme);
 });

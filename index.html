@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Lumina</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- Enhanced Content Security Policy -->
+    <!-- Updated Content Security Policy to include esm.sh -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' https://cdn.jsdelivr.net;
@@ -16,67 +16,45 @@
         base-uri 'self';
     ">
     <meta name="referrer" content="no-referrer">
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Lumina - The pinnacle of dark-themed web design with stunning 3D visuals and seamless user experience.">
-    <meta name="keywords" content="Web Design, Dark Theme, 3D Animations, User Experience, Lumina">
-    <meta name="author" content="Your Name">
     <link rel="icon" href="favicons/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
     <link rel="manifest" href="favicons/site.webmanifest">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean" rel="stylesheet">
-    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- NoScript Stylesheet -->
     <noscript>
         <link rel="stylesheet" href="css/noscript.css">
     </noscript>
 </head>
 <body>
-    <!-- Preloader with Progress Bar and Animated Elements -->
     <div id="preloader" aria-label="Loading">
-        <div class="preloader-content">
-            <div class="loader"></div>
-            <div class="progress-bar">
-                <div class="progress"></div>
-            </div>
-            <span class="loading-text">Loading...</span>
-        </div>
+        <div class="loader"></div>
     </div>
-
-    <!-- 3D Background Canvas -->
     <canvas id="background" aria-hidden="true" loading="lazy"></canvas>
-
     <main>
-        <section class="hero">
-            <div class="entrance">
-                <h1>Lumina</h1>
-                <form id="login-form" aria-label="Login Form" novalidate>
-                    <div class="input-container">
-                        <label for="username" class="visually-hidden">Username</label>
-                        <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username" aria-required="true">
-                        <span class="error-message" aria-live="polite"></span>
+        <div class="entrance">
+            <h1>Lumina</h1>
+            <form id="login-form" aria-label="Login Form">
+                <div class="input-container">
+                    <label for="username" class="visually-hidden">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username" aria-required="true">
+                </div>
+                <div class="input-container">
+                    <label for="domain" class="visually-hidden">Domain</label>
+                    <div class="custom-select">
+                        <select id="domain" name="domain" required autocomplete="off" aria-required="true">
+                            <option value="" disabled selected>Select Domain</option>
+                            <option value="@gj.to">@gj.to</option>
+                            <option value="@ko.vc">@ko.vc</option>
+                            <option value="@yv.is">@yv.is</option>
+                        </select>
                     </div>
-                    <div class="input-container">
-                        <label for="domain" class="visually-hidden">Domain</label>
-                        <div class="custom-select">
-                            <select id="domain" name="domain" required autocomplete="off" aria-required="true">
-                                <option value="" disabled selected>Select Domain</option>
-                                <option value="@gj.to">@gj.to</option>
-                                <option value="@ko.vc">@ko.vc</option>
-                                <option value="@yv.is">@yv.is</option>
-                            </select>
-                        </div>
-                        <span class="error-message" aria-live="polite"></span>
-                    </div>
-                    <button type="submit" aria-label="Enter">Enter</button>
-                </form>
-            </div>
-        </section>
+                </div>
+                <button type="submit" aria-label="Enter">Enter</button>
+            </form>
+        </div>
     </main>
-
     <noscript>
         <div id="noscript-wrapper">
             <main>
@@ -105,8 +83,7 @@
             </main>
         </div>
     </noscript>
-
-    <!-- Main JavaScript Module -->
+    <!-- Updated Script Tag to use script.js as a module -->
     <script 
         type="module" 
         src="js/script.js" 

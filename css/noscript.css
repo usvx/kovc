@@ -18,13 +18,13 @@ body {
     backdrop-filter: blur(15px);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     padding: 20px;
-    overflow-y: auto;
+    overflow-y: auto; /* Allow vertical scrolling */
 }
 
 .entrance {
     opacity: 1;
     animation: none;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1); /* Glassy effect */
     padding: clamp(30px, 5vw, 60px);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -152,7 +152,8 @@ button:focus {
     }
 }
 
-/* Responsive Design Enhancements */
+/* Enhanced Media Queries for Better Responsiveness */
+
 @media (max-width: 1440px) {
     :root {
         --h1-font-size: clamp(1.8rem, 4vw, 3rem);
@@ -226,43 +227,15 @@ button:focus {
 }
 
 /* Additional Fixes for iOS/Safari */
+
 @supports (-webkit-touch-callout: none) {
     /* iOS-specific styles */
     .input-container input,
     .custom-select select {
-        font-size: 1rem !important;
+        font-size: 1rem !important; /* Force font size */
         -webkit-text-size-adjust: 100% !important;
     }
     .input-container input::placeholder {
-        font-size: 1rem !important;
+        font-size: 1rem !important; /* Ensure placeholder matches input */
     }
-}
-
-/* Micro-Interactions */
-button:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Scrollbar Styling */
-body::-webkit-scrollbar {
-    width: 12px;
-}
-
-body::-webkit-scrollbar-track {
-    background: var(--background-color);
-}
-
-body::-webkit-scrollbar-thumb {
-    background-color: var(--accent-color);
-    border-radius: 6px;
-    border: 3px solid var(--background-color);
-}
-
-/* Enhanced Accessibility */
-input:focus,
-select:focus,
-button:focus {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
 }

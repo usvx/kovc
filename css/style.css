@@ -60,34 +60,6 @@ html, body {
     border: 0;
 }
 
-/* Theme Toggle Button */
-#theme-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: var(--accent-color);
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background var(--transition-speed) ease, transform var(--transition-speed) ease;
-    z-index: 1000;
-}
-
-#theme-toggle:hover {
-    background: var(--button-hover-color);
-    transform: rotate(20deg);
-}
-
-#theme-icon {
-    fill: var(--foreground-color);
-    transition: fill var(--transition-speed) ease;
-}
-
 /* Preloader Styles */
 #preloader {
     position: fixed;
@@ -304,8 +276,8 @@ form {
 }
 
 .custom-select select option {
-    color: var(--foreground-color);
-    background: var(--background-color);
+    color: #ffffff;
+    background: #0e0e0e;
 }
 
 button {

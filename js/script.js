@@ -25,8 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const textureLoader = new THREE.TextureLoader();
-    const particleTexture = textureLoader.load('path/to/particle-texture.png'); // Add a custom particle texture
+    const particleTexture = textureLoader.load('favicons/particle-texture.png'); // Ensure you have a particle texture
 
+    /**
+     * Initializes the Three.js scene, camera, renderer, particles, and spheres.
+     */
     const init = () => {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({
@@ -39,21 +42,37 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setClearColor(CONFIG.BACKGROUND_COLOR, 1);
 
         scene = new THREE.Scene();
+
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
         camera.position.z = isMobile ? 800 : 1200;
 
+        // Ambient Light
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        // Directional Light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(1, 1, 1).normalize();
+        scene.add(directionalLight);
+
+        // Group to hold all 3D objects
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
         createParticles();
         createSpheres();
 
+        // Event Listeners
         window.addEventListener('mousemove', onMouseMove, false);
+        window.addEventListener('touchmove', onTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
 
         animate();
     };
 
+    /**
+     * Creates particles (sprites) with random characters and positions.
+     */
     const createParticles = () => {
         const geometry = new THREE.BufferGeometry();
         const positions = [];
@@ -89,16 +108,20 @@ document.addEventListener('DOMContentLoaded', () => {
         particles.push(points);
     };
 
+    /**
+     * Creates smooth, glassy spheres with refined material properties.
+     */
     const createSpheres = () => {
         const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 32, 32);
         const material = new THREE.MeshPhysicalMaterial({
-            color: '#8a2be2',
+            color: 0x8a2be2,
             metalness: 0,
             roughness: 0,
-            transmission: 1,
+            transmission: 1, // Glass effect
             transparent: true,
             opacity: 0.2,
             side: THREE.DoubleSide,
+            reflectivity: 0.9,
         });
 
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
@@ -113,11 +136,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    /**
+     * Handles mouse movement to rotate the scene.
+     * @param {MouseEvent} event 
+     */
     const onMouseMove = (event) => {
-        mouseX = (event.clientX - windowHalfX) / 2;
-        mouseY = (event.clientY - windowHalfY) / 2;
+        mouseX = (event.clientX - windowHalfX) / windowHalfX;
+        mouseY = (event.clientY - windowHalfY) / windowHalfY;
     };
 
+    /**
+     * Handles touch movement to rotate the scene.
+     * @param {TouchEvent} event 
+     */
+    const onTouchMove = (event) => {
+        if (event.touches.length === 1) {
+            event.preventDefault();
+            mouseX = (event.touches[0].pageX - windowHalfX) / windowHalfX;
+            mouseY = (event.touches[0].pageY - windowHalfY) / windowHalfY;
+        }
+    };
+
+    /**
+     * Handles window resize events to adjust camera and renderer.
+     */
     const onWindowResize = () => {
         windowHalfX = window.innerWidth / 2;
         windowHalfY = window.innerHeight / 2;
@@ -128,12 +170,17 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
     };
 
+    /**
+     * The main animation loop. Updates positions and rotations of particles and spheres.
+     */
     const animate = () => {
         requestAnimationFrame(animate);
 
-        sceneGroup.rotation.x += (mouseY / window.innerHeight - sceneGroup.rotation.x) * 0.05;
-        sceneGroup.rotation.y += (mouseX / window.innerWidth - sceneGroup.rotation.y) * 0.05;
+        // Rotate the entire scene group based on mouse movement
+        sceneGroup.rotation.x += (mouseY * 0.05 - sceneGroup.rotation.x) * 0.05;
+        sceneGroup.rotation.y += (mouseX * 0.05 - sceneGroup.rotation.y) * 0.05;
 
+        // Update particle positions
         particles.forEach(particle => {
             const positions = particle.geometry.attributes.position.array;
             const velocities = particle.geometry.attributes.velocity.array;
@@ -143,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 positions[i + 1] += velocities[i + 1];
                 positions[i + 2] += velocities[i + 2];
 
+                // Boundary conditions
                 if (positions[i] > 1000 || positions[i] < -1000) velocities[i] *= -1;
                 if (positions[i + 1] > 1000 || positions[i + 1] < -1000) velocities[i + 1] *= -1;
                 if (positions[i + 2] > 1000 || positions[i + 2] < -1000) velocities[i + 2] *= -1;
@@ -154,26 +202,51 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.render(scene, camera);
     };
 
+    /**
+     * Handles form submission to redirect to the login URL.
+     * @param {Event} event 
+     */
     const handleFormSubmit = (event) => {
         event.preventDefault();
         const username = form.username.value.trim();
-        const domain = form.domain.value;
+        const domainSelect = form.querySelector('select[name="domain"]');
+        const domain = domainSelect.value;
         if (username && domain) {
             const email = `${username}${domain}`;
             const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
             window.location.href = loginUrl;
+        } else {
+            alert('Please enter your username and select a domain.');
         }
     };
 
-    init();
-
-    window.onload = () => {
-        preloader.style.opacity = '0';
-        preloader.style.transition = 'opacity 0.5s ease';
-        setTimeout(() => {
-            preloader.style.display = 'none';
-        }, 500);
+    /**
+     * Initializes the scene and starts the animation.
+     */
+    const initializeScene = () => {
+        init();
     };
 
+    // Initialize the Scene
+    initializeScene();
+
+    // Hide preloader after a short delay
+    window.onload = () => {
+        setTimeout(() => {
+            preloader.style.opacity = '0';
+            preloader.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
+        }, 800);
+    };
+
+    // Form Handling
     form.addEventListener('submit', handleFormSubmit);
+    form.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            form.dispatchEvent(new Event('submit'));
+        }
+    });
 });

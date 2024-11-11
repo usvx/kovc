@@ -27,6 +27,7 @@
     --hover-shadow-color: rgba(0, 255, 255, 0.5);
 }
 
+/* Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -124,10 +125,10 @@ h1 {
 
 @keyframes neonGlow {
     from {
-        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent);
+        text-shadow: 0 0 15px var(--accent-color), 0 0 30px var(--secondary-accent);
     }
     to {
-        text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
+        text-shadow: 0 0 25px var(--accent-color), 0 0 40px var(--secondary-accent);
     }
 }
 
@@ -137,11 +138,11 @@ form {
     gap: 25px;
 }
 
-.input-container {
+.input-group {
     position: relative;
 }
 
-.input-container input,
+.input-group input,
 .custom-select select {
     width: 100%;
     padding: 15px 20px;
@@ -156,12 +157,12 @@ form {
     transition: background 0.3s ease, transform 0.3s ease;
 }
 
-.input-container input::placeholder,
+.input-group input::placeholder,
 .custom-select select:invalid {
     color: rgba(255, 255, 255, 0.7);
 }
 
-.input-container input:focus,
+.input-group input:focus,
 .custom-select select:focus {
     background: rgba(255, 255, 255, 0.25);
     transform: scale(1.02);
@@ -220,48 +221,94 @@ button:hover {
 
 /* Responsive Design */
 
-@media (max-width: 1024px) {
+@media (max-width: 1440px) {
     :root {
-        --h1-font-size: 3rem;
-        --form-width: 80%;
+        --h1-font-size: clamp(2rem, 4vw, 4rem);
+        --form-width: clamp(280px, 70%, 550px);
+        --form-padding: clamp(35px, 4vw, 65px);
+        --input-font-size: 1rem;
+        --button-font-size: 1.1rem;
+        --button-padding: 16px 32px;
     }
+}
 
+@media (max-width: 1024px) {
     .entrance {
+        width: 90%;
+        max-width: 500px;
         padding: 50px 30px;
+    }
+    h1 {
+        font-size: 3rem;
+        margin-bottom: 40px;
+    }
+    form {
+        gap: 20px;
     }
 }
 
 @media (max-width: 768px) {
-    :root {
-        --h1-font-size: 2.5rem;
-        --form-width: 90%;
-    }
-
     .entrance {
-        padding: 40px 20px;
+        width: 95%;
+        max-width: 450px;
+        padding: 40px 25px;
     }
-
-    button {
-        font-size: 1rem;
+    h1 {
+        font-size: 2.5rem;
+        margin-bottom: 35px;
+    }
+    form {
+        gap: 15px;
+    }
+    .custom-select::after {
+        right: 15px;
     }
 }
 
 @media (max-width: 480px) {
     :root {
-        --h1-font-size: 2rem;
+        --h1-font-size: clamp(1.8rem, 5vw, 3rem);
     }
-
     .entrance {
-        padding: 30px 15px;
+        padding: 30px 20px;
     }
-
-    .input-container input,
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+    .input-group input,
     .custom-select select {
+        padding: 12px 18px;
         font-size: 0.9rem;
     }
-
     button {
         padding: 14px 28px;
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
+    .custom-select::after {
+        right: 12px;
+        width: 8px;
+        height: 8px;
+    }
+}
+
+/* Focus States for Accessibility */
+input:focus,
+select:focus,
+button:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Neumorphism Effect for Input Fields */
+.input-group input,
+.custom-select select {
+    box-shadow: inset 8px 8px 15px rgba(0, 0, 0, 0.2),
+                inset -8px -8px 15px rgba(255, 255, 255, 0.1);
+}
+
+.input-group input:focus,
+.custom-select select:focus {
+    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.1),
+                inset -4px -4px 10px rgba(255, 255, 255, 0.05);
 }

@@ -1,5 +1,4 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/controls/OrbitControls.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
@@ -7,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
     const themeIcon = document.getElementById('theme-icon');
 
-    let scene, camera, renderer, controls, sceneGroup;
+    let scene, camera, renderer, sceneGroup;
     const particles = [];
     const spheres = [];
     let mouseX = 0, mouseY = 0;
@@ -41,6 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const TEXTURE_CACHE_SIZE = 200;
     const textureCache = [];
 
+    /**
+     * Creates a high-resolution text texture for a given character.
+     * @param {string} char - The character to create a texture for.
+     * @returns {THREE.Texture} - The generated texture.
+     */
     const createTextTexture = (char) => {
         if (textureCache.length >= TEXTURE_CACHE_SIZE) {
             return textureCache[Math.floor(Math.random() * TEXTURE_CACHE_SIZE)];
@@ -69,6 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return texture;
     };
 
+    /**
+     * Generates a random Hangul character.
+     * @returns {string} - A random Hangul character.
+     */
     const getRandomHangulCharacter = () => {
         const initials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
         const medials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A];
@@ -80,15 +88,30 @@ document.addEventListener('DOMContentLoaded', () => {
         return String.fromCharCode(syllableCode);
     };
 
+    /**
+     * Generates a random Cyrillic character.
+     * @returns {string} - A random Cyrillic character.
+     */
     const getRandomCyrillicCharacter = () => {
         const letters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
         return letters[Math.floor(Math.random() * letters.length)];
     };
 
+    /**
+     * Generates a random character, either Hangul or Cyrillic.
+     * @returns {string} - A random character.
+     */
     const getRandomCharacter = () => Math.random() < 0.5 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
 
+    /**
+     * Generates a random position in 3D space, ensuring it's not too close to existing spheres
+     * and not too close to the camera to prevent covering the entire screen.
+     * @param {Array} existingSpheres - Array of existing spheres to avoid.
+     * @param {number} radius - The radius to maintain distance.
+     * @returns {THREE.Vector3} - A random position vector.
+     */
     const getRandomPosition = (existingSpheres, radius) => {
-        const boundingRadius = 2000;
+        const boundingRadius = 2000; // Limit positions within a sphere of radius 2000
         const minDistanceFromCamera = CONFIG.MIN_CAMERA_DISTANCE + radius;
         let position, tooClose, attempts = 0;
         do {
@@ -97,10 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 (Math.random() - 0.5) * 2 * boundingRadius,
                 (Math.random() - 0.5) * 2 * boundingRadius
             );
+            // Check distance from camera
             const distanceFromCamera = position.distanceTo(camera.position);
             if (distanceFromCamera < minDistanceFromCamera) {
                 tooClose = true;
             } else {
+                // Check distance from other spheres
                 tooClose = existingSpheres.some(sphere => position.distanceTo(sphere.position) < CONFIG.MIN_DISTANCE + radius);
             }
             attempts++;
@@ -109,6 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return position;
     };
 
+    /**
+     * Initializes the Three.js scene, camera, renderer, particles, and spheres.
+     */
     const init = () => {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({
@@ -120,20 +148,13 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(CONFIG.MAX_PIXEL_RATIO, 3));
         renderer.setClearColor(CONFIG.BACKGROUND_COLOR, 1);
-        renderer.physicallyCorrectLights = true;
-        renderer.outputEncoding = THREE.sRGBEncoding;
-        renderer.toneMapping = THREE.ReinhardToneMapping;
+        renderer.physicallyCorrectLights = true; // Enable physically correct lighting
+        renderer.outputEncoding = THREE.sRGBEncoding; // Improved color accuracy
+        renderer.toneMapping = THREE.ReinhardToneMapping; // Better tone mapping for realistic lighting
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1200 : 1800;
-
-        controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.enablePan = false;
-        controls.minDistance = CONFIG.MIN_CAMERA_DISTANCE;
-        controls.maxDistance = 5000;
 
         const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
         const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
@@ -146,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         createParticles();
         createSpheres();
 
-        renderer.sortObjects = true;
+        renderer.sortObjects = true; // Enable sorting for transparent objects
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
@@ -155,6 +176,9 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     };
 
+    /**
+     * Creates particles (sprites) with random characters and positions.
+     */
     const createParticles = () => {
         const uniqueChars = 30;
         const characters = Array.from({ length: uniqueChars }, () => getRandomCharacter());
@@ -181,12 +205,15 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
-            sprite.renderOrder = 1;
+            sprite.renderOrder = 1; // Ensure particles render after spheres
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
     };
 
+    /**
+     * Creates smooth, glassy spheres with refined material properties.
+     */
     const createSpheres = () => {
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
             const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64);
@@ -194,35 +221,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 color: CONFIG.SPHERE_COLOR,
                 metalness: 0.0,
                 roughness: 0.05,
-                transmission: 1.0,
+                transmission: 1.0, // Full transmission for glass effect
                 transparent: true,
-                opacity: 0.3,
+                opacity: 0.3, // Reduced opacity for higher transparency
                 emissive: CONFIG.EMISSIVE_COLOR,
                 emissiveIntensity: 0.5,
                 side: THREE.DoubleSide,
                 reflectivity: 0.9,
                 clearcoat: 1.0,
                 clearcoatRoughness: 0.05,
-                ior: 1.5,
-                depthWrite: false,
-                alphaTest: 0.1
+                ior: 1.5, // Index of Refraction for glass
+                depthWrite: false, // Prevent spheres from blocking particles
+                alphaTest: 0.1 // Helps in correct rendering of transparent objects
             });
             const sphere = new THREE.Mesh(geometry, material);
             sphere.position.copy(getRandomPosition(spheres, CONFIG.SPHERE_SIZE));
             sphere.rotationSpeedX = (Math.random() - 0.5) * 0.02;
             sphere.rotationSpeedY = (Math.random() - 0.5) * 0.02;
             sphere.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
-            sphere.renderOrder = 0;
+            sphere.renderOrder = 0; // Ensure spheres render before particles
             sceneGroup.add(sphere);
             spheres.push(sphere);
         }
     };
 
+    /**
+     * Handles mouse movement to influence scene rotation.
+     * @param {MouseEvent} event 
+     */
     const onDocumentMouseMove = (event) => {
         mouseX = (event.clientX - windowHalfX) / windowHalfX;
         mouseY = (event.clientY - windowHalfY) / windowHalfY;
     };
 
+    /**
+     * Handles touch movement to influence scene rotation.
+     * @param {TouchEvent} event 
+     */
     const onDocumentTouchMove = (event) => {
         if (event.touches.length === 1) {
             event.preventDefault();
@@ -231,6 +266,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    /**
+     * Handles window resize events to adjust camera and renderer.
+     */
     const onWindowResize = () => {
         windowHalfX = window.innerWidth / 2;
         windowHalfY = window.innerHeight / 2;
@@ -239,6 +277,9 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
     };
 
+    /**
+     * The main animation loop. Updates positions and rotations of particles and spheres.
+     */
     const animate = () => {
         requestAnimationFrame(animate);
         particles.forEach(p => {
@@ -261,10 +302,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
-        controls.update();
         renderer.render(scene, camera);
     };
 
+    /**
+     * Handles form submission to redirect to the login URL.
+     * @param {Event} event 
+     */
     const handleFormSubmit = (event) => {
         event.preventDefault();
         const username = form.username.value.trim();
@@ -299,20 +343,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    /**
+     * Initializes the scene and starts the animation.
+     */
     const initializeScene = () => {
         init();
     };
 
+    // Initialize the Scene
     initializeScene();
 
+    // Hide preloader after a short delay
     window.onload = () => {
         setTimeout(() => {
             preloader.style.opacity = '0';
-            preloader.style.pointerEvents = 'none';
+            preloader.style.visibility = 'hidden';
             document.body.style.overflow = 'auto';
         }, 3000); // Adjust timing as needed
     };
 
+    // Form Handling
     form.addEventListener('submit', handleFormSubmit);
     form.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
@@ -360,6 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggle.addEventListener('click', toggleTheme);
 
     // Initialize theme based on user preference or default
-    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'dark'); // Default to dark
     setTheme(savedTheme);
 });

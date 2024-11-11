@@ -1,10 +1,13 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/controls/OrbitControls.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
 
-    let scene, camera, renderer, sceneGroup;
+    let scene, camera, renderer, controls, sceneGroup;
     const particles = [];
     const spheres = [];
     let mouseX = 0, mouseY = 0;
@@ -12,16 +15,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 600 : 800, // Balanced count for performance
-        SPHERE_COUNT: isMobile ? 30 : 50,
+        PARTICLE_COUNT: isMobile ? 600 : 1000,
+        SPHERE_COUNT: isMobile ? 30 : 60,
         MIN_DISTANCE: 400,
         PARTICLE_SIZE: isMobile ? 150 : 200,
-        SPHERE_SIZE: isMobile ? 80 : 100, // Further reduced for better distribution
-        PARTICLE_SPEED: isMobile ? 1.5 : 2.0, // Slight adjustment for smoother motion
-        ROTATION_SPEED: isMobile ? 0.002 : 0.004, // Balanced rotation speed
+        SPHERE_SIZE: isMobile ? 80 : 120,
+        PARTICLE_SPEED: isMobile ? 1.5 : 2.5,
+        ROTATION_SPEED: isMobile ? 0.003 : 0.005,
         TEXTURE_SIZE: isMobile ? 256 : 512,
-        SHADOW_BLUR: isMobile ? 15 : 25,
-        LIGHT_INTENSITY: isMobile ? 1.0 : 1.3,
+        SHADOW_BLUR: isMobile ? 15 : 30,
+        LIGHT_INTENSITY: isMobile ? 1.0 : 1.5,
         AMBIENT_COLOR: 0x1E90FF,
         DIRECTIONAL_COLOR: 0x9370DB,
         BACKGROUND_COLOR: 0x0A0A0A,
@@ -32,17 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
         MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 3) : Math.min(window.devicePixelRatio, 2),
         ENV_MAP_INTENSITY: 1.0,
         MIN_CAMERA_DISTANCE: 500,
-        MAX_SPHERE_SIZE: isMobile ? 100 : 120,
+        MAX_SPHERE_SIZE: isMobile ? 100 : 150,
     };
 
     const TEXTURE_CACHE_SIZE = 200;
     const textureCache = [];
 
-    /**
-     * Creates a high-resolution text texture for a given character.
-     * @param {string} char - The character to create a texture for.
-     * @returns {THREE.Texture} - The generated texture.
-     */
     const createTextTexture = (char) => {
         if (textureCache.length >= TEXTURE_CACHE_SIZE) {
             return textureCache[Math.floor(Math.random() * TEXTURE_CACHE_SIZE)];
@@ -71,10 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return texture;
     };
 
-    /**
-     * Generates a random Hangul character.
-     * @returns {string} - A random Hangul character.
-     */
     const getRandomHangulCharacter = () => {
         const initials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
         const medials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A];
@@ -86,30 +80,15 @@ document.addEventListener('DOMContentLoaded', () => {
         return String.fromCharCode(syllableCode);
     };
 
-    /**
-     * Generates a random Cyrillic character.
-     * @returns {string} - A random Cyrillic character.
-     */
     const getRandomCyrillicCharacter = () => {
         const letters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
         return letters[Math.floor(Math.random() * letters.length)];
     };
 
-    /**
-     * Generates a random character, either Hangul or Cyrillic.
-     * @returns {string} - A random character.
-     */
     const getRandomCharacter = () => Math.random() < 0.5 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
 
-    /**
-     * Generates a random position in 3D space, ensuring it's not too close to existing spheres
-     * and not too close to the camera to prevent covering the entire screen.
-     * @param {Array} existingSpheres - Array of existing spheres to avoid.
-     * @param {number} radius - The radius to maintain distance.
-     * @returns {THREE.Vector3} - A random position vector.
-     */
     const getRandomPosition = (existingSpheres, radius) => {
-        const boundingRadius = 2000; // Limit positions within a sphere of radius 2000
+        const boundingRadius = 2000;
         const minDistanceFromCamera = CONFIG.MIN_CAMERA_DISTANCE + radius;
         let position, tooClose, attempts = 0;
         do {
@@ -118,12 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 (Math.random() - 0.5) * 2 * boundingRadius,
                 (Math.random() - 0.5) * 2 * boundingRadius
             );
-            // Check distance from camera
             const distanceFromCamera = position.distanceTo(camera.position);
             if (distanceFromCamera < minDistanceFromCamera) {
                 tooClose = true;
             } else {
-                // Check distance from other spheres
                 tooClose = existingSpheres.some(sphere => position.distanceTo(sphere.position) < CONFIG.MIN_DISTANCE + radius);
             }
             attempts++;
@@ -132,9 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return position;
     };
 
-    /**
-     * Initializes the Three.js scene, camera, renderer, particles, and spheres.
-     */
     const init = () => {
         const canvas = document.getElementById('background');
         renderer = new THREE.WebGLRenderer({
@@ -152,7 +126,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.z = isMobile ? 1200 : 1500; // Adjusted for better depth
+        camera.position.z = isMobile ? 1200 : 1800;
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enablePan = false;
+        controls.minDistance = CONFIG.MIN_CAMERA_DISTANCE;
+        controls.maxDistance = 5000;
 
         const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
         const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
@@ -174,13 +155,10 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     };
 
-    /**
-     * Creates particles (sprites) with random characters and positions.
-     */
     const createParticles = () => {
         const uniqueChars = 30;
         const characters = Array.from({ length: uniqueChars }, () => getRandomCharacter());
-        characters.forEach(char => createTextTexture(char));
+        characters.forEach(char => textureCache.push(createTextTexture(char)));
 
         for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
             const char = characters[Math.floor(Math.random() * uniqueChars)];
@@ -190,13 +168,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 transparent: true,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false,
-                opacity: 0.9
+                opacity: 0.95
             });
             const sprite = new THREE.Sprite(material);
             sprite.position.set(
-                (Math.random() - 0.5) * 4000,
-                (Math.random() - 0.5) * 4000,
-                (Math.random() - 0.5) * 4000
+                (Math.random() - 0.5) * 5000,
+                (Math.random() - 0.5) * 5000,
+                (Math.random() - 0.5) * 5000
             );
             sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
             sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
@@ -209,9 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    /**
-     * Creates smooth, glassy spheres with refined material properties.
-     */
     const createSpheres = () => {
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
             const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64);
@@ -243,19 +218,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    /**
-     * Handles mouse movement to rotate the scene.
-     * @param {MouseEvent} event 
-     */
     const onDocumentMouseMove = (event) => {
         mouseX = (event.clientX - windowHalfX) / windowHalfX;
         mouseY = (event.clientY - windowHalfY) / windowHalfY;
     };
 
-    /**
-     * Handles touch movement to rotate the scene.
-     * @param {TouchEvent} event 
-     */
     const onDocumentTouchMove = (event) => {
         if (event.touches.length === 1) {
             event.preventDefault();
@@ -264,9 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    /**
-     * Handles window resize events to adjust camera and renderer.
-     */
     const onWindowResize = () => {
         windowHalfX = window.innerWidth / 2;
         windowHalfY = window.innerHeight / 2;
@@ -275,9 +239,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
     };
 
-    /**
-     * The main animation loop. Updates positions and rotations of particles and spheres.
-     */
     const animate = () => {
         requestAnimationFrame(animate);
         particles.forEach(p => {
@@ -285,9 +246,9 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
             p.material.rotation += p.rotationSpeed;
-            if (Math.abs(p.position.x) > 2000) p.speedX *= -1;
-            if (Math.abs(p.position.y) > 2000) p.speedY *= -1;
-            if (Math.abs(p.position.z) > 2000) p.speedZ *= -1;
+            if (Math.abs(p.position.x) > 2500) p.speedX *= -1;
+            if (Math.abs(p.position.y) > 2500) p.speedY *= -1;
+            if (Math.abs(p.position.z) > 2500) p.speedZ *= -1;
         });
         spheres.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
@@ -300,49 +261,58 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
+        controls.update();
         renderer.render(scene, camera);
     };
 
-    /**
-     * Handles form submission to redirect to the login URL.
-     * @param {Event} event 
-     */
     const handleFormSubmit = (event) => {
         event.preventDefault();
         const username = form.username.value.trim();
         const domainSelect = form.querySelector('select[name="domain"]');
         const domain = domainSelect.value;
-        if (username && domain) {
+        const usernameError = form.querySelector('#username + .error-message');
+        const domainError = form.querySelector('#domain + .error-message');
+        let valid = true;
+
+        // Reset error messages
+        usernameError.textContent = '';
+        domainError.textContent = '';
+        usernameError.classList.remove('error-visible');
+        domainError.classList.remove('error-visible');
+
+        if (!username) {
+            usernameError.textContent = 'Username is required.';
+            usernameError.classList.add('error-visible');
+            valid = false;
+        }
+
+        if (!domain) {
+            domainError.textContent = 'Please select a domain.';
+            domainError.classList.add('error-visible');
+            valid = false;
+        }
+
+        if (valid) {
             const email = `${username}${domain}`;
             const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
             window.location.href = loginUrl;
-        } else {
-            alert('Please enter your username and select a domain.');
         }
     };
 
-    /**
-     * Initializes the scene and starts the animation.
-     */
     const initializeScene = () => {
         init();
     };
 
-    // Initialize the Scene
     initializeScene();
 
-    // Hide preloader after a short delay
     window.onload = () => {
         setTimeout(() => {
             preloader.style.opacity = '0';
-            preloader.style.transition = 'opacity 0.5s ease';
-            setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 500);
-        }, 800);
+            preloader.style.pointerEvents = 'none';
+            document.body.style.overflow = 'auto';
+        }, 3000); // Adjust timing as needed
     };
 
-    // Form Handling
     form.addEventListener('submit', handleFormSubmit);
     form.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
@@ -350,4 +320,46 @@ document.addEventListener('DOMContentLoaded', () => {
             form.dispatchEvent(new Event('submit'));
         }
     });
+
+    // Theme Toggle Functionality
+    const setTheme = (theme) => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        if (theme === 'dark') {
+            themeIcon.innerHTML = `
+                <!-- Moon Icon -->
+                <path d="M21 12.79A9 9 0 0112.21 3 7 7 0 0012 17a7 7 0 009-4.21z"/>
+            `;
+        } else {
+            themeIcon.innerHTML = `
+                <!-- Sun Icon -->
+                <circle cx="12" cy="12" r="5" fill="currentColor"/>
+                <g stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </g>
+            `;
+        }
+    };
+
+    const toggleTheme = () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (currentTheme === 'dark') {
+            setTheme('light');
+        } else {
+            setTheme('dark');
+        }
+    };
+
+    themeToggle.addEventListener('click', toggleTheme);
+
+    // Initialize theme based on user preference or default
+    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    setTheme(savedTheme);
 });

@@ -1,159 +1,196 @@
+/* noscript.css */
+
+/* Hide the Three.js background and preloader when JavaScript is disabled */
 #preloader,
 #background {
     display: none !important;
 }
 
+/* Body Styling */
 body {
-    background-color: #0e0e0e;
-    color: #ffffff;
-    font-family: 'Urbanist', sans-serif;
+    background-color: var(--background-color);
+    color: var(--foreground-color);
+    font-family: var(--font-family);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
 }
 
+/* Noscript Wrapper */
 #noscript-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(15px);
+    width: 100%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    padding: 20px;
-    overflow-y: auto; /* Allow vertical scrolling */
-}
-
-.entrance {
+    padding: var(--form-padding);
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    text-align: center;
     opacity: 1;
     animation: none;
-    background: rgba(255, 255, 255, 0.1); /* Glassy effect */
-    padding: clamp(30px, 5vw, 60px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    transition: none;
 }
 
-h1 {
-    font-size: clamp(2rem, 5vw, 4rem);
-    margin-bottom: 40px;
+/* Optional: Informative Message for Users */
+#noscript-wrapper::before {
+    content: "JavaScript is disabled in your browser. For the best experience, please enable JavaScript.";
+    display: block;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    color: var(--foreground-color);
+    opacity: 0.8;
+}
+
+/* Heading Styling */
+#noscript-wrapper h1 {
+    font-size: var(--h1-font-size);
+    margin-bottom: 30px;
     font-weight: 700;
     letter-spacing: 3px;
-    color: #ffffff;
-    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(138, 43, 226, 0.5), 0 0 30px rgba(75, 0, 130, 0.5);
+    color: var(--foreground-color);
+    text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent);
+    animation: glow 3s infinite alternate;
 }
 
-.input-container input,
-.custom-select select {
+/* Form Styling */
+#noscript-wrapper form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    width: 100%;
+}
+
+/* Input Container */
+#noscript-wrapper .input-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Input Fields */
+#noscript-wrapper .input-container input,
+#noscript-wrapper .custom-select select {
     width: 100%;
     padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.05);
-    color: #ffffff;
+    background: var(--glass-bg);
+    color: var(--foreground-color);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
-    font-size: 1rem;
+    font-size: var(--input-font-size);
     outline: none;
-    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.input-container input::placeholder,
-.custom-select select:invalid {
-    color: #ffffff;
+/* Placeholder Styling */
+#noscript-wrapper .input-container input::placeholder,
+#noscript-wrapper .custom-select select:invalid {
+    color: var(--foreground-color);
     opacity: 0.6;
-    font-size: 1rem;
+    font-size: var(--input-font-size);
 }
 
-.input-container input:focus,
-.custom-select select:focus {
+/* Focus States */
+#noscript-wrapper .input-container input:focus,
+#noscript-wrapper .custom-select select:focus {
     background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(0, 255, 255, 0.5);
-    box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
     transform: translateY(-2px);
 }
 
-.custom-select {
+/* Custom Select Styling */
+#noscript-wrapper .custom-select {
     position: relative;
 }
 
-.custom-select::after {
+#noscript-wrapper .custom-select::after {
     content: '▼';
     position: absolute;
     top: 50%;
     right: 16px;
     transform: translateY(-50%);
-    color: #ffffff;
+    color: var(--foreground-color);
     pointer-events: none;
     font-size: 1rem;
 }
 
-.custom-select select {
+#noscript-wrapper .custom-select select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
     padding-right: 40px;
-    background: rgba(255, 255, 255, 0.05);
-    color: #ffffff;
-    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    background: var(--glass-bg);
+    color: var(--foreground-color);
+    transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
 
-.custom-select select:hover {
+#noscript-wrapper .custom-select select:hover {
     background: rgba(255, 255, 255, 0.15);
 }
 
-.custom-select select:focus {
+#noscript-wrapper .custom-select select:focus {
     background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(0, 255, 255, 0.5);
-    box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
     transform: translateY(-2px);
 }
 
-.custom-select select option {
-    color: #ffffff;
-    background: #0e0e0e;
+#noscript-wrapper .custom-select select option {
+    color: var(--foreground-color);
+    background: var(--background-color);
 }
 
-button {
-    padding: 16px 32px;
-    background: rgba(0, 255, 255, 0.5);
-    color: #0e0e0e;
+/* Button Styling */
+#noscript-wrapper button {
+    padding: var(--button-padding);
+    background: var(--accent-color);
+    color: var(--background-color);
     border: none;
     border-radius: 10px;
-    font-size: 1.1rem;
+    font-size: var(--button-font-size);
     cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    transition: background var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, filter 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-button:hover,
-button:focus {
-    background: rgba(138, 43, 226, 0.5);
+#noscript-wrapper button:hover,
+#noscript-wrapper button:focus {
+    background: var(--secondary-accent);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
     outline: none;
+    filter: brightness(1.1);
 }
 
-input:focus,
-select:focus,
-button:focus {
-    outline: 2px solid rgba(0, 255, 255, 0.5);
+/* Focus Outline for Accessibility */
+#noscript-wrapper input:focus,
+#noscript-wrapper select:focus,
+#noscript-wrapper button:focus {
+    outline: 2px solid var(--accent-color);
     outline-offset: 2px;
 }
 
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
+/* Keyframes for Animations */
+@keyframes glow {
+    from { text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent); }
+    to { text-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--secondary-accent), 0 0 40px var(--tertiary-accent); }
 }
 
-/* Enhanced Media Queries for Better Responsiveness */
-
+/* Responsive Design */
 @media (max-width: 1440px) {
     :root {
         --h1-font-size: clamp(1.8rem, 4vw, 3rem);
@@ -166,76 +203,72 @@ button:focus {
 }
 
 @media (max-width: 1024px) {
-    .entrance {
-        width: 100%;
+    #noscript-wrapper {
         max-width: 450px;
         padding: 50px 30px;
     }
-    h1 {
+    #noscript-wrapper h1 {
         font-size: 2.5rem;
         margin-bottom: 30px;
     }
-    form {
+    #noscript-wrapper form {
         gap: 20px;
     }
 }
 
 @media (max-width: 768px) {
-    .entrance {
-        width: 100%;
+    #noscript-wrapper {
         max-width: 400px;
         padding: 45px 25px;
     }
-    h1 {
+    #noscript-wrapper h1 {
         font-size: 2rem;
         margin-bottom: 25px;
     }
-    form {
+    #noscript-wrapper form {
         gap: 15px;
     }
-    .custom-select::after {
+    #noscript-wrapper .custom-select::after {
         right: 12px;
     }
 }
 
 @media (max-width: 480px) {
-    .entrance {
-        width: 100%;
+    #noscript-wrapper {
         max-width: 320px;
         padding: 35px 20px;
     }
-    h1 {
+    #noscript-wrapper h1 {
         font-size: 1.8rem;
         margin-bottom: 20px;
     }
-    form {
+    #noscript-wrapper form {
         gap: 10px;
     }
-    .input-container input,
-    .custom-select select {
+    #noscript-wrapper .input-container input,
+    #noscript-wrapper .custom-select select {
         padding: 10px 14px;
         font-size: 0.9rem;
     }
-    button {
+    #noscript-wrapper button {
         padding: 12px 24px;
         font-size: 1rem;
     }
-    .custom-select::after {
+    #noscript-wrapper .custom-select::after {
         right: 10px;
         font-size: 0.9rem;
     }
 }
 
 /* Additional Fixes for iOS/Safari */
-
 @supports (-webkit-touch-callout: none) {
     /* iOS-specific styles */
-    .input-container input,
-    .custom-select select {
+    #noscript-wrapper .input-container input,
+    #noscript-wrapper .custom-select select {
         font-size: 1rem !important; /* Force font size */
         -webkit-text-size-adjust: 100% !important;
     }
-    .input-container input::placeholder {
+    #noscript-wrapper .input-container input::placeholder {
         font-size: 1rem !important; /* Ensure placeholder matches input */
     }
 }

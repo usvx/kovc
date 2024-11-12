@@ -25,6 +25,10 @@
     /* Shadows and Depth */
     --shadow-color: rgba(0, 255, 255, 0.2);
     --hover-shadow-color: rgba(0, 255, 255, 0.4);
+    
+    /* Animations */
+    --transition-speed: 0.3s;
+    --animation-duration: 1.5s;
 }
 
 * {
@@ -51,8 +55,7 @@ html, body {
     width: 100%;
     background-color: var(--background-color);
     color: var(--foreground-color);
-    /* Removed overflow: hidden to allow scrolling */
-    /* overflow: hidden; */
+    overflow: hidden; /* Prevent scrolling to maintain focus on the 3D scene */
     -webkit-user-select: none;
     user-select: none;
     position: relative;
@@ -103,7 +106,7 @@ main {
     justify-content: center;
     min-height: 100vh;
     padding: 20px;
-    overflow-y: auto; /* Allow vertical scrolling */
+    overflow-y: auto; /* Allow vertical scrolling if content overflows */
 }
 
 .entrance {
@@ -117,10 +120,10 @@ main {
     border-radius: 20px;
     border: 1px solid var(--glass-border);
     transform: translateZ(0);
-    animation: fadeInUp 1.5s ease forwards;
+    animation: fadeInUp var(--animation-duration) ease forwards;
     backdrop-filter: blur(var(--glass-blur));
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
 }
 
 .entrance:hover {
@@ -166,7 +169,7 @@ form {
     border-radius: 10px;
     font-size: var(--input-font-size);
     outline: none;
-    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -208,7 +211,7 @@ form {
     padding-right: 40px;
     background: rgba(255, 255, 255, 0.1);
     color: var(--foreground-color);
-    transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
 
 .custom-select select:hover {
@@ -235,7 +238,7 @@ button {
     border-radius: 10px;
     font-size: var(--button-font-size);
     cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    transition: background var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -354,4 +357,136 @@ button:focus {
     .input-container input::placeholder {
         font-size: 1rem !important; /* Ensure placeholder matches input */
     }
+}
+
+/* Smooth Scroll Behavior */
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Scrollbar Styling for Webkit Browsers */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-accent);
+}
+
+/* Accessibility Enhancements */
+
+:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Button Animation Enhancements */
+
+button {
+    transition: background var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, filter 0.3s ease;
+}
+
+button:hover {
+    filter: brightness(1.1);
+}
+
+/* Form Element Enhancements */
+
+.input-container input,
+.custom-select select {
+    transition: all var(--transition-speed) ease;
+}
+
+.input-container input:focus,
+.custom-select select:focus {
+    transform: translateY(-2px) scale(1.02);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Enhanced Responsiveness for Landscape Modes */
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .entrance {
+        padding: 30px 20px;
+    }
+    h1 {
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+    }
+}
+
+/* Night Mode Compatibility */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #0e0e0e;
+        --foreground-color: #ffffff;
+        --accent-color: rgba(0, 255, 255, 0.5);
+        --secondary-accent: rgba(138, 43, 226, 0.5);
+        --tertiary-accent: rgba(75, 0, 130, 0.5);
+        --glass-bg: rgba(255, 255, 255, 0.1);
+        --glass-border: rgba(255, 255, 255, 0.3);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --background-color: #ffffff;
+        --foreground-color: #0e0e0e;
+        --accent-color: rgba(0, 255, 255, 0.5);
+        --secondary-accent: rgba(138, 43, 226, 0.5);
+        --tertiary-accent: rgba(75, 0, 130, 0.5);
+        --glass-bg: rgba(0, 0, 0, 0.1);
+        --glass-border: rgba(0, 0, 0, 0.3);
+    }
+    body {
+        background-color: var(--background-color);
+        color: var(--foreground-color);
+    }
+    .entrance {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    h1 {
+        color: var(--foreground-color);
+        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent);
+    }
+    .input-container input,
+    .custom-select select {
+        background: rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Optional: Add Cursor Styles for Enhanced Interactivity */
+
+body {
+    cursor: default;
+}
+
+button {
+    cursor: pointer;
+}
+
+.custom-select select {
+    cursor: pointer;
+}
+
+/* Optional: Prevent Text Selection on Buttons */
+
+button {
+    user-select: none;
 }

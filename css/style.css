@@ -221,8 +221,7 @@ form {
     position: relative;
 }
 
-.custom-select::after {
-    content: '▼';
+.select-arrow { /* Single Dropdown Arrow */
     position: absolute;
     top: 50%;
     right: 16px;
@@ -257,13 +256,6 @@ form {
 .custom-select select option {
     color: var(--foreground-color);
     background: var(--background-color);
-}
-
-/* Error Styling for Invalid Inputs */
-.input-container.invalid input,
-.input-container.invalid select {
-    border-color: #ff6b6b;
-    box-shadow: 0 0 8px #ff6b6b;
 }
 
 /* Button Styling */
@@ -387,7 +379,7 @@ button:focus {
     form {
         gap: 15px;
     }
-    .custom-select::after {
+    .select-arrow {
         right: 12px;
     }
 }
@@ -415,7 +407,7 @@ button:focus {
         padding: 12px 24px;
         font-size: 1rem;
     }
-    .custom-select::after {
+    .select-arrow {
         right: 10px;
         font-size: 0.9rem;
     }

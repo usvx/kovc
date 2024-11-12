@@ -98,15 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Generates a random Cyrillic character (both uppercase and lowercase).
-     * Expanded to include more characters for diversity.
-     * @returns {string} - A random Cyrillic character.
+     * Generates a random Cyrillic uppercase character.
+     * Excludes lowercase letters as per user request.
+     * @returns {string} - A random uppercase Cyrillic character.
      */
     const getRandomCyrillicCharacter = () => {
         const uppercase = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я'];
-        const lowercase = ['а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я'];
-        const allCyrillic = uppercase.concat(lowercase);
-        return allCyrillic[Math.floor(Math.random() * allCyrillic.length)];
+        return uppercase[Math.floor(Math.random() * uppercase.length)];
     };
 
     /**
@@ -289,13 +287,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const uniqueChars = CONFIG.PARTICLE_COUNT;
         const characters = Array.from({ length: uniqueChars }, () => getRandomCharacter());
         const textures = characters.map(char => createTextTexture(char));
-
-        const spriteMaterial = new THREE.SpriteMaterial({
-            transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false,
-            opacity: 0.95
-        });
 
         for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
             const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: textures[i], transparent: true, blending: THREE.AdditiveBlending }));

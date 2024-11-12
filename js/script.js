@@ -13,16 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 800 : 1500, // Reduced for mobile
-        SPHERE_COUNT: isMobile ? 40 : 80,      // Reduced for mobile
-        MIN_DISTANCE: 500,
-        PARTICLE_SIZE: isMobile ? 120 : 200,
-        SPHERE_SIZE: isMobile ? 60 : 100,
-        PARTICLE_SPEED: isMobile ? 1.8 : 3.0,
-        ROTATION_SPEED: isMobile ? 0.004 : 0.006,
+        PARTICLE_COUNT: isMobile ? 800 : 1200, // Further reduced for performance
+        SPHERE_COUNT: isMobile ? 30 : 60,      // Further reduced for performance
+        MIN_DISTANCE: 400,                      // Adjusted for fewer connections
+        PARTICLE_SIZE: isMobile ? 100 : 150,
+        SPHERE_SIZE: isMobile ? 50 : 80,
+        PARTICLE_SPEED: isMobile ? 1.5 : 2.5,
+        ROTATION_SPEED: isMobile ? 0.003 : 0.005,
         TEXTURE_SIZE: isMobile ? 256 : 512,
-        SHADOW_BLUR: isMobile ? 20 : 35,
-        LIGHT_INTENSITY: isMobile ? 1.2 : 1.8,
+        SHADOW_BLUR: isMobile ? 15 : 25,        // Reduced for performance
+        LIGHT_INTENSITY: isMobile ? 1.0 : 1.5,
         AMBIENT_COLOR: 0x1E90FF,
         DIRECTIONAL_COLOR: 0x9370DB,
         BACKGROUND_COLOR: 0x0A0A0A,
@@ -37,9 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
         BLOOM_INTENSITY: 2.0,
         BLOOM_THRESHOLD: 0.9,
         BLOOM_RADIUS: 0.5,
-        STAR_COUNT: 3000,
+        STAR_COUNT: 2500,                         // Reduced for performance
         STAR_SIZE: 0.7,
-        TWINKLE_SPEED: 0.005,
+        TWINKLE_SPEED: 0.003,                     // Slower for subtlety
     };
 
     const TEXTURE_CACHE_SIZE = 300;
@@ -203,9 +203,9 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.sortObjects = true;
 
         // Event listeners for interactivity and responsiveness
-        document.addEventListener('mousemove', onDocumentMouseMove, false);
-        document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
-        window.addEventListener('resize', onWindowResize, false);
+        document.addEventListener('mousemove', throttle(onDocumentMouseMove, 100), false);
+        document.addEventListener('touchmove', throttle(onDocumentTouchMove, 100), { passive: false });
+        window.addEventListener('resize', debounce(onWindowResize, 200), false);
 
         animate();
     };
@@ -326,32 +326,33 @@ document.addEventListener('DOMContentLoaded', () => {
      * Creates smooth, glassy spheres with refined material properties for enhanced realism.
      */
     const createSpheres = () => {
+        const sphereGeometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 32, 32); // Reduced segments for performance
+        const sphereMaterial = new THREE.MeshPhysicalMaterial({
+            color: CONFIG.SPHERE_COLOR,
+            metalness: 0.0,
+            roughness: 0.05,
+            transmission: 1.0,
+            transparent: true,
+            opacity: 0.3, // Ensure transparency
+            emissive: CONFIG.EMISSIVE_COLOR,
+            emissiveIntensity: 0.7,
+            side: THREE.DoubleSide,
+            reflectivity: 1.0,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.05,
+            ior: 1.5,
+            depthWrite: false,
+            alphaTest: 0.1
+        });
+
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
-            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64);
-            const material = new THREE.MeshPhysicalMaterial({
-                color: CONFIG.SPHERE_COLOR,
-                metalness: 0.0,
-                roughness: 0.05,
-                transmission: 1.0,
-                transparent: true,
-                opacity: 0.3, // Ensure transparency
-                emissive: CONFIG.EMISSIVE_COLOR,
-                emissiveIntensity: 0.7,
-                side: THREE.DoubleSide,
-                reflectivity: 1.0,
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.05,
-                ior: 1.5,
-                depthWrite: false,
-                alphaTest: 0.1
-            });
-            const sphere = new THREE.Mesh(geometry, material);
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
             sphere.position.copy(getRandomPosition(spheres, CONFIG.SPHERE_SIZE));
             sphere.castShadow = true;
             sphere.receiveShadow = true;
-            sphere.rotationSpeedX = (Math.random() - 0.5) * 0.015;
-            sphere.rotationSpeedY = (Math.random() - 0.5) * 0.015;
-            sphere.rotationSpeedZ = (Math.random() - 0.5) * 0.015;
+            sphere.rotationSpeedX = (Math.random() - 0.5) * CONFIG.ROTATION_SPEED;
+            sphere.rotationSpeedY = (Math.random() - 0.5) * CONFIG.ROTATION_SPEED;
+            sphere.rotationSpeedZ = (Math.random() - 0.5) * CONFIG.ROTATION_SPEED;
             sphere.renderOrder = 0;
             sceneGroup.add(sphere);
             spheres.push(sphere);
@@ -370,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // To optimize performance, limit the number of connections per particle
-        const maxConnections = 5;
+        const maxConnections = 3; // Further reduced for performance
 
         for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
             let connections = 0;
@@ -392,6 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Handles mouse movement to rotate the scene smoothly and responsively.
+     * Throttled to improve performance.
      * @param {MouseEvent} event 
      */
     const onDocumentMouseMove = (event) => {
@@ -401,6 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Handles touch movement to rotate the scene smoothly and responsively.
+     * Throttled to improve performance.
      * @param {TouchEvent} event 
      */
     const onDocumentTouchMove = (event) => {
@@ -413,6 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Handles window resize events to adjust camera and renderer for responsive design.
+     * Debounced to prevent excessive computations.
      */
     const onWindowResize = () => {
         windowHalfX = window.innerWidth / 2;
@@ -423,7 +427,42 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
+     * Throttle function to limit the rate at which a function can fire.
+     * @param {Function} func 
+     * @param {number} limit 
+     * @returns {Function}
+     */
+    const throttle = (func, limit) => {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        }
+    };
+
+    /**
+     * Debounce function to delay the processing of a function until after a wait time has elapsed.
+     * @param {Function} func 
+     * @param {number} wait 
+     * @returns {Function}
+     */
+    const debounce = (func, wait) => {
+        let timeout;
+        return function() {
+            const context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        }
+    };
+
+    /**
      * The main animation loop. Updates positions, rotations, and visual effects of particles and spheres.
+     * Optimized to minimize computations.
      */
     const animate = () => {
         requestAnimationFrame(animate);
@@ -433,10 +472,11 @@ document.addEventListener('DOMContentLoaded', () => {
             p.position.x += p.speedX;
             p.position.y += p.speedY;
             p.position.z += p.speedZ;
-            p.material.rotation += p.rotationSpeed;
-            if (Math.abs(p.position.x) > 3000) p.speedX *= -1;
-            if (Math.abs(p.position.y) > 3000) p.speedY *= -1;
-            if (Math.abs(p.position.z) > 3000) p.speedZ *= -1;
+
+            // Loop particles within bounds
+            if (p.position.x > 3000 || p.position.x < -3000) p.speedX *= -1;
+            if (p.position.y > 3000 || p.position.y < -3000) p.speedY *= -1;
+            if (p.position.z > 3000 || p.position.z < -3000) p.speedZ *= -1;
         });
 
         // Update spheres and their glow

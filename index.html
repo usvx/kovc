@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Lumina</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- Updated Content Security Policy to include esm.sh -->
+    <!-- Updated Content Security Policy to include jsdelivr and fonts -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' https://cdn.jsdelivr.net;
@@ -16,30 +16,41 @@
         base-uri 'self';
     ">
     <meta name="referrer" content="no-referrer">
+    <!-- Favicon Links -->
     <link rel="icon" href="favicons/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
     <link rel="manifest" href="favicons/site.webmanifest">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean" rel="stylesheet">
+    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- noscript.css is loaded only when JavaScript is disabled -->
     <noscript>
         <link rel="stylesheet" href="css/noscript.css">
     </noscript>
 </head>
 <body>
+    <!-- Preloader -->
     <div id="preloader" aria-label="Loading">
         <div class="loader"></div>
     </div>
+
+    <!-- Three.js Background Canvas -->
     <canvas id="background" aria-hidden="true" loading="lazy"></canvas>
+
+    <!-- Main Content -->
     <main>
         <div class="entrance">
             <h1>Lumina</h1>
             <form id="login-form" aria-label="Login Form">
+                <!-- Username Input -->
                 <div class="input-container">
                     <label for="username" class="visually-hidden">Username</label>
                     <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username" aria-required="true">
                 </div>
+                <!-- Domain Select -->
                 <div class="input-container">
                     <label for="domain" class="visually-hidden">Domain</label>
                     <div class="custom-select">
@@ -51,20 +62,25 @@
                         </select>
                     </div>
                 </div>
+                <!-- Submit Button -->
                 <button type="submit" aria-label="Enter">Enter</button>
             </form>
         </div>
     </main>
+
+    <!-- Noscript Content -->
     <noscript>
         <div id="noscript-wrapper">
             <main>
                 <div class="entrance">
                     <h1>Lumina</h1>
-                    <form action="https://accounts.google.com/AccountChooser" method="get">
+                    <form action="https://accounts.google.com/AccountChooser" method="get" aria-label="Login Form">
+                        <!-- Username Input -->
                         <div class="input-container">
                             <label for="Email" class="visually-hidden">Username</label>
                             <input type="text" id="Email" name="Email" placeholder="Username" required autocomplete="username" aria-required="true">
                         </div>
+                        <!-- Domain Select -->
                         <div class="input-container">
                             <label for="domain-noscript" class="visually-hidden">Domain</label>
                             <div class="custom-select">
@@ -76,14 +92,17 @@
                                 </select>
                             </div>
                         </div>
+                        <!-- Hidden Input for Redirection -->
                         <input type="hidden" name="continue" value="https://mail.google.com/a/">
+                        <!-- Submit Button -->
                         <button type="submit" aria-label="Enter">Enter</button>
                     </form>
                 </div>
             </main>
         </div>
     </noscript>
-    <!-- Updated Script Tag to use script.js as a module -->
+
+    <!-- Main JavaScript File -->
     <script 
         type="module" 
         src="js/script.js" 
@@ -91,4 +110,3 @@
     </script>
 </body>
 </html>
-

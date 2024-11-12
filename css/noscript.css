@@ -98,8 +98,8 @@ body {
 /* Placeholder Styling */
 #noscript-wrapper .input-container input::placeholder,
 #noscript-wrapper .custom-select select:invalid {
-    color: var(--foreground-color);
-    opacity: 0.6;
+    color: rgba(255, 255, 255, 0.7);
+    opacity: 1;
     font-size: var(--input-font-size);
 }
 
@@ -108,7 +108,7 @@ body {
 #noscript-wrapper .custom-select select:focus {
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid var(--accent-color);
-    box-shadow: 0 0 8px var(--accent-color);
+    box-shadow: 0 0 12px var(--accent-color);
     transform: translateY(-2px);
 }
 
@@ -148,7 +148,7 @@ body {
 #noscript-wrapper .custom-select select:focus {
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid var(--accent-color);
-    box-shadow: 0 0 8px var(--accent-color);
+    box-shadow: 0 0 12px var(--accent-color);
     transform: translateY(-2px);
 }
 
@@ -199,7 +199,7 @@ body {
 #noscript-wrapper button:focus {
     background: var(--secondary-accent);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.02);
     outline: none;
     filter: brightness(1.1);
 }
@@ -221,6 +221,18 @@ body {
 @keyframes glow {
     from { text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent); }
     to { text-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--secondary-accent), 0 0 40px var(--tertiary-accent); }
+}
+
+/* Fade In Animation */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
 }
 
 /* Responsive Design Enhancements */
@@ -250,30 +262,33 @@ body {
 }
 
 @media (max-width: 1024px) {
-    #noscript-wrapper {
+    main {
+        padding: 30px;
+    }
+    .entrance {
         max-width: 450px;
         padding: 50px 30px;
     }
-    #noscript-wrapper h1 {
+    h1 {
         font-size: 2.5rem;
         margin-bottom: 30px;
     }
-    #noscript-wrapper form {
+    form {
         gap: 20px;
     }
 }
 
 /* Small Screens */
 @media (max-width: 768px) {
-    #noscript-wrapper {
+    .entrance {
         max-width: 400px;
         padding: 45px 25px;
     }
-    #noscript-wrapper h1 {
+    h1 {
         font-size: 2rem;
         margin-bottom: 25px;
     }
-    #noscript-wrapper form {
+    form {
         gap: 15px;
     }
     .select-arrow {
@@ -283,15 +298,15 @@ body {
 
 /* Extra Small Screens */
 @media (max-width: 480px) {
-    #noscript-wrapper {
+    .entrance {
         max-width: 320px;
         padding: 35px 20px;
     }
-    #noscript-wrapper h1 {
+    h1 {
         font-size: 1.8rem;
         margin-bottom: 20px;
     }
-    #noscript-wrapper form {
+    form {
         gap: 10px;
     }
     .input-container input,
@@ -299,7 +314,7 @@ body {
         padding: 10px 14px;
         font-size: 0.9rem;
     }
-    #noscript-wrapper button {
+    button {
         padding: 12px 24px;
         font-size: 1rem;
     }
@@ -311,10 +326,10 @@ body {
 
 /* Landscape Orientation Adjustments */
 @media (max-height: 500px) and (orientation: landscape) {
-    #noscript-wrapper {
+    .entrance {
         padding: 30px 20px;
     }
-    #noscript-wrapper h1 {
+    h1 {
         font-size: 1.6rem;
         margin-bottom: 15px;
     }
@@ -415,4 +430,30 @@ button {
 /* Error Message Visibility */
 .input-container.invalid .error-message {
     display: block;
+}
+
+/* Button Animation Enhancements */
+button {
+    transition: background var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, filter 0.3s ease;
+}
+
+button:hover {
+    filter: brightness(1.1);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Element Enhancements */
+.input-container input,
+.custom-select select {
+    transition: all var(--transition-speed) ease;
+}
+
+.input-container input:focus,
+.custom-select select:focus {
+    transform: translateY(-2px) scale(1.02);
+    background: rgba(255, 255, 255, 0.15);
 }

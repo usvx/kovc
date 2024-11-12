@@ -41,35 +41,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const TEXTURE_CACHE_SIZE = 200;
     const textureCache = [];
 
-    // Shader material for particles with pulsating effect
+    // Shader material for particles with pulsating and glowing effect
     const particleShaderMaterial = new THREE.ShaderMaterial({
         vertexShader: `
             uniform float uTime;
+            uniform float uSize;
             varying vec3 vColor;
+            varying float vOpacity;
             void main() {
                 vColor = color;
-                vec3 pos = position;
-                pos += normal * sin(uTime + position.x * 0.1) * 10.0;
-                gl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );
-                gl_PointSize = 20.0 * ( 300.0 / -mvPosition.z );
+                // Pulsate the size based on time
+                float pulsate = 0.5 + 0.5 * sin(uTime + position.x * 0.005);
+                vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                gl_PointSize = uSize * (300.0 / -mvPosition.z) * pulsate;
+                gl_Position = projectionMatrix * mvPosition;
+                // Set opacity based on pulsate
+                vOpacity = pulsate;
             }
         `,
         fragmentShader: `
-            uniform float uTime;
             varying vec3 vColor;
+            varying float vOpacity;
             void main() {
                 float dist = distance(gl_PointCoord, vec2(0.5));
                 if (dist > 0.5) discard;
-                float alpha = 1.0 - dist;
-                gl_FragColor = vec4(vColor, alpha);
+                // Create a smooth edge
+                float alpha = 1.0 - smoothstep(0.45, 0.5, dist);
+                gl_FragColor = vec4(vColor, alpha * vOpacity);
             }
         `,
         uniforms: {
-            uTime: { value: 0.0 }
+            uTime: { value: 0.0 },
+            uSize: { value: 20.0 }
         },
         blending: THREE.AdditiveBlending,
         depthTest: false,
-        transparent: true
+        transparent: true,
+        vertexColors: true
     });
 
     /**
@@ -205,24 +213,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 (Math.random() - 0.5) * 2000
             );
             scene.add(pointLight);
-            // Add light helper for debugging (optional)
+            // Optionally, add light helpers for debugging
             // const sphereSize = 50;
             // const pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
             // scene.add(pointLightHelper);
         }
 
-        // Environment Map for realistic reflections
-        const envTexture = new THREE.CubeTextureLoader().load([
-            'https://threejs.org/examples/textures/cube/Bridge2/posx.jpg',
-            'https://threejs.org/examples/textures/cube/Bridge2/negx.jpg',
-            'https://threejs.org/examples/textures/cube/Bridge2/posy.jpg',
-            'https://threejs.org/examples/textures/cube/Bridge2/negy.jpg',
-            'https://threejs.org/examples/textures/cube/Bridge2/posz.jpg',
-            'https://threejs.org/examples/textures/cube/Bridge2/negz.jpg'
-        ]);
-        envTexture.encoding = THREE.sRGBEncoding;
-        scene.background = envTexture;
-        scene.environment = envTexture;
+        // Remove Environment Map to avoid background image
+        // Previously, an environment map was used for reflections, but it's removed per requirement
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
@@ -231,6 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
         createSpheres();
 
         // Post-Processing Effects
+        // Since no external images are used, post-processing is limited to what can be achieved without images
         setupPostProcessing();
 
         renderer.sortObjects = true;
@@ -243,25 +242,24 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Sets up post-processing for bloom and depth-of-field effects.
+     * Sets up post-processing for bloom and glow effects using shaders.
      */
     const setupPostProcessing = () => {
-        // Since we are limited to using only THREE.js, we'll implement a simple bloom-like effect using multiple render passes
-        // Note: For advanced post-processing, additional modules like EffectComposer are typically required
-        // Here, we'll simulate bloom by adding emissive materials and using additive blending
+        // Implement a simple bloom-like effect using shaders or additive blending
+        // Since we're not using EffectComposer, we'll simulate glow with semi-transparent meshes
 
         spheres.forEach(sphere => {
-            const bloomMaterial = new THREE.MeshBasicMaterial({
+            const glowMaterial = new THREE.MeshBasicMaterial({
                 color: CONFIG.PARTICLE_COLOR_1,
                 blending: THREE.AdditiveBlending,
                 transparent: true,
-                opacity: 0.2
+                opacity: 0.3
             });
-            const bloomMesh = new THREE.Mesh(sphere.geometry.clone(), bloomMaterial);
-            bloomMesh.scale.multiplyScalar(1.5);
-            bloomMesh.position.copy(sphere.position);
-            sceneGroup.add(bloomMesh);
-            sphere.userData.bloom = bloomMesh;
+            const glowMesh = new THREE.Mesh(sphere.geometry.clone(), glowMaterial);
+            glowMesh.scale.multiplyScalar(1.5);
+            glowMesh.position.copy(sphere.position);
+            sceneGroup.add(glowMesh);
+            sphere.userData.glow = glowMesh;
         });
     };
 
@@ -281,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const offsets = [];
         const colors = [];
         const scales = [];
+        const uSizes = [];
 
         for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
             const char = characters[Math.floor(Math.random() * uniqueChars)];
@@ -297,31 +296,15 @@ document.addEventListener('DOMContentLoaded', () => {
             offsets.push(position.x, position.y, position.z);
             colors.push(color.r, color.g, color.b);
             scales.push(CONFIG.PARTICLE_SIZE);
+            uSizes.push(CONFIG.PARTICLE_SIZE);
 
-            // Create individual sprite for advanced effects (optional)
-            /*
-            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-                map: texture,
-                transparent: true,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false,
-                opacity: 0.95
-            }));
-            sprite.position.copy(position);
-            sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
-            sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
-            sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
-            sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
-            sprite.renderOrder = 1;
-            sceneGroup.add(sprite);
-            particles.push(sprite);
-            */
+            // Optionally, store additional data like velocity
         }
 
         instancedGeometry.setAttribute('offset', new THREE.InstancedBufferAttribute(new Float32Array(offsets), 3));
         instancedGeometry.setAttribute('color', new THREE.InstancedBufferAttribute(new Float32Array(colors), 3));
         instancedGeometry.setAttribute('scale', new THREE.InstancedBufferAttribute(new Float32Array(scales), 1));
+        instancedGeometry.setAttribute('uSize', new THREE.InstancedBufferAttribute(new Float32Array(uSizes), 1));
 
         const particleMaterial = particleShaderMaterial.clone();
         particleMaterial.vertexColors = true;
@@ -407,43 +390,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const delta = clock.getDelta();
         const elapsedTime = clock.getElapsedTime();
 
-        // Update particles
+        // Update shader uniforms
         particles.forEach(p => {
             if (p.isMesh) {
-                p.position.x += p.userData.speedX;
-                p.position.y += p.userData.speedY;
-                p.position.z += p.userData.speedZ;
-                if (Math.abs(p.position.x) > 2500) p.userData.speedX *= -1;
-                if (Math.abs(p.position.y) > 2500) p.userData.speedY *= -1;
-                if (Math.abs(p.position.z) > 2500) p.userData.speedZ *= -1;
-            } else {
                 p.material.uniforms.uTime.value = elapsedTime;
             }
         });
 
-        // Update spheres and their bloom
+        // Update spheres and their bloom/glow
         spheres.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;
 
-            // Update bloom
-            if (s.userData.bloom) {
-                s.userData.bloom.rotation.copy(s.rotation);
-                s.userData.bloom.scale.setScalar(1.5 + Math.sin(elapsedTime) * 0.3);
+            // Update glow
+            if (s.userData.glow) {
+                s.userData.glow.rotation.copy(s.rotation);
+                s.userData.glow.scale.setScalar(1.5 + Math.sin(elapsedTime) * 0.3);
             }
         });
 
-        // Dynamic lighting effects (optional: could add pulsating lights)
+        // Dynamic lighting effects
         scene.traverse(object => {
             if (object.isPointLight) {
+                // Pulsate light intensity
                 object.intensity = CONFIG.LIGHT_INTENSITY + Math.sin(elapsedTime + object.position.x) * 0.5;
             }
         });
 
         // Scene rotation based on mouse
-        sceneGroup.rotation.y += CONFIG.ROTATION_SPEED;
-        sceneGroup.rotation.x += CONFIG.ROTATION_SPEED * 0.75;
         const targetRotationY = mouseX * 0.05;
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;

@@ -486,13 +486,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = form.username.value.trim();
         const domainSelect = form.querySelector('select[name="domain"]');
         const domain = domainSelect.value;
-        if (username && domain) {
+        const errorMessages = form.querySelectorAll('.error-message');
+        let hasError = false;
+
+        // Reset previous errors
+        form.querySelectorAll('.input-container').forEach(container => {
+            container.classList.remove('invalid');
+        });
+        errorMessages.forEach(msg => {
+            msg.textContent = '';
+        });
+
+        // Validate Username
+        if (!username) {
+            const usernameContainer = form.querySelector('#username').parentElement;
+            usernameContainer.classList.add('invalid');
+            usernameContainer.querySelector('.error-message').textContent = 'Username is required.';
+            hasError = true;
+        }
+
+        // Validate Domain
+        if (!domain) {
+            const domainContainer = form.querySelector('#domain').parentElement;
+            domainContainer.classList.add('invalid');
+            domainContainer.querySelector('.error-message').textContent = 'Please select a domain.';
+            hasError = true;
+        }
+
+        if (!hasError) {
             const email = `${username}${domain}`;
             const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
             window.location.href = loginUrl;
-        } else {
-            // Enhanced user feedback with custom styling
-            alert('Please enter your username and select a domain.');
         }
     };
 
@@ -506,7 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize the Scene
     initializeScene();
 
-    // Hide preloader after a short delay for smoother transition
+    // Hide preloader after the scene is ready for a smoother transition
     window.onload = () => {
         setTimeout(() => {
             preloader.style.opacity = '0';

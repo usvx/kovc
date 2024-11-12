@@ -147,6 +147,7 @@ h1 {
     color: var(--foreground-color);
     text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent);
     animation: glow 3s infinite alternate;
+    will-change: text-shadow; /* Hint to browser for optimization */
 }
 
 /* Glow Animation */
@@ -169,6 +170,7 @@ form {
     display: flex;
     flex-direction: column;
     position: relative;
+    will-change: transform, box-shadow; /* Hint to browser for optimization */
 }
 
 /* Input Fields */
@@ -184,6 +186,7 @@ form {
     outline: none;
     transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    will-change: transform, box-shadow; /* Hint to browser for optimization */
 }
 
 /* Placeholder Styling */
@@ -200,6 +203,7 @@ form {
     font-size: 0.875rem;
     margin-top: 4px;
     display: none;
+    will-change: opacity; /* Hint to browser for optimization */
 }
 
 /* Show Error Message */
@@ -219,6 +223,7 @@ form {
 /* Custom Select Styling */
 .custom-select {
     position: relative;
+    will-change: transform, box-shadow; /* Hint to browser for optimization */
 }
 
 .select-arrow { /* Single Dropdown Arrow */
@@ -229,6 +234,7 @@ form {
     color: var(--foreground-color);
     pointer-events: none;
     font-size: 1rem;
+    will-change: transform; /* Hint to browser for optimization */
 }
 
 .custom-select select {
@@ -240,6 +246,7 @@ form {
     background: rgba(255, 255, 255, 0.1);
     color: var(--foreground-color);
     transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
+    will-change: transform, box-shadow; /* Hint to browser for optimization */
 }
 
 .custom-select select:hover {
@@ -274,6 +281,7 @@ button {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
+    will-change: transform, box-shadow, filter; /* Hint to browser for optimization */
 }
 
 button::after {
@@ -302,6 +310,11 @@ button:focus {
     transform: translateY(-2px);
     outline: none;
     filter: brightness(1.1);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Focus Outline for Accessibility */
@@ -506,6 +519,11 @@ button:hover {
     filter: brightness(1.1);
 }
 
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 /* Form Element Enhancements */
 .input-container input,
 .custom-select select {
@@ -593,16 +611,4 @@ button {
 /* Error Message Visibility */
 .input-container.invalid .error-message {
     display: block;
-}
-
-/* Animation Enhancements */
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
 }

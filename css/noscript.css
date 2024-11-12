@@ -115,8 +115,7 @@ body {
     position: relative;
 }
 
-#noscript-wrapper .custom-select::after {
-    content: '▼';
+#noscript-wrapper .select-arrow { /* Single Dropdown Arrow */
     position: absolute;
     top: 50%;
     right: 16px;
@@ -266,7 +265,7 @@ body {
     #noscript-wrapper form {
         gap: 15px;
     }
-    #noscript-wrapper .custom-select::after {
+    .select-arrow {
         right: 12px;
     }
 }
@@ -284,8 +283,8 @@ body {
     #noscript-wrapper form {
         gap: 10px;
     }
-    #noscript-wrapper .input-container input,
-    #noscript-wrapper .custom-select select {
+    .input-container input,
+    .custom-select select {
         padding: 10px 14px;
         font-size: 0.9rem;
     }
@@ -293,7 +292,7 @@ body {
         padding: 12px 24px;
         font-size: 1rem;
     }
-    #noscript-wrapper .custom-select::after {
+    .select-arrow {
         right: 10px;
         font-size: 0.9rem;
     }
@@ -305,6 +304,113 @@ body {
         padding: 30px 20px;
     }
     #noscript-wrapper h1 {
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+    }
+}
+
+/* Night Mode Compatibility */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #0e0e0e;
+        --foreground-color: #ffffff;
+        --accent-color: rgba(0, 255, 255, 0.8);
+        --secondary-accent: rgba(138, 43, 226, 0.8);
+        --tertiary-accent: rgba(75, 0, 130, 0.8);
+        --glass-bg: rgba(255, 255, 255, 0.15);
+        --glass-border: rgba(255, 255, 255, 0.3);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --background-color: #ffffff;
+        --foreground-color: #0e0e0e;
+        --accent-color: rgba(0, 255, 255, 0.8);
+        --secondary-accent: rgba(138, 43, 226, 0.8);
+        --tertiary-accent: rgba(75, 0, 130, 0.8);
+        --glass-bg: rgba(0, 0, 0, 0.1);
+        --glass-border: rgba(0, 0, 0, 0.3);
+    }
+    body {
+        background-color: var(--background-color);
+        color: var(--foreground-color);
+    }
+    .entrance,
+    #noscript-wrapper .entrance {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    h1 {
+        color: var(--foreground-color);
+        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent);
+    }
+    .input-container input,
+    .custom-select select {
+        background: rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Smooth Scroll Behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Scrollbar Styling for Webkit Browsers */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-accent);
+}
+
+/* Accessibility Enhancements */
+:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Button Animation Enhancements */
+button {
+    transition: background var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, filter 0.3s ease;
+}
+
+button:hover {
+    filter: brightness(1.1);
+}
+
+/* Form Element Enhancements */
+.input-container input,
+.custom-select select {
+    transition: all var(--transition-speed) ease;
+}
+
+.input-container input:focus,
+.custom-select select:focus {
+    transform: translateY(-2px) scale(1.02);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Enhanced Responsiveness for Landscape Modes */
+@media (max-height: 500px) and (orientation: landscape) {
+    .entrance,
+    #noscript-wrapper .entrance {
+        padding: 30px 20px;
+    }
+    h1 {
         font-size: 1.6rem;
         margin-bottom: 15px;
     }

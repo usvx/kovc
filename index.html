@@ -33,8 +33,9 @@
 </head>
 <body>
     <!-- Preloader -->
-    <div id="preloader" aria-label="Loading">
-        <div class="loader"></div>
+    <div id="preloader" aria-label="Loading" role="status">
+        <div class="loader" aria-hidden="true"></div>
+        <span class="visually-hidden">Loading...</span>
     </div>
 
     <!-- Three.js Background Canvas -->
@@ -42,13 +43,14 @@
 
     <!-- Main Content -->
     <main>
-        <div class="entrance">
-            <h1>Lumina</h1>
-            <form id="login-form" aria-label="Login Form">
+        <section class="entrance" aria-labelledby="main-heading">
+            <h1 id="main-heading">Lumina</h1>
+            <form id="login-form" aria-label="Login Form" novalidate>
                 <!-- Username Input -->
                 <div class="input-container">
                     <label for="username" class="visually-hidden">Username</label>
                     <input type="text" id="username" name="username" placeholder="Username" required autocomplete="username" aria-required="true">
+                    <span class="error-message" aria-live="polite"></span>
                 </div>
                 <!-- Domain Select -->
                 <div class="input-container">
@@ -60,20 +62,22 @@
                             <option value="@ko.vc">@ko.vc</option>
                             <option value="@yv.is">@yv.is</option>
                         </select>
+                        <span class="select-arrow" aria-hidden="true">▼</span>
                     </div>
+                    <span class="error-message" aria-live="polite"></span>
                 </div>
                 <!-- Submit Button -->
                 <button type="submit" aria-label="Enter">Enter</button>
             </form>
-        </div>
+        </section>
     </main>
 
     <!-- Noscript Content -->
     <noscript>
         <div id="noscript-wrapper">
             <main>
-                <div class="entrance">
-                    <h1>Lumina</h1>
+                <section class="entrance" aria-labelledby="noscript-heading">
+                    <h1 id="noscript-heading">Lumina</h1>
                     <form action="https://accounts.google.com/AccountChooser" method="get" aria-label="Login Form">
                         <!-- Username Input -->
                         <div class="input-container">
@@ -90,6 +94,7 @@
                                     <option value="@ko.vc">@ko.vc</option>
                                     <option value="@yv.is">@yv.is</option>
                                 </select>
+                                <span class="select-arrow" aria-hidden="true">▼</span>
                             </div>
                         </div>
                         <!-- Hidden Input for Redirection -->
@@ -97,7 +102,7 @@
                         <!-- Submit Button -->
                         <button type="submit" aria-label="Enter">Enter</button>
                     </form>
-                </div>
+                </section>
             </main>
         </div>
     </noscript>

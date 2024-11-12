@@ -42,20 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
         TWINKLE_SPEED: 0.005,
     };
 
-    const TEXTURE_CACHE_SIZE = 2000; // Increased cache size for more diversity
-    const textureCache = [];
-
     /**
      * Creates a high-resolution text texture for a given character with enhanced visual effects.
      * @param {string} char - The character to create a texture for.
      * @returns {THREE.Texture} - The generated texture.
      */
     const createTextTexture = (char) => {
-        // To maximize diversity, ensure unique textures as much as possible
-        if (textureCache.length >= TEXTURE_CACHE_SIZE) {
-            // Implement a strategy to reuse textures intelligently
-            return textureCache[Math.floor(Math.random() * TEXTURE_CACHE_SIZE)];
-        }
         const canvas = document.createElement('canvas');
         const size = CONFIG.TEXTURE_SIZE * window.devicePixelRatio;
         canvas.width = size;
@@ -84,38 +76,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
-        textureCache.push(texture);
         return texture;
     };
 
     /**
-     * Generates a random Hangul syllable with a diverse set of initials, medials, and finals.
+     * Generates a random Hangul syllable using Unicode composition.
+     * Preserves the original mechanism for Hangul generation.
      * @returns {string} - A random Hangul syllable.
      */
     const getRandomHangulCharacter = () => {
-        const initials = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
-        const medials = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
-        const finals = ['', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+        const initials = [0x1100, 0x1103, 0x1104, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
+        const medials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x116F, 0x1171, 0x1173, 0x1175, 0x1177, 0x1179, 0x117B, 0x117D, 0x117F, 0x1181, 0x1183, 0x1185, 0x1187, 0x1189, 0x118B];
+        const finals = [0x11A8, 0x11AA, 0x11AB, 0x11AC, 0x11AD, 0x11AE, 0x11AF, 0x11B7, 0x11BA, 0x11C2];
 
         const initial = initials[Math.floor(Math.random() * initials.length)];
         const medial = medials[Math.floor(Math.random() * medials.length)];
         const final = finals[Math.floor(Math.random() * finals.length)];
 
-        // Combine into a syllable
-        return initial + medial + final;
+        const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
+        return String.fromCharCode(syllableCode);
     };
 
     /**
-     * Generates a random Cyrillic character.
+     * Generates a random Cyrillic character (both uppercase and lowercase).
+     * Expanded to include more characters for diversity.
      * @returns {string} - A random Cyrillic character.
      */
     const getRandomCyrillicCharacter = () => {
-        const letters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я'];
-        return letters[Math.floor(Math.random() * letters.length)];
+        const uppercase = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я'];
+        const lowercase = ['а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я'];
+        const allCyrillic = uppercase.concat(lowercase);
+        return allCyrillic[Math.floor(Math.random() * allCyrillic.length)];
     };
 
     /**
-     * Generates a random character, either Hangul or Cyrillic, to maximize diversity.
+     * Generates a random character, either Hangul or Cyrillic.
      * @returns {string} - A random character.
      */
     const getRandomCharacter = () => Math.random() < 0.5 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
@@ -291,9 +286,9 @@ document.addEventListener('DOMContentLoaded', () => {
      * Creates particles (sprites) with random characters and optimized rendering.
      */
     const createParticles = () => {
-        const uniqueChars = 2000; // Increased unique characters for diversity
+        const uniqueChars = CONFIG.PARTICLE_COUNT;
         const characters = Array.from({ length: uniqueChars }, () => getRandomCharacter());
-        characters.forEach(char => textureCache.push(createTextTexture(char)));
+        const textures = characters.map(char => createTextTexture(char));
 
         const spriteMaterial = new THREE.SpriteMaterial({
             transparent: true,
@@ -303,8 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
-            const texture = textureCache[i % uniqueChars];
-            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending }));
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: textures[i], transparent: true, blending: THREE.AdditiveBlending }));
             sprite.position.set(
                 (Math.random() - 0.5) * 6000,
                 (Math.random() - 0.5) * 6000,

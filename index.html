@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>Lumina</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <!-- Updated Content Security Policy to include esm.sh -->
+    <!-- Updated Content Security Policy to include threejs.org for images -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' https://cdn.jsdelivr.net;
         style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
-        img-src 'self' data:;
+        img-src 'self' data: https://threejs.org;
         font-src 'self' https://fonts.gstatic.com data:;
         connect-src 'self';
         object-src 'none';

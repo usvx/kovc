@@ -104,7 +104,6 @@ canvas#background {
     pointer-events: none; /* Prevent canvas from capturing mouse events */
 }
 
-/* Main Content */
 main {
     position: relative;
     z-index: 1;
@@ -192,8 +191,8 @@ form {
 /* Placeholder Styling */
 .input-container input::placeholder,
 .custom-select select:invalid {
-    color: var(--foreground-color);
-    opacity: 0.6;
+    color: rgba(255, 255, 255, 0.7);
+    opacity: 1;
     font-size: var(--input-font-size);
 }
 
@@ -216,7 +215,7 @@ form {
 .custom-select select:focus {
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid var(--accent-color);
-    box-shadow: 0 0 8px var(--accent-color);
+    box-shadow: 0 0 12px var(--accent-color);
     transform: translateY(-2px);
 }
 
@@ -256,7 +255,7 @@ form {
 .custom-select select:focus {
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid var(--accent-color);
-    box-shadow: 0 0 8px var(--accent-color);
+    box-shadow: 0 0 12px var(--accent-color);
     transform: translateY(-2px);
 }
 
@@ -307,7 +306,7 @@ button:hover,
 button:focus {
     background: var(--secondary-accent);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.02);
     outline: none;
     filter: brightness(1.1);
 }
@@ -364,8 +363,10 @@ button:focus {
 }
 
 @media (max-width: 1024px) {
+    main {
+        padding: 30px;
+    }
     .entrance {
-        width: 100%;
         max-width: 450px;
         padding: 50px 30px;
     }
@@ -381,7 +382,6 @@ button:focus {
 /* Small Screens */
 @media (max-width: 768px) {
     .entrance {
-        width: 100%;
         max-width: 400px;
         padding: 45px 25px;
     }
@@ -400,7 +400,6 @@ button:focus {
 /* Extra Small Screens */
 @media (max-width: 480px) {
     .entrance {
-        width: 100%;
         max-width: 320px;
         padding: 35px 20px;
     }
@@ -464,7 +463,8 @@ button:focus {
         background-color: var(--background-color);
         color: var(--foreground-color);
     }
-    .entrance {
+    .entrance,
+    #noscript-wrapper .entrance {
         background: var(--glass-bg);
         border: 1px solid var(--glass-border);
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
@@ -510,6 +510,29 @@ html {
     outline-offset: 2px;
 }
 
+/* Cursor Styles */
+body {
+    cursor: default;
+}
+
+button {
+    cursor: pointer;
+}
+
+.custom-select select {
+    cursor: pointer;
+}
+
+/* Prevent Text Selection on Buttons */
+button {
+    user-select: none;
+}
+
+/* Error Message Visibility */
+.input-container.invalid .error-message {
+    display: block;
+}
+
 /* Button Animation Enhancements */
 button {
     transition: background var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, filter 0.3s ease;
@@ -534,81 +557,4 @@ button:active {
 .custom-select select:focus {
     transform: translateY(-2px) scale(1.02);
     background: rgba(255, 255, 255, 0.15);
-}
-
-/* Enhanced Responsiveness for Landscape Modes */
-@media (max-height: 500px) and (orientation: landscape) {
-    .entrance {
-        padding: 30px 20px;
-    }
-    h1 {
-        font-size: 1.6rem;
-        margin-bottom: 15px;
-    }
-}
-
-/* Night Mode Compatibility */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background-color: #0e0e0e;
-        --foreground-color: #ffffff;
-        --accent-color: rgba(0, 255, 255, 0.8);
-        --secondary-accent: rgba(138, 43, 226, 0.8);
-        --tertiary-accent: rgba(75, 0, 130, 0.8);
-        --glass-bg: rgba(255, 255, 255, 0.15);
-        --glass-border: rgba(255, 255, 255, 0.3);
-    }
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        --background-color: #ffffff;
-        --foreground-color: #0e0e0e;
-        --accent-color: rgba(0, 255, 255, 0.8);
-        --secondary-accent: rgba(138, 43, 226, 0.8);
-        --tertiary-accent: rgba(75, 0, 130, 0.8);
-        --glass-bg: rgba(0, 0, 0, 0.1);
-        --glass-border: rgba(0, 0, 0, 0.3);
-    }
-    body {
-        background-color: var(--background-color);
-        color: var(--foreground-color);
-    }
-    .entrance {
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    }
-    h1 {
-        color: var(--foreground-color);
-        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent);
-    }
-    .input-container input,
-    .custom-select select {
-        background: rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(0, 0, 0, 0.3);
-    }
-}
-
-/* Cursor Styles */
-body {
-    cursor: default;
-}
-
-button {
-    cursor: pointer;
-}
-
-.custom-select select {
-    cursor: pointer;
-}
-
-/* Prevent Text Selection on Buttons */
-button {
-    user-select: none;
-}
-
-/* Error Message Visibility */
-.input-container.invalid .error-message {
-    display: block;
 }

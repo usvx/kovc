@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
 
-    let scene, camera, renderer, sceneGroup;
+    let scene, camera, renderer, sceneGroup, composer, bloomPass;
     const particles = [];
     const spheres = [];
     let mouseX = 0, mouseY = 0;
@@ -13,15 +13,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const CONFIG = {
         PARTICLE_COUNT: isMobile ? 600 : 1000,
-        SPHERE_COUNT: isMobile ? 30 : 60, // Reduced count to prevent screen coverage
-        MIN_DISTANCE: 400, // Increased to ensure more spacing
+        SPHERE_COUNT: isMobile ? 30 : 60,
+        MIN_DISTANCE: 400,
         PARTICLE_SIZE: isMobile ? 150 : 200,
-        SPHERE_SIZE: isMobile ? 80 : 120, // Reduced size for better distribution
+        SPHERE_SIZE: isMobile ? 80 : 120,
         PARTICLE_SPEED: isMobile ? 1.5 : 2.5,
         ROTATION_SPEED: isMobile ? 0.003 : 0.005,
         TEXTURE_SIZE: isMobile ? 256 : 512,
         SHADOW_BLUR: isMobile ? 15 : 30,
-        LIGHT_INTENSITY: isMobile ? 1.0 : 1.5, // Increased for better illumination
+        LIGHT_INTENSITY: isMobile ? 1.0 : 1.5,
         AMBIENT_COLOR: 0x1E90FF,
         DIRECTIONAL_COLOR: 0x9370DB,
         BACKGROUND_COLOR: 0x0A0A0A,
@@ -31,12 +31,38 @@ document.addEventListener('DOMContentLoaded', () => {
         EMISSIVE_COLOR: 0x9370DB,
         MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 3) : Math.min(window.devicePixelRatio, 2),
         ENV_MAP_INTENSITY: 1.0,
-        MIN_CAMERA_DISTANCE: 500, // Minimum distance from camera to any sphere
-        MAX_SPHERE_SIZE: isMobile ? 100 : 150, // Maximum sphere size to prevent excessive scaling
+        MIN_CAMERA_DISTANCE: 500,
+        MAX_SPHERE_SIZE: isMobile ? 100 : 150,
+        BLOOM_INTENSITY: 1.5,
+        BLOOM_THRESHOLD: 0.85,
+        BLOOM_RADIUS: 0.4,
     };
 
     const TEXTURE_CACHE_SIZE = 200;
     const textureCache = [];
+
+    // Shader material for particles
+    const particleShader = {
+        vertexShader: `
+            varying vec3 vColor;
+            void main() {
+                vColor = color;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                gl_PointSize = 10.0;
+            }
+        `,
+        fragmentShader: `
+            varying vec3 vColor;
+            void main() {
+                float dist = distance(gl_PointCoord, vec2(0.5));
+                if (dist > 0.5) discard;
+                gl_FragColor = vec4(vColor, 1.0);
+            }
+        `,
+        blending: THREE.AdditiveBlending,
+        depthTest: false,
+        transparent: true
+    };
 
     /**
      * Creates a high-resolution text texture for a given character.
@@ -109,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {THREE.Vector3} - A random position vector.
      */
     const getRandomPosition = (existingSpheres, radius) => {
-        const boundingRadius = 2000; // Limit positions within a sphere of radius 2000
+        const boundingRadius = 2000;
         const minDistanceFromCamera = CONFIG.MIN_CAMERA_DISTANCE + radius;
         let position, tooClose, attempts = 0;
         do {
@@ -118,12 +144,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 (Math.random() - 0.5) * 2 * boundingRadius,
                 (Math.random() - 0.5) * 2 * boundingRadius
             );
-            // Check distance from camera
             const distanceFromCamera = position.distanceTo(camera.position);
             if (distanceFromCamera < minDistanceFromCamera) {
                 tooClose = true;
             } else {
-                // Check distance from other spheres
                 tooClose = existingSpheres.some(sphere => position.distanceTo(sphere.position) < CONFIG.MIN_DISTANCE + radius);
             }
             attempts++;
@@ -146,18 +170,22 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(CONFIG.MAX_PIXEL_RATIO, 3));
         renderer.setClearColor(CONFIG.BACKGROUND_COLOR, 1);
-        renderer.physicallyCorrectLights = true; // Enable physically correct lighting
-        renderer.outputEncoding = THREE.sRGBEncoding; // Improved color accuracy
-        renderer.toneMapping = THREE.ReinhardToneMapping; // Better tone mapping for realistic lighting
+        renderer.physicallyCorrectLights = true;
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        renderer.toneMapping = THREE.ReinhardToneMapping;
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
         camera.position.z = isMobile ? 1200 : 1800;
 
+        // Ambient Light with pulsating intensity
         const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
+        scene.add(ambientLight);
+
+        // Directional Light with dynamic movement
         const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
         directionalLight.position.set(1, 1, 1).normalize();
-        scene.add(ambientLight, directionalLight);
+        scene.add(directionalLight);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
@@ -165,13 +193,39 @@ document.addEventListener('DOMContentLoaded', () => {
         createParticles();
         createSpheres();
 
-        renderer.sortObjects = true; // Enable sorting for transparent objects
+        // Bloom Effect Setup
+        setupPostProcessing();
+
+        renderer.sortObjects = true;
 
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
 
         animate();
+    };
+
+    /**
+     * Sets up post-processing for bloom effect.
+     */
+    const setupPostProcessing = () => {
+        // Since we can only use THREE.js, we'll implement a simple bloom-like effect using the renderer's capabilities
+        // Note: For advanced post-processing, additional modules are typically required
+        // Here, we'll simulate a glow by adding a larger, semi-transparent sphere around each main sphere
+
+        spheres.forEach(sphere => {
+            const glowGeometry = new THREE.SphereGeometry(sphere.geometry.parameters.radius * 1.5, 32, 32);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: CONFIG.PARTICLE_COLOR_1,
+                transparent: true,
+                opacity: 0.1,
+                blending: THREE.AdditiveBlending
+            });
+            const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
+            glowMesh.position.copy(sphere.position);
+            sceneGroup.add(glowMesh);
+            sphere.userData.glow = glowMesh;
+        });
     };
 
     /**
@@ -182,17 +236,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const characters = Array.from({ length: uniqueChars }, () => getRandomCharacter());
         characters.forEach(char => textureCache.push(createTextTexture(char)));
 
+        // Create a buffer geometry for particles
+        const geometry = new THREE.BufferGeometry();
+        const positions = [];
+        const colors = [];
+
         for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
             const char = characters[Math.floor(Math.random() * uniqueChars)];
             const texture = createTextTexture(char);
-            const material = new THREE.SpriteMaterial({
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
                 map: texture,
                 transparent: true,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false,
                 opacity: 0.95
-            });
-            const sprite = new THREE.Sprite(material);
+            }));
             sprite.position.set(
                 (Math.random() - 0.5) * 5000,
                 (Math.random() - 0.5) * 5000,
@@ -203,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
             sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
-            sprite.renderOrder = 1; // Ensure particles render after spheres
+            sprite.renderOrder = 1;
             sceneGroup.add(sprite);
             particles.push(sprite);
         }
@@ -214,30 +272,30 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const createSpheres = () => {
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
-            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64); // Reduced segments for better performance
+            const geometry = new THREE.SphereGeometry(CONFIG.SPHERE_SIZE, 64, 64);
             const material = new THREE.MeshPhysicalMaterial({
                 color: CONFIG.SPHERE_COLOR,
                 metalness: 0.0,
                 roughness: 0.05,
-                transmission: 1.0, // Full transmission for glass effect
+                transmission: 1.0,
                 transparent: true,
-                opacity: 0.3, // Reduced opacity for higher transparency
+                opacity: 0.3,
                 emissive: CONFIG.EMISSIVE_COLOR,
                 emissiveIntensity: 0.5,
                 side: THREE.DoubleSide,
                 reflectivity: 0.9,
                 clearcoat: 1.0,
                 clearcoatRoughness: 0.05,
-                ior: 1.5, // Index of Refraction for glass
-                depthWrite: false, // Prevent spheres from blocking particles
-                alphaTest: 0.1 // Helps in correct rendering of transparent objects
+                ior: 1.5,
+                depthWrite: false,
+                alphaTest: 0.1
             });
             const sphere = new THREE.Mesh(geometry, material);
             sphere.position.copy(getRandomPosition(spheres, CONFIG.SPHERE_SIZE));
             sphere.rotationSpeedX = (Math.random() - 0.5) * 0.02;
             sphere.rotationSpeedY = (Math.random() - 0.5) * 0.02;
             sphere.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
-            sphere.renderOrder = 0; // Ensure spheres render before particles
+            sphere.renderOrder = 0;
             sceneGroup.add(sphere);
             spheres.push(sphere);
         }
@@ -280,6 +338,8 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const animate = () => {
         requestAnimationFrame(animate);
+
+        // Update particles
         particles.forEach(p => {
             p.position.x += p.speedX;
             p.position.y += p.speedY;
@@ -289,17 +349,37 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Math.abs(p.position.y) > 2500) p.speedY *= -1;
             if (Math.abs(p.position.z) > 2500) p.speedZ *= -1;
         });
+
+        // Update spheres and their glow
         spheres.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
             s.rotation.z += s.rotationSpeedZ;
+
+            // Update glow
+            if (s.userData.glow) {
+                s.userData.glow.rotation.copy(s.rotation);
+                s.userData.glow.scale.setScalar(1 + Math.sin(Date.now() * 0.001) * 0.5);
+            }
         });
+
+        // Dynamic lighting effects
+        scene.traverse(object => {
+            if (object.isDirectionalLight) {
+                object.position.x = Math.sin(Date.now() * 0.001) * 5;
+                object.position.y = Math.cos(Date.now() * 0.001) * 5;
+                object.position.z = Math.sin(Date.now() * 0.001) * 5;
+            }
+        });
+
+        // Scene rotation based on mouse
         sceneGroup.rotation.y += CONFIG.ROTATION_SPEED;
         sceneGroup.rotation.x += CONFIG.ROTATION_SPEED * 0.75;
         const targetRotationY = mouseX * 0.05;
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
+
         renderer.render(scene, camera);
     };
 
@@ -313,8 +393,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const domainSelect = form.querySelector('select[name="domain"]');
         const domain = domainSelect.value;
         if (username && domain) {
-            const email = ${username}${domain};
-            const loginUrl = https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/;
+            const email = `${username}${domain}`;
+            const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
             window.location.href = loginUrl;
         } else {
             alert('Please enter your username and select a domain.');
@@ -347,4 +427,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-

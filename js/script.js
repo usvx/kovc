@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 800 : 1500,
-        SPHERE_COUNT: isMobile ? 40 : 80,
+        PARTICLE_COUNT: isMobile ? 800 : 1500, // Reduced for mobile
+        SPHERE_COUNT: isMobile ? 40 : 80,      // Reduced for mobile
         MIN_DISTANCE: 500,
         PARTICLE_SIZE: isMobile ? 120 : 200,
         SPHERE_SIZE: isMobile ? 60 : 100,

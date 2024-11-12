@@ -39,7 +39,7 @@ body {
     transition: none;
 }
 
-/* Optional: Informative Message for Users */
+/* Informative Message for Users */
 #noscript-wrapper::before {
     content: "JavaScript is disabled in your browser. For the best experience, please enable JavaScript.";
     display: block;
@@ -47,6 +47,7 @@ body {
     font-size: 1rem;
     color: var(--foreground-color);
     opacity: 0.8;
+    padding: 0 10px; /* Added padding for better readability on small screens */
 }
 
 /* Heading Styling */
@@ -81,7 +82,7 @@ body {
 #noscript-wrapper .custom-select select {
     width: 100%;
     padding: 12px 16px;
-    background: var(--glass-bg);
+    background: rgba(255, 255, 255, 0.1);
     color: var(--foreground-color);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
@@ -130,7 +131,7 @@ body {
     -moz-appearance: none;
     cursor: pointer;
     padding-right: 40px;
-    background: var(--glass-bg);
+    background: rgba(255, 255, 255, 0.1);
     color: var(--foreground-color);
     transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
 }
@@ -184,13 +185,27 @@ body {
     outline-offset: 2px;
 }
 
-/* Keyframes for Animations */
+/* Glow Animation */
 @keyframes glow {
     from { text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent); }
     to { text-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--secondary-accent), 0 0 40px var(--tertiary-accent); }
 }
 
-/* Responsive Design */
+/* Responsive Design Enhancements */
+
+/* Large Screens */
+@media (min-width: 1200px) {
+    :root {
+        --h1-font-size: clamp(2.5rem, 5vw, 4rem);
+        --form-width: clamp(300px, 60%, 600px);
+        --form-padding: clamp(40px, 5vw, 70px);
+        --input-font-size: 1.1rem;
+        --button-font-size: 1.2rem;
+        --button-padding: 18px 36px;
+    }
+}
+
+/* Medium Screens */
 @media (max-width: 1440px) {
     :root {
         --h1-font-size: clamp(1.8rem, 4vw, 3rem);
@@ -216,6 +231,7 @@ body {
     }
 }
 
+/* Small Screens */
 @media (max-width: 768px) {
     #noscript-wrapper {
         max-width: 400px;
@@ -233,6 +249,7 @@ body {
     }
 }
 
+/* Extra Small Screens */
 @media (max-width: 480px) {
     #noscript-wrapper {
         max-width: 320px;
@@ -260,15 +277,104 @@ body {
     }
 }
 
-/* Additional Fixes for iOS/Safari */
-@supports (-webkit-touch-callout: none) {
-    /* iOS-specific styles */
-    #noscript-wrapper .input-container input,
-    #noscript-wrapper .custom-select select {
-        font-size: 1rem !important; /* Force font size */
-        -webkit-text-size-adjust: 100% !important;
+/* Landscape Orientation Adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+    #noscript-wrapper {
+        padding: 30px 20px;
     }
-    #noscript-wrapper .input-container input::placeholder {
-        font-size: 1rem !important; /* Ensure placeholder matches input */
+    #noscript-wrapper h1 {
+        font-size: 1.6rem;
+        margin-bottom: 15px;
     }
+}
+
+/* Night Mode Compatibility */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #0e0e0e;
+        --foreground-color: #ffffff;
+        --accent-color: rgba(0, 255, 255, 0.7);
+        --secondary-accent: rgba(138, 43, 226, 0.7);
+        --tertiary-accent: rgba(75, 0, 130, 0.7);
+        --glass-bg: rgba(255, 255, 255, 0.15);
+        --glass-border: rgba(255, 255, 255, 0.3);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --background-color: #ffffff;
+        --foreground-color: #0e0e0e;
+        --accent-color: rgba(0, 255, 255, 0.7);
+        --secondary-accent: rgba(138, 43, 226, 0.7);
+        --tertiary-accent: rgba(75, 0, 130, 0.7);
+        --glass-bg: rgba(0, 0, 0, 0.1);
+        --glass-border: rgba(0, 0, 0, 0.3);
+    }
+    body {
+        background-color: var(--background-color);
+        color: var(--foreground-color);
+    }
+    .entrance {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    h1 {
+        color: var(--foreground-color);
+        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent);
+    }
+    .input-container input,
+    .custom-select select {
+        background: rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Smooth Scroll Behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Scrollbar Styling for Webkit Browsers */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-accent);
+}
+
+/* Accessibility Enhancements */
+:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Cursor Styles */
+body {
+    cursor: default;
+}
+
+button {
+    cursor: pointer;
+}
+
+.custom-select select {
+    cursor: pointer;
+}
+
+/* Prevent Text Selection on Buttons */
+button {
+    user-select: none;
 }

@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         BLOOM_RADIUS: 0.5,
         STAR_COUNT: 3000,
         STAR_SIZE: 0.7,
+        TWINKLE_SPEED: 0.005,
     };
 
     const TEXTURE_CACHE_SIZE = 300;
@@ -250,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     uniform vec3 glowColor;
                     varying float intensity;
                     void main() {
-                        gl_FragColor = vec4(glowColor, intensity);
+                        gl_FragColor = vec4(glowColor, intensity * 0.5);
                     }
                 `,
                 side: THREE.FrontSide,
@@ -312,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 roughness: 0.05,
                 transmission: 1.0,
                 transparent: true,
-                opacity: 0.4,
+                opacity: 0.3, // Ensure transparency
                 emissive: CONFIG.EMISSIVE_COLOR,
                 emissiveIntensity: 0.7,
                 side: THREE.DoubleSide,
@@ -345,8 +346,12 @@ document.addEventListener('DOMContentLoaded', () => {
             blending: THREE.AdditiveBlending
         });
 
+        // To optimize performance, limit the number of connections per particle
+        const maxConnections = 5;
+
         for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
-            for (let j = i + 1; j < CONFIG.PARTICLE_COUNT; j++) {
+            let connections = 0;
+            for (let j = i + 1; j < CONFIG.PARTICLE_COUNT && connections < maxConnections; j++) {
                 const dist = particles[i].position.distanceTo(particles[j].position);
                 if (dist < CONFIG.MIN_DISTANCE) {
                     const geometry = new THREE.BufferGeometry().setFromPoints([
@@ -356,6 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const line = new THREE.Line(geometry, material);
                     sceneGroup.add(line);
                     lines.push(line);
+                    connections++;
                 }
             }
         }
@@ -427,9 +433,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Dynamic lighting effects
         scene.traverse(object => {
             if (object.isDirectionalLight) {
-                object.position.x = Math.sin(Date.now() * 0.0008) * 10;
-                object.position.y = Math.cos(Date.now() * 0.0008) * 10;
-                object.position.z = Math.sin(Date.now() * 0.0008) * 10;
+                const time = Date.now() * 0.0005;
+                object.position.x = Math.sin(time) * 10;
+                object.position.y = Math.cos(time) * 10;
+                object.position.z = Math.sin(time * 0.5) * 10;
             }
         });
 
@@ -440,8 +447,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
 
         // Update starfield
-        starsGroup.rotation.x += 0.0001;
-        starsGroup.rotation.y += 0.0001;
+        starsGroup.rotation.x += CONFIG.TWINKLE_SPEED;
+        starsGroup.rotation.y += CONFIG.TWINKLE_SPEED;
 
         renderer.render(scene, camera);
     };

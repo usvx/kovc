@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const gradient = ctx.createLinearGradient(0, 0, CONFIG.TEXTURE_SIZE, CONFIG.TEXTURE_SIZE);
         gradient.addColorStop(0, '#1E90FF');
         gradient.addColorStop(1, '#BA55D3');
-        ctx.font = ${CONFIG.TEXTURE_SIZE * 0.8}px 'Urbanist', sans-serif;
+        ctx.font = `${CONFIG.TEXTURE_SIZE * 0.8}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillStyle = gradient;

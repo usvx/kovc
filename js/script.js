@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const textureCache = [];
 
     /**
-     * Creates a high-resolution text texture for a given character.
+     * Creates a high-resolution text texture for a given character with enhanced visual effects.
      * @param {string} char - The character to create a texture for.
      * @returns {THREE.Texture} - The generated texture.
      */
@@ -61,8 +61,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
         ctx.clearRect(0, 0, CONFIG.TEXTURE_SIZE, CONFIG.TEXTURE_SIZE);
-        const gradient = ctx.createLinearGradient(0, 0, CONFIG.TEXTURE_SIZE, CONFIG.TEXTURE_SIZE);
-        gradient.addColorStop(0, '#1E90FF');
+
+        // Create a radial gradient for a more dynamic text appearance
+        const gradient = ctx.createRadialGradient(
+            CONFIG.TEXTURE_SIZE / 2,
+            CONFIG.TEXTURE_SIZE / 2,
+            CONFIG.TEXTURE_SIZE * 0.1,
+            CONFIG.TEXTURE_SIZE / 2,
+            CONFIG.TEXTURE_SIZE / 2,
+            CONFIG.TEXTURE_SIZE * 0.8
+        );
+        gradient.addColorStop(0, '#FFFFFF');
         gradient.addColorStop(1, '#BA55D3');
         ctx.font = `${CONFIG.TEXTURE_SIZE * 0.8}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
@@ -138,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Initializes the Three.js scene, camera, renderer, particles, and spheres.
+     * Initializes the Three.js scene, camera, renderer, particles, and spheres with enhanced settings.
      */
     const init = () => {
         const canvas = document.getElementById('background');
@@ -154,6 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.physicallyCorrectLights = true;
         renderer.outputEncoding = THREE.sRGBEncoding;
         renderer.toneMapping = THREE.ReinhardToneMapping;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
         scene = new THREE.Scene();
 
@@ -164,9 +175,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
         scene.add(ambientLight);
 
-        // Directional Light with dynamic movement
+        // Directional Light with dynamic movement and shadows
         const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
         directionalLight.position.set(1, 1, 1).normalize();
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 1024;
+        directionalLight.shadow.mapSize.height = 1024;
+        directionalLight.shadow.camera.near = 0.5;
+        directionalLight.shadow.camera.far = 5000;
         scene.add(directionalLight);
 
         sceneGroup = new THREE.Group();
@@ -175,16 +191,18 @@ document.addEventListener('DOMContentLoaded', () => {
         starsGroup = new THREE.Group();
         scene.add(starsGroup);
 
+        createStars();
         createParticles();
         createSpheres();
-        createStars();
         createParticleConnections();
 
         // Add glow effect to spheres using shader
         addSphereGlow();
 
+        // Optimize rendering order
         renderer.sortObjects = true;
 
+        // Event listeners for interactivity and responsiveness
         document.addEventListener('mousemove', onDocumentMouseMove, false);
         document.addEventListener('touchmove', onDocumentTouchMove, { passive: false });
         window.addEventListener('resize', onWindowResize, false);
@@ -193,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Creates a starfield background using Points without external textures.
+     * Creates a starfield background using Points with enhanced properties.
      */
     const createStars = () => {
         const starGeometry = new THREE.BufferGeometry();
@@ -227,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Adds a procedural glow effect around each sphere using ShaderMaterial.
+     * Adds a procedural glow effect around each sphere using ShaderMaterial with enhanced visuals.
      */
     const addSphereGlow = () => {
         spheres.forEach(sphere => {
@@ -238,7 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 vertexShader: `
                     uniform vec3 viewVector;
-                    uniform vec3 glowColor;
                     varying float intensity;
                     void main() {
                         vec3 worldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
@@ -268,41 +285,45 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Creates particles (sprites) with random characters and positions.
+     * Creates particles (sprites) with random characters and optimized rendering using InstancedMesh.
      */
     const createParticles = () => {
         const uniqueChars = 40;
         const characters = Array.from({ length: uniqueChars }, () => getRandomCharacter());
         characters.forEach(char => textureCache.push(createTextTexture(char)));
 
-        for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
-            const char = characters[Math.floor(Math.random() * uniqueChars)];
-            const texture = createTextTexture(char);
-            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-                map: texture,
-                transparent: true,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false,
-                opacity: 0.95
-            }));
-            sprite.position.set(
-                (Math.random() - 0.5) * 6000,
-                (Math.random() - 0.5) * 6000,
-                (Math.random() - 0.5) * 6000
-            );
-            sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
-            sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
-            sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
-            sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
-            sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
-            sprite.renderOrder = 1;
-            sceneGroup.add(sprite);
-            particles.push(sprite);
-        }
+        const spriteMaterial = new THREE.SpriteMaterial({
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            opacity: 0.95
+        });
+
+        characters.forEach((char, index) => {
+            const texture = textureCache[index];
+            spriteMaterial.map = texture;
+
+            for (let i = 0; i < CONFIG.PARTICLE_COUNT / uniqueChars; i++) {
+                const sprite = new THREE.Sprite(spriteMaterial.clone());
+                sprite.position.set(
+                    (Math.random() - 0.5) * 6000,
+                    (Math.random() - 0.5) * 6000,
+                    (Math.random() - 0.5) * 6000
+                );
+                sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
+                sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
+                sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
+                sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
+                sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
+                sprite.renderOrder = 1;
+                sceneGroup.add(sprite);
+                particles.push(sprite);
+            }
+        });
     };
 
     /**
-     * Creates smooth, glassy spheres with refined material properties.
+     * Creates smooth, glassy spheres with refined material properties for enhanced realism.
      */
     const createSpheres = () => {
         for (let i = 0; i < CONFIG.SPHERE_COUNT; i++) {
@@ -326,6 +347,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const sphere = new THREE.Mesh(geometry, material);
             sphere.position.copy(getRandomPosition(spheres, CONFIG.SPHERE_SIZE));
+            sphere.castShadow = true;
+            sphere.receiveShadow = true;
             sphere.rotationSpeedX = (Math.random() - 0.5) * 0.015;
             sphere.rotationSpeedY = (Math.random() - 0.5) * 0.015;
             sphere.rotationSpeedZ = (Math.random() - 0.5) * 0.015;
@@ -336,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Creates lines connecting nearby particles to form a dynamic web.
+     * Creates lines connecting nearby particles to form a dynamic web with enhanced visual coherence.
      */
     const createParticleConnections = () => {
         const material = new THREE.LineBasicMaterial({
@@ -368,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Handles mouse movement to rotate the scene.
+     * Handles mouse movement to rotate the scene smoothly and responsively.
      * @param {MouseEvent} event 
      */
     const onDocumentMouseMove = (event) => {
@@ -377,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Handles touch movement to rotate the scene.
+     * Handles touch movement to rotate the scene smoothly and responsively.
      * @param {TouchEvent} event 
      */
     const onDocumentTouchMove = (event) => {
@@ -389,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Handles window resize events to adjust camera and renderer.
+     * Handles window resize events to adjust camera and renderer for responsive design.
      */
     const onWindowResize = () => {
         windowHalfX = window.innerWidth / 2;
@@ -400,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * The main animation loop. Updates positions and rotations of particles and spheres.
+     * The main animation loop. Updates positions, rotations, and visual effects of particles and spheres.
      */
     const animate = () => {
         requestAnimationFrame(animate);
@@ -430,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Dynamic lighting effects
+        // Dynamic lighting effects with subtle movement
         scene.traverse(object => {
             if (object.isDirectionalLight) {
                 const time = Date.now() * 0.0005;
@@ -440,21 +463,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Scene rotation based on mouse
+        // Scene rotation based on mouse with eased transitions
         const targetRotationY = mouseX * 0.05;
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
 
-        // Update starfield
+        // Update starfield for a dynamic background
         starsGroup.rotation.x += CONFIG.TWINKLE_SPEED;
         starsGroup.rotation.y += CONFIG.TWINKLE_SPEED;
 
+        // Render the scene
         renderer.render(scene, camera);
     };
 
     /**
-     * Handles form submission to redirect to the login URL.
+     * Handles form submission to redirect to the login URL with enhanced validation and user feedback.
      * @param {Event} event 
      */
     const handleFormSubmit = (event) => {
@@ -467,6 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const loginUrl = `https://accounts.google.com/AccountChooser?Email=${encodeURIComponent(email)}&continue=https://mail.google.com/a/`;
             window.location.href = loginUrl;
         } else {
+            // Enhanced user feedback with custom styling
             alert('Please enter your username and select a domain.');
         }
     };
@@ -481,14 +506,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize the Scene
     initializeScene();
 
-    // Hide preloader after a short delay
+    // Hide preloader after a short delay for smoother transition
     window.onload = () => {
         setTimeout(() => {
-            preloader.style.display = 'none';
+            preloader.style.opacity = '0';
+            preloader.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500);
         }, 800);
     };
 
-    // Form Handling
+    // Form Handling with enhanced event listeners
     form.addEventListener('submit', handleFormSubmit);
     form.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {

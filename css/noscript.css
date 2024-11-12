@@ -75,6 +75,7 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 /* Input Fields */
@@ -166,6 +167,27 @@ body {
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+#noscript-wrapper button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, -50%) rotate(45deg);
+    transition: all 0.5s ease;
+    opacity: 0;
+}
+
+#noscript-wrapper button:hover::after,
+#noscript-wrapper button:focus::after {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg);
 }
 
 #noscript-wrapper button:hover,
@@ -293,9 +315,9 @@ body {
     :root {
         --background-color: #0e0e0e;
         --foreground-color: #ffffff;
-        --accent-color: rgba(0, 255, 255, 0.7);
-        --secondary-accent: rgba(138, 43, 226, 0.7);
-        --tertiary-accent: rgba(75, 0, 130, 0.7);
+        --accent-color: rgba(0, 255, 255, 0.8);
+        --secondary-accent: rgba(138, 43, 226, 0.8);
+        --tertiary-accent: rgba(75, 0, 130, 0.8);
         --glass-bg: rgba(255, 255, 255, 0.15);
         --glass-border: rgba(255, 255, 255, 0.3);
     }
@@ -305,9 +327,9 @@ body {
     :root {
         --background-color: #ffffff;
         --foreground-color: #0e0e0e;
-        --accent-color: rgba(0, 255, 255, 0.7);
-        --secondary-accent: rgba(138, 43, 226, 0.7);
-        --tertiary-accent: rgba(75, 0, 130, 0.7);
+        --accent-color: rgba(0, 255, 255, 0.8);
+        --secondary-accent: rgba(138, 43, 226, 0.8);
+        --tertiary-accent: rgba(75, 0, 130, 0.8);
         --glass-bg: rgba(0, 0, 0, 0.1);
         --glass-border: rgba(0, 0, 0, 0.3);
     }
@@ -315,7 +337,8 @@ body {
         background-color: var(--background-color);
         color: var(--foreground-color);
     }
-    .entrance {
+    .entrance,
+    #noscript-wrapper .entrance {
         background: var(--glass-bg);
         border: 1px solid var(--glass-border);
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
@@ -377,4 +400,21 @@ button {
 /* Prevent Text Selection on Buttons */
 button {
     user-select: none;
+}
+
+/* Error Message Visibility */
+.input-container.invalid .error-message {
+    display: block;
+}
+
+/* Animation Enhancements */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
 }

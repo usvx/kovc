@@ -1,35 +1,23 @@
-/* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
-    /* Color Palette */
-    --background-color: #0e0e0e; /* Dark background */
-    --foreground-color: #ffffff; /* White text */
-    --accent-color: rgba(0, 255, 255, 0.8); /* Increased opacity for better visibility */
-    --secondary-accent: rgba(138, 43, 226, 0.8);
-    --tertiary-accent: rgba(75, 0, 130, 0.8);
+    --background-color: #0a0a0a;
+    --foreground-color: #00FFD1;
+    --accent-color: #00FFD1;
+    --secondary-accent: #FF00FF;
     --font-family: 'Urbanist', sans-serif;
-
-    /* Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.15);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-blur: 20px;
-
-    /* Sizes */
-    --h1-font-size: clamp(2rem, 5vw, 4rem);
-    --form-width: clamp(280px, 80%, 500px);
-    --form-padding: clamp(30px, 5vw, 60px);
-    --input-font-size: 1rem;
-    --button-font-size: 1.1rem;
-    --button-padding: 16px 32px;
-
-    /* Shadows and Depth */
-    --shadow-color: rgba(0, 255, 255, 0.2);
-    --hover-shadow-color: rgba(0, 255, 255, 0.4);
-
-    /* Animations */
-    --transition-speed: 0.3s;
-    --animation-duration: 1.5s;
+    --gradient-start: #0a0a0a;
+    --gradient-mid: #141414;
+    --gradient-end: #1c1c1c;
+    --button-hover: #FF00FF;
+    --input-focus: #00FFD1;
+    --loader-color: rgba(0, 255, 209, 0.2);
+    --h1-font-size: clamp(2rem, 5vw, 3rem);
+    --form-width: clamp(250px, 80%, 450px);
+    --form-padding: clamp(35px, 5vw, 60px);
+    --input-font-size: clamp(1rem, 2vw, 1.1rem);
+    --button-font-size: clamp(1rem, 2vw, 1.1rem);
+    --button-padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
 }
 
 * {
@@ -54,16 +42,21 @@
 html, body {
     height: 100%;
     width: 100%;
-    background-color: var(--background-color);
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
+    background-size: 400% 400%;
     color: var(--foreground-color);
-    overflow: hidden; /* Prevent scrolling to maintain focus on the 3D scene */
+    overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
-    position: relative;
-    font-size: 16px;
+    animation: gradientAnimation 20s ease infinite;
 }
 
-/* Preloader Styles */
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 #preloader {
     position: fixed;
     top: 0;
@@ -75,11 +68,10 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
 }
 
 .loader {
-    border: 5px solid rgba(255, 255, 255, 0.1);
+    border: 5px solid var(--loader-color);
     border-top: 5px solid var(--accent-color);
     border-radius: 50%;
     width: 60px;
@@ -87,12 +79,10 @@ html, body {
     animation: spin 1s linear infinite;
 }
 
-/* Spin Animation */
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
 
-/* Three.js Canvas */
 canvas#background {
     position: fixed;
     top: 0;
@@ -100,8 +90,6 @@ canvas#background {
     width: 100%;
     height: 100%;
     z-index: 0;
-    background: transparent;
-    pointer-events: none; /* Prevent canvas from capturing mouse events */
 }
 
 main {
@@ -111,129 +99,93 @@ main {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 20px;
-    overflow-y: auto; /* Allow vertical scrolling if content overflows */
+    background: transparent;
+    padding: 0 10px;
 }
 
-/* Entrance Section */
 .entrance {
+    position: relative;
     width: var(--form-width);
     max-width: 100%;
     text-align: center;
     opacity: 0;
-    background: var(--glass-bg);
+    background: rgba(0, 0, 0, 0.6);
     padding: var(--form-padding);
-    border-radius: 20px;
-    border: 1px solid var(--glass-border);
+    border-radius: 25px;
+    border: 2px solid var(--accent-color);
     transform: translateZ(0);
-    animation: fadeInUp var(--animation-duration) ease forwards;
-    backdrop-filter: blur(var(--glass-blur));
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+    animation: fadeInUp 1.5s ease forwards;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 20px rgba(0, 255, 209, 0.5);
+    margin: 20px;
 }
 
-.entrance:hover {
-    transform: scale(1.02);
-    box-shadow: 0 12px 48px 0 rgba(31, 38, 135, 0.5);
-}
-
-/* Heading Styling */
 h1 {
     font-size: var(--h1-font-size);
-    margin-bottom: 40px;
+    margin-bottom: 50px;
     font-weight: 700;
-    letter-spacing: 3px;
-    color: var(--foreground-color);
-    text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent);
-    animation: glow 3s infinite alternate;
-    will-change: text-shadow; /* Hint to browser for optimization */
+    letter-spacing: 2px;
+    color: var(--accent-color);
+    text-shadow: 0 0 15px var(--accent-color), 0 0 30px var(--secondary-accent);
+    animation: glow 2s infinite alternate;
 }
 
-/* Glow Animation */
 @keyframes glow {
-    from { text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent); }
-    to { text-shadow: 0 0 20px var(--accent-color), 0 0 30px var(--secondary-accent), 0 0 40px var(--tertiary-accent); }
+    from { text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent); }
+    to { text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent); }
 }
 
-/* Form Styling */
 form {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: 20px;
+    align-items: center;
+    gap: 35px;
 }
 
-/* Input Container */
 .input-container {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    will-change: transform, box-shadow; /* Hint to browser for optimization */
 }
 
-/* Input Fields */
 .input-container input,
 .custom-select select {
     width: 100%;
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.1);
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.05);
     color: var(--foreground-color);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
+    border: none;
+    border-radius: 12px;
     font-size: var(--input-font-size);
+    line-height: 1.6;
     outline: none;
-    transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-    will-change: transform, box-shadow; /* Hint to browser for optimization */
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 15px rgba(0, 255, 209, 0.3);
 }
 
-/* Placeholder Styling */
 .input-container input::placeholder,
 .custom-select select:invalid {
-    color: rgba(255, 255, 255, 0.7);
-    opacity: 1;
-    font-size: var(--input-font-size);
+    color: var(--foreground-color);
+    opacity: 0.6;
 }
 
-/* Error Message Styling */
-.error-message {
-    color: #ff6b6b;
-    font-size: 0.875rem;
-    margin-top: 4px;
-    display: none;
-    will-change: opacity; /* Hint to browser for optimization */
-}
-
-/* Show Error Message */
-.input-container.invalid .error-message {
-    display: block;
-}
-
-/* Focus States */
 .input-container input:focus,
 .custom-select select:focus {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid var(--accent-color);
-    box-shadow: 0 0 12px var(--accent-color);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 25px var(--input-focus), 0 0 35px var(--secondary-accent);
 }
 
-/* Custom Select Styling */
 .custom-select {
     position: relative;
-    will-change: transform, box-shadow; /* Hint to browser for optimization */
 }
 
-.select-arrow { /* Single Dropdown Arrow */
+.custom-select::after {
+    content: '▼';
     position: absolute;
     top: 50%;
-    right: 16px;
+    right: 20px;
     transform: translateY(-50%);
-    color: var(--foreground-color);
+    color: var(--accent-color);
     pointer-events: none;
     font-size: 1rem;
-    will-change: transform; /* Hint to browser for optimization */
 }
 
 .custom-select select {
@@ -241,22 +193,10 @@ form {
     -webkit-appearance: none;
     -moz-appearance: none;
     cursor: pointer;
-    padding-right: 40px;
-    background: rgba(255, 255, 255, 0.1);
+    padding-right: 50px;
+    background: rgba(255, 255, 255, 0.05);
     color: var(--foreground-color);
-    transition: background var(--transition-speed) ease, border var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
-    will-change: transform, box-shadow; /* Hint to browser for optimization */
-}
-
-.custom-select select:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.custom-select select:focus {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid var(--accent-color);
-    box-shadow: 0 0 12px var(--accent-color);
-    transform: translateY(-2px);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .custom-select select option {
@@ -264,67 +204,34 @@ form {
     background: var(--background-color);
 }
 
-/* Button Styling */
 button {
     padding: var(--button-padding);
     background: var(--accent-color);
     color: var(--background-color);
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: var(--button-font-size);
     cursor: pointer;
-    transition: background var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, filter 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
-    will-change: transform, box-shadow, filter; /* Hint to browser for optimization */
-}
-
-button::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 300%;
-    height: 300%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translate(-50%, -50%) rotate(45deg);
-    transition: all 0.5s ease;
-    opacity: 0;
-}
-
-button:hover::after,
-button:focus::after {
-    opacity: 1;
-    transform: translate(-50%, -50%) rotate(0deg);
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    box-shadow: 0 0 15px rgba(0, 255, 209, 0.5);
 }
 
 button:hover,
 button:focus {
-    background: var(--secondary-accent);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px) scale(1.02);
+    transform: scale(1.05);
+    background: var(--button-hover);
+    box-shadow: 0 0 25px rgba(0, 255, 209, 0.7);
     outline: none;
-    filter: brightness(1.1);
 }
 
-button:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Focus Outline for Accessibility */
 input:focus,
 select:focus,
 button:focus {
-    outline: 2px solid var(--accent-color);
+    outline: 2px solid var(--input-focus);
     outline-offset: 2px;
 }
 
-/* Fade In Animation */
 @keyframes fadeInUp {
     to {
         opacity: 1;
@@ -332,229 +239,48 @@ button:focus {
     }
     from {
         opacity: 0;
-        transform: translateY(20px);
-    }
-}
-
-/* Responsive Design Enhancements */
-
-/* Large Screens */
-@media (min-width: 1200px) {
-    :root {
-        --h1-font-size: clamp(2.5rem, 5vw, 4rem);
-        --form-width: clamp(300px, 60%, 600px);
-        --form-padding: clamp(40px, 5vw, 70px);
-        --input-font-size: 1.1rem;
-        --button-font-size: 1.2rem;
-        --button-padding: 18px 36px;
-    }
-}
-
-/* Medium Screens */
-@media (max-width: 1440px) {
-    :root {
-        --h1-font-size: clamp(1.8rem, 4vw, 3rem);
-        --form-width: clamp(260px, 75%, 450px);
-        --form-padding: clamp(25px, 4vw, 55px);
-        --input-font-size: 1rem;
-        --button-font-size: 1.1rem;
-        --button-padding: 14px 28px;
+        transform: translateY(50px);
     }
 }
 
 @media (max-width: 1024px) {
-    main {
-        padding: 30px;
-    }
     .entrance {
-        max-width: 450px;
-        padding: 50px 30px;
+        width: 400px;
+        padding: 50px;
+    }
+    h1 {
+        font-size: 3.5rem;
+        margin-bottom: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .entrance {
+        width: 350px;
+        padding: 45px;
+    }
+    h1 {
+        font-size: 3rem;
+        margin-bottom: 35px;
+    }
+}
+
+@media (max-width: 480px) {
+    .entrance {
+        width: 300px;
+        padding: 35px;
     }
     h1 {
         font-size: 2.5rem;
-        margin-bottom: 30px;
-    }
-    form {
-        gap: 20px;
-    }
-}
-
-/* Small Screens */
-@media (max-width: 768px) {
-    .entrance {
-        max-width: 400px;
-        padding: 45px 25px;
-    }
-    h1 {
-        font-size: 2rem;
         margin-bottom: 25px;
     }
-    form {
-        gap: 15px;
-    }
-    .select-arrow {
-        right: 12px;
-    }
-}
-
-/* Extra Small Screens */
-@media (max-width: 480px) {
-    .entrance {
-        max-width: 320px;
-        padding: 35px 20px;
-    }
-    h1 {
-        font-size: 1.8rem;
-        margin-bottom: 20px;
-    }
-    form {
-        gap: 10px;
-    }
-    .input-container input,
-    .custom-select select {
-        padding: 10px 14px;
-        font-size: 0.9rem;
+    input,
+    .custom-select select,
+    button {
+        font-size: 1rem;
+        padding: 14px;
     }
     button {
-        padding: 12px 24px;
-        font-size: 1rem;
+        padding: 14px 28px;
     }
-    .select-arrow {
-        right: 10px;
-        font-size: 0.9rem;
-    }
-}
-
-/* Landscape Orientation Adjustments */
-@media (max-height: 500px) and (orientation: landscape) {
-    .entrance {
-        padding: 30px 20px;
-    }
-    h1 {
-        font-size: 1.6rem;
-        margin-bottom: 15px;
-    }
-}
-
-/* Night Mode Compatibility */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background-color: #0e0e0e;
-        --foreground-color: #ffffff;
-        --accent-color: rgba(0, 255, 255, 0.8);
-        --secondary-accent: rgba(138, 43, 226, 0.8);
-        --tertiary-accent: rgba(75, 0, 130, 0.8);
-        --glass-bg: rgba(255, 255, 255, 0.15);
-        --glass-border: rgba(255, 255, 255, 0.3);
-    }
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        --background-color: #ffffff;
-        --foreground-color: #0e0e0e;
-        --accent-color: rgba(0, 255, 255, 0.8);
-        --secondary-accent: rgba(138, 43, 226, 0.8);
-        --tertiary-accent: rgba(75, 0, 130, 0.8);
-        --glass-bg: rgba(0, 0, 0, 0.1);
-        --glass-border: rgba(0, 0, 0, 0.3);
-    }
-    body {
-        background-color: var(--background-color);
-        color: var(--foreground-color);
-    }
-    .entrance,
-    #noscript-wrapper .entrance {
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    }
-    h1 {
-        color: var(--foreground-color);
-        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent), 0 0 30px var(--tertiary-accent);
-    }
-    .input-container input,
-    .custom-select select {
-        background: rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(0, 0, 0, 0.3);
-    }
-}
-
-/* Smooth Scroll Behavior */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Scrollbar Styling for Webkit Browsers */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--accent-color);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--secondary-accent);
-}
-
-/* Accessibility Enhancements */
-:focus-visible {
-    outline: 2px solid var(--accent-color);
-    outline-offset: 2px;
-}
-
-/* Cursor Styles */
-body {
-    cursor: default;
-}
-
-button {
-    cursor: pointer;
-}
-
-.custom-select select {
-    cursor: pointer;
-}
-
-/* Prevent Text Selection on Buttons */
-button {
-    user-select: none;
-}
-
-/* Error Message Visibility */
-.input-container.invalid .error-message {
-    display: block;
-}
-
-/* Button Animation Enhancements */
-button {
-    transition: background var(--transition-speed) ease, box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease, filter 0.3s ease;
-}
-
-button:hover {
-    filter: brightness(1.1);
-}
-
-button:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Form Element Enhancements */
-.input-container input,
-.custom-select select {
-    transition: all var(--transition-speed) ease;
-}
-
-.input-container input:focus,
-.custom-select select:focus {
-    transform: translateY(-2px) scale(1.02);
-    background: rgba(255, 255, 255, 0.15);
 }

@@ -13,16 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 800 : 1200, // Further reduced for performance
-        SPHERE_COUNT: isMobile ? 30 : 60,      // Further reduced for performance
-        MIN_DISTANCE: 400,                      // Adjusted for fewer connections
-        PARTICLE_SIZE: isMobile ? 100 : 150,
-        SPHERE_SIZE: isMobile ? 50 : 80,
-        PARTICLE_SPEED: isMobile ? 1.5 : 2.5,
-        ROTATION_SPEED: isMobile ? 0.003 : 0.005,
+        PARTICLE_COUNT: isMobile ? 800 : 1500,
+        SPHERE_COUNT: isMobile ? 40 : 80,
+        MIN_DISTANCE: 500,
+        PARTICLE_SIZE: isMobile ? 100 : 200,
+        SPHERE_SIZE: isMobile ? 60 : 100,
+        PARTICLE_SPEED: isMobile ? 1.8 : 3.0,
+        ROTATION_SPEED: isMobile ? 0.004 : 0.006,
         TEXTURE_SIZE: isMobile ? 256 : 512,
-        SHADOW_BLUR: isMobile ? 15 : 25,        // Reduced for performance
-        LIGHT_INTENSITY: isMobile ? 1.0 : 1.5,
+        SHADOW_BLUR: isMobile ? 20 : 35,
+        LIGHT_INTENSITY: isMobile ? 1.2 : 1.8,
         AMBIENT_COLOR: 0x1E90FF,
         DIRECTIONAL_COLOR: 0x9370DB,
         BACKGROUND_COLOR: 0x0A0A0A,
@@ -37,12 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
         BLOOM_INTENSITY: 2.0,
         BLOOM_THRESHOLD: 0.9,
         BLOOM_RADIUS: 0.5,
-        STAR_COUNT: 2500,                         // Reduced for performance
+        STAR_COUNT: 3000,
         STAR_SIZE: 0.7,
-        TWINKLE_SPEED: 0.003,                     // Slower for subtlety
+        TWINKLE_SPEED: 0.005,
     };
 
-    const TEXTURE_CACHE_SIZE = 300;
+    const TEXTURE_CACHE_SIZE = 2000; // Increased cache size for more diversity
     const textureCache = [];
 
     /**
@@ -51,7 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {THREE.Texture} - The generated texture.
      */
     const createTextTexture = (char) => {
+        // To maximize diversity, ensure unique textures as much as possible
         if (textureCache.length >= TEXTURE_CACHE_SIZE) {
+            // Implement a strategy to reuse textures intelligently
             return textureCache[Math.floor(Math.random() * TEXTURE_CACHE_SIZE)];
         }
         const canvas = document.createElement('canvas');
@@ -62,25 +64,24 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
         ctx.clearRect(0, 0, CONFIG.TEXTURE_SIZE, CONFIG.TEXTURE_SIZE);
 
-        // Create a radial gradient for a more dynamic text appearance
-        const gradient = ctx.createRadialGradient(
-            CONFIG.TEXTURE_SIZE / 2,
-            CONFIG.TEXTURE_SIZE / 2,
-            CONFIG.TEXTURE_SIZE * 0.1,
-            CONFIG.TEXTURE_SIZE / 2,
-            CONFIG.TEXTURE_SIZE / 2,
-            CONFIG.TEXTURE_SIZE * 0.8
-        );
-        gradient.addColorStop(0, '#FFFFFF');
-        gradient.addColorStop(1, '#BA55D3');
-        ctx.font = `${CONFIG.TEXTURE_SIZE * 0.8}px 'Urbanist', sans-serif`;
+        // Create a vibrant linear gradient
+        const gradient = ctx.createLinearGradient(0, 0, CONFIG.TEXTURE_SIZE, CONFIG.TEXTURE_SIZE);
+        gradient.addColorStop(0, '#FF5733'); // Orange
+        gradient.addColorStop(1, '#C70039'); // Red
+        ctx.fillStyle = gradient;
+
+        // Apply text styles
+        ctx.font = `bold ${CONFIG.TEXTURE_SIZE * 0.8}px 'Urbanist', sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = gradient;
-        ctx.shadowColor = '#9370DB';
-        ctx.shadowBlur = CONFIG.SHADOW_BLUR;
-        ctx.globalAlpha = 0.95;
         ctx.fillText(char, CONFIG.TEXTURE_SIZE / 2, CONFIG.TEXTURE_SIZE / 2);
+
+        // Add a subtle shadow for depth
+        ctx.shadowColor = '#000000';
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = 'rgba(0,0,0,0.1)';
+        ctx.fillText(char, CONFIG.TEXTURE_SIZE / 2, CONFIG.TEXTURE_SIZE / 2);
+
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
         textureCache.push(texture);
@@ -88,18 +89,20 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Generates a random Hangul character.
-     * @returns {string} - A random Hangul character.
+     * Generates a random Hangul syllable with a diverse set of initials, medials, and finals.
+     * @returns {string} - A random Hangul syllable.
      */
     const getRandomHangulCharacter = () => {
-        const initials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
-        const medials = [0x1161, 0x1163, 0x1165, 0x1167, 0x1169, 0x116D, 0x1162, 0x1164, 0x1166, 0x1168, 0x116A];
-        const finals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA, 0x11C2];
+        const initials = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+        const medials = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
+        const finals = ['', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+
         const initial = initials[Math.floor(Math.random() * initials.length)];
         const medial = medials[Math.floor(Math.random() * medials.length)];
         const final = finals[Math.floor(Math.random() * finals.length)];
-        const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
-        return String.fromCharCode(syllableCode);
+
+        // Combine into a syllable
+        return initial + medial + final;
     };
 
     /**
@@ -107,12 +110,12 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {string} - A random Cyrillic character.
      */
     const getRandomCyrillicCharacter = () => {
-        const letters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
+        const letters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я'];
         return letters[Math.floor(Math.random() * letters.length)];
     };
 
     /**
-     * Generates a random character, either Hangul or Cyrillic.
+     * Generates a random character, either Hangul or Cyrillic, to maximize diversity.
      * @returns {string} - A random character.
      */
     const getRandomCharacter = () => Math.random() < 0.5 ? getRandomHangulCharacter() : getRandomCyrillicCharacter();
@@ -285,10 +288,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Creates particles (sprites) with random characters and optimized rendering using InstancedMesh.
+     * Creates particles (sprites) with random characters and optimized rendering.
      */
     const createParticles = () => {
-        const uniqueChars = 40;
+        const uniqueChars = 2000; // Increased unique characters for diversity
         const characters = Array.from({ length: uniqueChars }, () => getRandomCharacter());
         characters.forEach(char => textureCache.push(createTextTexture(char)));
 
@@ -299,27 +302,23 @@ document.addEventListener('DOMContentLoaded', () => {
             opacity: 0.95
         });
 
-        characters.forEach((char, index) => {
-            const texture = textureCache[index];
-            spriteMaterial.map = texture;
-
-            for (let i = 0; i < CONFIG.PARTICLE_COUNT / uniqueChars; i++) {
-                const sprite = new THREE.Sprite(spriteMaterial.clone());
-                sprite.position.set(
-                    (Math.random() - 0.5) * 6000,
-                    (Math.random() - 0.5) * 6000,
-                    (Math.random() - 0.5) * 6000
-                );
-                sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
-                sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
-                sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
-                sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
-                sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
-                sprite.renderOrder = 1;
-                sceneGroup.add(sprite);
-                particles.push(sprite);
-            }
-        });
+        for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
+            const texture = textureCache[i % uniqueChars];
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, blending: THREE.AdditiveBlending }));
+            sprite.position.set(
+                (Math.random() - 0.5) * 6000,
+                (Math.random() - 0.5) * 6000,
+                (Math.random() - 0.5) * 6000
+            );
+            sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
+            sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
+            sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
+            sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
+            sprite.renderOrder = 1;
+            sceneGroup.add(sprite);
+            particles.push(sprite);
+        }
     };
 
     /**

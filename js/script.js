@@ -4,24 +4,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('login-form');
     const preloader = document.getElementById('preloader');
 
-    let scene, camera, renderer, sceneGroup, clock;
+    let scene, camera, renderer, sceneGroup, starsGroup;
     const particles = [];
     const spheres = [];
+    const lines = [];
     let mouseX = 0, mouseY = 0;
     let windowHalfX = window.innerWidth / 2, windowHalfY = window.innerHeight / 2;
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     const CONFIG = {
-        PARTICLE_COUNT: isMobile ? 600 : 1000,
-        SPHERE_COUNT: isMobile ? 30 : 60,
-        MIN_DISTANCE: 400,
-        PARTICLE_SIZE: isMobile ? 150 : 200,
-        SPHERE_SIZE: isMobile ? 80 : 120,
-        PARTICLE_SPEED: isMobile ? 1.5 : 2.5,
-        ROTATION_SPEED: isMobile ? 0.003 : 0.005,
+        PARTICLE_COUNT: isMobile ? 800 : 1500,
+        SPHERE_COUNT: isMobile ? 40 : 80,
+        MIN_DISTANCE: 500,
+        PARTICLE_SIZE: isMobile ? 120 : 200,
+        SPHERE_SIZE: isMobile ? 60 : 100,
+        PARTICLE_SPEED: isMobile ? 1.8 : 3.0,
+        ROTATION_SPEED: isMobile ? 0.004 : 0.006,
         TEXTURE_SIZE: isMobile ? 256 : 512,
-        SHADOW_BLUR: isMobile ? 15 : 30,
-        LIGHT_INTENSITY: isMobile ? 1.0 : 1.5,
+        SHADOW_BLUR: isMobile ? 20 : 35,
+        LIGHT_INTENSITY: isMobile ? 1.2 : 1.8,
         AMBIENT_COLOR: 0x1E90FF,
         DIRECTIONAL_COLOR: 0x9370DB,
         BACKGROUND_COLOR: 0x0A0A0A,
@@ -30,55 +31,18 @@ document.addEventListener('DOMContentLoaded', () => {
         SPHERE_COLOR: 0xBA55D3,
         EMISSIVE_COLOR: 0x9370DB,
         MAX_PIXEL_RATIO: isMobile ? Math.min(window.devicePixelRatio, 3) : Math.min(window.devicePixelRatio, 2),
-        ENV_MAP_INTENSITY: 1.0,
-        MIN_CAMERA_DISTANCE: 500,
-        MAX_SPHERE_SIZE: isMobile ? 100 : 150,
-        BLOOM_INTENSITY: 1.5,
-        BLOOM_THRESHOLD: 0.85,
-        BLOOM_RADIUS: 0.4,
+        ENV_MAP_INTENSITY: 1.2,
+        MIN_CAMERA_DISTANCE: 600,
+        MAX_SPHERE_SIZE: isMobile ? 90 : 160,
+        BLOOM_INTENSITY: 2.0,
+        BLOOM_THRESHOLD: 0.9,
+        BLOOM_RADIUS: 0.5,
+        STAR_COUNT: 3000,
+        STAR_SIZE: 0.7,
     };
 
-    const TEXTURE_CACHE_SIZE = 200;
+    const TEXTURE_CACHE_SIZE = 300;
     const textureCache = [];
-
-    // Shader material for particles with pulsating and glowing effect
-    const particleShaderMaterial = new THREE.ShaderMaterial({
-        vertexShader: `
-            uniform float uTime;
-            uniform float uSize;
-            varying vec3 vColor;
-            varying float vOpacity;
-            void main() {
-                vColor = color;
-                // Pulsate the size based on time
-                float pulsate = 0.5 + 0.5 * sin(uTime + position.x * 0.005);
-                vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                gl_PointSize = uSize * (300.0 / -mvPosition.z) * pulsate;
-                gl_Position = projectionMatrix * mvPosition;
-                // Set opacity based on pulsate
-                vOpacity = pulsate;
-            }
-        `,
-        fragmentShader: `
-            varying vec3 vColor;
-            varying float vOpacity;
-            void main() {
-                float dist = distance(gl_PointCoord, vec2(0.5));
-                if (dist > 0.5) discard;
-                // Create a smooth edge
-                float alpha = 1.0 - smoothstep(0.45, 0.5, dist);
-                gl_FragColor = vec4(vColor, alpha * vOpacity);
-            }
-        `,
-        uniforms: {
-            uTime: { value: 0.0 },
-            uSize: { value: 20.0 }
-        },
-        blending: THREE.AdditiveBlending,
-        depthTest: false,
-        transparent: true,
-        vertexColors: true
-    });
 
     /**
      * Creates a high-resolution text texture for a given character.
@@ -105,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = gradient;
         ctx.shadowColor = '#9370DB';
         ctx.shadowBlur = CONFIG.SHADOW_BLUR;
-        ctx.globalAlpha = 0.9;
+        ctx.globalAlpha = 0.95;
         ctx.fillText(char, CONFIG.TEXTURE_SIZE / 2, CONFIG.TEXTURE_SIZE / 2);
         const texture = new THREE.Texture(canvas);
         texture.needsUpdate = true;
@@ -151,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {THREE.Vector3} - A random position vector.
      */
     const getRandomPosition = (existingSpheres, radius) => {
-        const boundingRadius = 2000;
+        const boundingRadius = 2500;
         const minDistanceFromCamera = CONFIG.MIN_CAMERA_DISTANCE + radius;
         let position, tooClose, attempts = 0;
         do {
@@ -191,46 +155,32 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.toneMapping = THREE.ReinhardToneMapping;
 
         scene = new THREE.Scene();
+
         camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-        camera.position.z = isMobile ? 1200 : 1800;
+        camera.position.z = isMobile ? 1500 : 2000;
 
-        clock = new THREE.Clock();
-
-        // Ambient Light with soft intensity
-        const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, 0.5);
+        // Ambient Light
+        const ambientLight = new THREE.AmbientLight(CONFIG.AMBIENT_COLOR, CONFIG.LIGHT_INTENSITY);
         scene.add(ambientLight);
 
-        // Dynamic Point Lights
-        for (let i = 0; i < 5; i++) {
-            const pointLight = new THREE.PointLight(
-                new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`),
-                1,
-                1000
-            );
-            pointLight.position.set(
-                (Math.random() - 0.5) * 2000,
-                (Math.random() - 0.5) * 2000,
-                (Math.random() - 0.5) * 2000
-            );
-            scene.add(pointLight);
-            // Optionally, add light helpers for debugging
-            // const sphereSize = 50;
-            // const pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
-            // scene.add(pointLightHelper);
-        }
-
-        // Remove Environment Map to avoid background image
-        // Previously, an environment map was used for reflections, but it's removed per requirement
+        // Directional Light with dynamic movement
+        const directionalLight = new THREE.DirectionalLight(CONFIG.DIRECTIONAL_COLOR, CONFIG.LIGHT_INTENSITY);
+        directionalLight.position.set(1, 1, 1).normalize();
+        scene.add(directionalLight);
 
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
+        starsGroup = new THREE.Group();
+        scene.add(starsGroup);
+
         createParticles();
         createSpheres();
+        createStars();
+        createParticleConnections();
 
-        // Post-Processing Effects
-        // Since no external images are used, post-processing is limited to what can be achieved without images
-        setupPostProcessing();
+        // Add glow effect to spheres using shader
+        addSphereGlow();
 
         renderer.sortObjects = true;
 
@@ -242,21 +192,74 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Sets up post-processing for bloom and glow effects using shaders.
+     * Creates a starfield background using Points without external textures.
      */
-    const setupPostProcessing = () => {
-        // Implement a simple bloom-like effect using shaders or additive blending
-        // Since we're not using EffectComposer, we'll simulate glow with semi-transparent meshes
+    const createStars = () => {
+        const starGeometry = new THREE.BufferGeometry();
+        const positions = [];
+        const colors = [];
+        const color = new THREE.Color(0xffffff);
 
+        for (let i = 0; i < CONFIG.STAR_COUNT; i++) {
+            positions.push(
+                (Math.random() - 0.5) * 10000,
+                (Math.random() - 0.5) * 10000,
+                -Math.random() * 10000
+            );
+            colors.push(color.r, color.g, color.b);
+        }
+
+        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+        const starMaterial = new THREE.PointsMaterial({
+            vertexColors: true,
+            size: CONFIG.STAR_SIZE,
+            sizeAttenuation: true,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        starsGroup.add(stars);
+    };
+
+    /**
+     * Adds a procedural glow effect around each sphere using ShaderMaterial.
+     */
+    const addSphereGlow = () => {
         spheres.forEach(sphere => {
-            const glowMaterial = new THREE.MeshBasicMaterial({
-                color: CONFIG.PARTICLE_COLOR_1,
+            const glowMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    viewVector: { value: camera.position },
+                    glowColor: { value: new THREE.Color(CONFIG.EMISSIVE_COLOR) },
+                },
+                vertexShader: `
+                    uniform vec3 viewVector;
+                    uniform vec3 glowColor;
+                    varying float intensity;
+                    void main() {
+                        vec3 worldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+                        vec3 viewDir = normalize(viewVector - worldPosition);
+                        intensity = pow( dot(normalize(normalMatrix * normal), viewDir), 2.0 );
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 glowColor;
+                    varying float intensity;
+                    void main() {
+                        gl_FragColor = vec4(glowColor, intensity);
+                    }
+                `,
+                side: THREE.FrontSide,
                 blending: THREE.AdditiveBlending,
-                transparent: true,
-                opacity: 0.3
+                transparent: true
             });
-            const glowMesh = new THREE.Mesh(sphere.geometry.clone(), glowMaterial);
-            glowMesh.scale.multiplyScalar(1.5);
+
+            const glowGeometry = new THREE.SphereGeometry(sphere.geometry.parameters.radius * 1.5, 32, 32);
+            const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
             glowMesh.position.copy(sphere.position);
             sceneGroup.add(glowMesh);
             sphere.userData.glow = glowMesh;
@@ -264,55 +267,37 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Creates particles (sprites) with random characters and positions using instanced rendering.
+     * Creates particles (sprites) with random characters and positions.
      */
     const createParticles = () => {
-        const uniqueChars = 50;
+        const uniqueChars = 40;
         const characters = Array.from({ length: uniqueChars }, () => getRandomCharacter());
-
-        const instancedGeometry = new THREE.InstancedBufferGeometry();
-        const baseGeometry = new THREE.PlaneGeometry(1, 1);
-        instancedGeometry.index = baseGeometry.index;
-        instancedGeometry.attributes.position = baseGeometry.attributes.position;
-        instancedGeometry.attributes.uv = baseGeometry.attributes.uv;
-
-        const offsets = [];
-        const colors = [];
-        const scales = [];
-        const uSizes = [];
+        characters.forEach(char => textureCache.push(createTextTexture(char)));
 
         for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
             const char = characters[Math.floor(Math.random() * uniqueChars)];
             const texture = createTextTexture(char);
-
-            const position = new THREE.Vector3(
-                (Math.random() - 0.5) * 5000,
-                (Math.random() - 0.5) * 5000,
-                (Math.random() - 0.5) * 5000
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+                map: texture,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                opacity: 0.95
+            }));
+            sprite.position.set(
+                (Math.random() - 0.5) * 6000,
+                (Math.random() - 0.5) * 6000,
+                (Math.random() - 0.5) * 6000
             );
-
-            const color = new THREE.Color(CONFIG.PARTICLE_COLOR_1).lerp(new THREE.Color(CONFIG.PARTICLE_COLOR_2), Math.random());
-
-            offsets.push(position.x, position.y, position.z);
-            colors.push(color.r, color.g, color.b);
-            scales.push(CONFIG.PARTICLE_SIZE);
-            uSizes.push(CONFIG.PARTICLE_SIZE);
-
-            // Optionally, store additional data like velocity
+            sprite.scale.set(CONFIG.PARTICLE_SIZE, CONFIG.PARTICLE_SIZE, 1);
+            sprite.speedX = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
+            sprite.speedY = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
+            sprite.speedZ = (Math.random() - 0.5) * CONFIG.PARTICLE_SPEED;
+            sprite.rotationSpeed = (Math.random() - 0.5) * 0.02;
+            sprite.renderOrder = 1;
+            sceneGroup.add(sprite);
+            particles.push(sprite);
         }
-
-        instancedGeometry.setAttribute('offset', new THREE.InstancedBufferAttribute(new Float32Array(offsets), 3));
-        instancedGeometry.setAttribute('color', new THREE.InstancedBufferAttribute(new Float32Array(colors), 3));
-        instancedGeometry.setAttribute('scale', new THREE.InstancedBufferAttribute(new Float32Array(scales), 1));
-        instancedGeometry.setAttribute('uSize', new THREE.InstancedBufferAttribute(new Float32Array(uSizes), 1));
-
-        const particleMaterial = particleShaderMaterial.clone();
-        particleMaterial.vertexColors = true;
-
-        const particlesMesh = new THREE.Mesh(instancedGeometry, particleMaterial);
-        particlesMesh.frustumCulled = false;
-        sceneGroup.add(particlesMesh);
-        particles.push(particlesMesh);
     };
 
     /**
@@ -327,11 +312,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 roughness: 0.05,
                 transmission: 1.0,
                 transparent: true,
-                opacity: 0.8,
+                opacity: 0.4,
                 emissive: CONFIG.EMISSIVE_COLOR,
-                emissiveIntensity: 0.5,
+                emissiveIntensity: 0.7,
                 side: THREE.DoubleSide,
-                reflectivity: 0.9,
+                reflectivity: 1.0,
                 clearcoat: 1.0,
                 clearcoatRoughness: 0.05,
                 ior: 1.5,
@@ -340,12 +325,39 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const sphere = new THREE.Mesh(geometry, material);
             sphere.position.copy(getRandomPosition(spheres, CONFIG.SPHERE_SIZE));
-            sphere.rotationSpeedX = (Math.random() - 0.5) * 0.02;
-            sphere.rotationSpeedY = (Math.random() - 0.5) * 0.02;
-            sphere.rotationSpeedZ = (Math.random() - 0.5) * 0.02;
+            sphere.rotationSpeedX = (Math.random() - 0.5) * 0.015;
+            sphere.rotationSpeedY = (Math.random() - 0.5) * 0.015;
+            sphere.rotationSpeedZ = (Math.random() - 0.5) * 0.015;
             sphere.renderOrder = 0;
             sceneGroup.add(sphere);
             spheres.push(sphere);
+        }
+    };
+
+    /**
+     * Creates lines connecting nearby particles to form a dynamic web.
+     */
+    const createParticleConnections = () => {
+        const material = new THREE.LineBasicMaterial({
+            color: CONFIG.PARTICLE_COLOR_1,
+            transparent: true,
+            opacity: 0.2,
+            blending: THREE.AdditiveBlending
+        });
+
+        for (let i = 0; i < CONFIG.PARTICLE_COUNT; i++) {
+            for (let j = i + 1; j < CONFIG.PARTICLE_COUNT; j++) {
+                const dist = particles[i].position.distanceTo(particles[j].position);
+                if (dist < CONFIG.MIN_DISTANCE) {
+                    const geometry = new THREE.BufferGeometry().setFromPoints([
+                        particles[i].position,
+                        particles[j].position
+                    ]);
+                    const line = new THREE.Line(geometry, material);
+                    sceneGroup.add(line);
+                    lines.push(line);
+                }
+            }
         }
     };
 
@@ -387,17 +399,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const animate = () => {
         requestAnimationFrame(animate);
 
-        const delta = clock.getDelta();
-        const elapsedTime = clock.getElapsedTime();
-
-        // Update shader uniforms
+        // Update particles
         particles.forEach(p => {
-            if (p.isMesh) {
-                p.material.uniforms.uTime.value = elapsedTime;
-            }
+            p.position.x += p.speedX;
+            p.position.y += p.speedY;
+            p.position.z += p.speedZ;
+            p.material.rotation += p.rotationSpeed;
+            if (Math.abs(p.position.x) > 3000) p.speedX *= -1;
+            if (Math.abs(p.position.y) > 3000) p.speedY *= -1;
+            if (Math.abs(p.position.z) > 3000) p.speedZ *= -1;
         });
 
-        // Update spheres and their bloom/glow
+        // Update spheres and their glow
         spheres.forEach(s => {
             s.rotation.x += s.rotationSpeedX;
             s.rotation.y += s.rotationSpeedY;
@@ -406,15 +419,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update glow
             if (s.userData.glow) {
                 s.userData.glow.rotation.copy(s.rotation);
-                s.userData.glow.scale.setScalar(1.5 + Math.sin(elapsedTime) * 0.3);
+                s.userData.glow.position.copy(s.position);
+                s.userData.glow.material.uniforms.viewVector.value = new THREE.Vector3().subVectors(camera.position, s.position);
             }
         });
 
         // Dynamic lighting effects
         scene.traverse(object => {
-            if (object.isPointLight) {
-                // Pulsate light intensity
-                object.intensity = CONFIG.LIGHT_INTENSITY + Math.sin(elapsedTime + object.position.x) * 0.5;
+            if (object.isDirectionalLight) {
+                object.position.x = Math.sin(Date.now() * 0.0008) * 10;
+                object.position.y = Math.cos(Date.now() * 0.0008) * 10;
+                object.position.z = Math.sin(Date.now() * 0.0008) * 10;
             }
         });
 
@@ -423,6 +438,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetRotationX = mouseY * 0.05;
         sceneGroup.rotation.y += (targetRotationY - sceneGroup.rotation.y) * 0.05;
         sceneGroup.rotation.x += (targetRotationX - sceneGroup.rotation.x) * 0.05;
+
+        // Update starfield
+        starsGroup.rotation.x += 0.0001;
+        starsGroup.rotation.y += 0.0001;
 
         renderer.render(scene, camera);
     };

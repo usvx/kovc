@@ -78,29 +78,29 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        // More interesting shapes: TorusKnots & Icosahedrons
+        // Interesting shapes: TorusKnot and Icosahedron
         const shapeCount = isMobile?80:80;
         const geometryTypes = [
             ()=>new THREE.TorusKnotGeometry(80,20,100,16),
             ()=>new THREE.IcosahedronGeometry(90,1)
         ];
         for(let i=0; i<shapeCount; i++) {
-            const GeometryClass = geometryTypes[Math.floor(Math.random()*geometryTypes.length)]();
+            const Geometry = geometryTypes[Math.floor(Math.random()*geometryTypes.length)]();
             const material = new THREE.MeshStandardMaterial({
                 color:0x00FFD1,
                 wireframe:true,
                 transparent:true,
                 opacity:0.4,
                 emissive:0xFF00FF,
-                emissiveIntensity:0.5
+                emissiveIntensity:0.4 // slightly reduced for less harsh glow
             });
-            const mesh = new THREE.Mesh(GeometryClass, material);
+            const mesh = new THREE.Mesh(Geometry, material);
             mesh.position.x=(Math.random()-0.5)*5000;
             mesh.position.y=(Math.random()-0.5)*5000;
             mesh.position.z=(Math.random()-0.5)*5000;
-            mesh.rotationSpeedX=(Math.random()-0.5)*0.02;
-            mesh.rotationSpeedY=(Math.random()-0.5)*0.02;
-            mesh.rotationSpeedZ=(Math.random()-0.5)*0.02;
+            mesh.rotationSpeedX=(Math.random()-0.5)*0.015; // slightly slower rotation
+            mesh.rotationSpeedY=(Math.random()-0.5)*0.015;
+            mesh.rotationSpeedZ=(Math.random()-0.5)*0.015;
             sceneGroup.add(mesh);
             shapes.push(mesh);
         }
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             p.material.rotation+=p.rotationSpeed;
             if(p.position.x>2500||p.position.x<-2500) p.speedX*=-1;
             if(p.position.y>2500||p.position.y<-2500) p.speedY*=-1;
-            if(p.position.z>2500||p.position.z<-2500) p.speedZ*=-1;
+            if(p.position.z>2500||p.position.z< -2500) p.speedZ*=-1;
         });
         shapes.forEach(s=>{
             s.rotation.x+=s.rotationSpeedX;

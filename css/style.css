@@ -9,12 +9,13 @@
     --button-hover: #FF00FF;
     --input-focus: #00FFD1;
     --loader-color: rgba(0, 255, 209, 0.2);
-    --h1-font-size: clamp(2rem,5vw,3rem);
-    --form-width: clamp(260px,75%,480px);
-    --form-padding: clamp(40px,5vw,60px);
-    --input-font-size: clamp(1rem,1.8vw,1.1rem);
-    --button-font-size: clamp(1rem,1.8vw,1.1rem);
-    --button-padding: clamp(14px,3vw,18px) clamp(28px,5vw,35px);
+    /* Smaller form dimensions */
+    --h1-font-size: clamp(1.8rem,4.5vw,2.8rem);
+    --form-width: clamp(220px,40vw,320px);
+    --form-padding: clamp(25px,5vw,40px);
+    --input-font-size: clamp(0.95rem,1.5vw,1rem);
+    --button-font-size: clamp(0.95rem,1.5vw,1rem);
+    --button-padding: clamp(12px,3vw,16px) clamp(24px,5vw,30px);
 }
 
 * {
@@ -73,12 +74,12 @@ main {
     width:var(--form-width); max-width:100%;
     text-align:center;
     opacity:0;
-    background:rgba(0,0,0,0.55);
+    background:rgba(0,0,0,0.5);
     padding:var(--form-padding);
-    border-radius:25px;
+    border-radius:20px;
     border:2px solid var(--accent-color);
-    backdrop-filter:blur(20px) saturate(150%);
-    box-shadow:0 0 20px rgba(0,255,209,0.5);
+    backdrop-filter:blur(18px) saturate(130%);
+    box-shadow:0 0 15px rgba(0,255,209,0.4);
     margin:20px;
     transform:translateY(50px);
     animation: fadeInUp 1.5s ease forwards;
@@ -91,15 +92,14 @@ main {
 
 h1 {
     font-size:var(--h1-font-size);
-    margin-bottom:50px;
+    margin-bottom:35px;
     font-weight:700; letter-spacing:2px;
     color:var(--accent-color);
-    text-shadow:0 0 20px var(--accent-color),0 0 40px var(--secondary-accent);
-    /* Stable glow: no flicker animations */
+    text-shadow:0 0 15px var(--accent-color),0 0 30px var(--secondary-accent);
 }
 
 form {
-    display:flex; flex-direction:column; align-items:center; gap:35px;
+    display:flex; flex-direction:column; align-items:center; gap:25px;
 }
 
 .input-container {
@@ -108,13 +108,13 @@ form {
 
 .input-container input,
 .custom-select select {
-    width:100%; padding:18px;
+    width:100%; padding:14px;
     background:rgba(255,255,255,0.05);
     color:var(--foreground-color);
-    border:none; border-radius:12px;
-    font-size:var(--input-font-size); line-height:1.6;
+    border:none; border-radius:10px;
+    font-size:var(--input-font-size); line-height:1.4;
     outline:none; appearance:none;
-    box-shadow:0 0 15px rgba(0,255,209,0.3);
+    box-shadow:0 0 10px rgba(0,255,209,0.3);
     transition:background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
@@ -126,7 +126,7 @@ form {
 .input-container input:focus,
 .custom-select select:focus {
     background:rgba(255,255,255,0.1);
-    box-shadow:0 0 25px var(--input-focus),0 0 35px var(--secondary-accent);
+    box-shadow:0 0 20px var(--input-focus),0 0 25px var(--secondary-accent);
     transform:scale(1.02);
 }
 
@@ -136,64 +136,59 @@ form {
 
 .custom-select::after {
     content:'▼';
-    position:absolute; top:50%; right:20px;
+    position:absolute; top:50%; right:16px;
     transform:translateY(-50%);
     color:var(--accent-color);
     pointer-events:none;
-    font-size:1rem; opacity:0.8;
+    font-size:0.9rem; opacity:0.8;
 }
 
 .custom-select select {
-    padding-right:50px; cursor:pointer;
+    padding-right:40px;
+    cursor:pointer;
 }
 
 button {
     padding:var(--button-padding);
     background:var(--accent-color);
     color:#000;
-    border:none; border-radius:12px;
+    border:none; border-radius:10px;
     font-size:var(--button-font-size);
     cursor:pointer;
     transition:transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
     width:100%;
-    box-shadow:0 0 15px rgba(0,255,209,0.5);
+    box-shadow:0 0 10px rgba(0,255,209,0.4);
 }
 
 button:hover, button:focus {
     transform:scale(1.05);
     background:var(--button-hover);
-    box-shadow:0 0 25px rgba(0,255,209,0.7);
+    box-shadow:0 0 20px rgba(0,255,209,0.7);
     outline:none;
 }
 
-input:focus,
-select:focus,
-button:focus {
+input:focus, select:focus, button:focus {
     outline:2px solid var(--input-focus);
     outline-offset:2px;
 }
 
-@media (max-width:1024px) {
-    .entrance {
-        width:400px; padding:50px;
-    }
-    h1 {font-size:3.5rem; margin-bottom:40px;}
-}
-
 @media (max-width:768px) {
     .entrance {
-        width:350px; padding:45px;
+        width:80vw; padding:30px;
     }
-    h1 {font-size:3rem; margin-bottom:35px;}
+    h1 { font-size:2rem; margin-bottom:25px; }
+    input, .custom-select select, button {
+        font-size:0.9rem;
+    }
 }
 
 @media (max-width:480px) {
     .entrance {
-        width:300px; padding:35px;
+        width:75vw; padding:25px;
     }
-    h1 {font-size:2.5rem; margin-bottom:25px;}
-    input,.custom-select select,button {
-        font-size:1rem; padding:14px;
+    h1 { font-size:1.8rem; margin-bottom:20px; }
+    input, .custom-select select, button {
+        font-size:0.85rem; padding:12px;
     }
-    button {padding:14px 28px;}
+    button {padding:12px 24px;}
 }

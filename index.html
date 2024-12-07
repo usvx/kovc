@@ -26,12 +26,12 @@
 </head>
 <body>
     <div id="preloader" aria-label="Loading">
-        <div class="loader"></div>
+        <div class="loader" role="status" aria-live="polite"></div>
     </div>
     <canvas id="background" aria-hidden="true" loading="lazy"></canvas>
     <main>
-        <div class="entrance">
-            <h1>Lumina</h1>
+        <div class="entrance" role="region" aria-labelledby="lumina-title">
+            <h1 id="lumina-title">Lumina</h1>
             <form id="login-form" aria-label="Login Form">
                 <div class="input-container">
                     <label for="username" class="visually-hidden">Username</label>
@@ -55,9 +55,9 @@
     <noscript>
         <div id="noscript-wrapper">
             <main>
-                <div class="entrance">
-                    <h1>Lumina</h1>
-                    <form action="https://accounts.google.com/AccountChooser" method="get">
+                <div class="entrance" aria-labelledby="lumina-title-noscript">
+                    <h1 id="lumina-title-noscript">Lumina</h1>
+                    <form action="https://accounts.google.com/AccountChooser" method="get" aria-label="No-JS Login Form">
                         <div class="input-container">
                             <label for="Email" class="visually-hidden">Username</label>
                             <input type="text" id="Email" name="Email" placeholder="Username" required autocomplete="username" aria-required="true">

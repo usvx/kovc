@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height=size;
         const ctx=canvas.getContext('2d');
         ctx.clearRect(0,0,size,size);
-        ctx.fillStyle='#00FFD1';
+        // Use a softer color, more pastel cyan:
+        ctx.fillStyle='#99ffff';
         ctx.textAlign='center';
         ctx.textBaseline='middle';
         ctx.font=`${size*0.6}px 'Urbanist', sans-serif`;
@@ -50,16 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
         camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,1,10000);
         camera.position.z=isMobile?1000:1500;
 
-        const ambientLight=new THREE.AmbientLight(0x00FFD1,2);
+        const ambientLight=new THREE.AmbientLight(0x99ffff,2);
         scene.add(ambientLight);
-        const directionalLight=new THREE.DirectionalLight(0xFF00FF,1);
+        const directionalLight=new THREE.DirectionalLight(0xFF00FF,0.8);
         directionalLight.position.set(1,1,1).normalize();
         scene.add(directionalLight);
 
         sceneGroup=new THREE.Group();
         scene.add(sceneGroup);
 
-        // Letters
+        // Letters (now more translucent for ghostly feel)
         const particleCount=isMobile?1200:1200;
         for(let i=0;i<particleCount;i++) {
             const char=getRandomCharacter();
@@ -68,7 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 map:texture,
                 transparent:true,
                 blending:THREE.AdditiveBlending,
-                depthWrite:false
+                depthWrite:false,
+                opacity:0.7 // More translucent letters
             });
             const sprite=new THREE.Sprite(material);
             sprite.position.x=(Math.random()-0.5)*5000;
@@ -84,18 +86,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Two shape types: Pentagonal prism & Icosahedron
-        // Pentagonal prism via CylinderGeometry with 5 radial segments:
-        const shapeMaterial=new THREE.MeshStandardMaterial({
-            color:0x00FFD1,
+        // Adjust materials for a glassy, ghostly effect
+        const baseMaterialProps = {
             wireframe:true,
             transparent:true,
-            opacity:0.4,
-            emissive:0xFF00FF,
-            emissiveIntensity:0.4,
+            opacity:0.2, // More translucent
+            emissive:0x99ffff,
+            emissiveIntensity:0.3,
             blending:THREE.AdditiveBlending,
-            depthWrite:false
-        });
+            depthWrite:false,
+            metalness:0.5, // Glassy, metallic sheen
+            roughness:0.1, // Slight reflectivity
+            color:0xffffff // Almost white to pick up ambient color and look ghostly
+        };
 
+        const shapeMaterial = new THREE.MeshStandardMaterial(baseMaterialProps);
         const geometryTypes=[
             ()=>new THREE.CylinderGeometry(80,80,150,5,1,false), // Pentagonal prism
             ()=>new THREE.IcosahedronGeometry(90,1) // Icosahedron

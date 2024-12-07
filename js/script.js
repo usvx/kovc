@@ -30,16 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getRandomCharacter() {
-        // Hangeul & Cyrillic characters provide a global, dynamic feel
-        const hangeulInitials = [0x1100, 0x1102, 0x1103, 0x1105, 0x1106, 0x1107, 0x1109, 0x110B, 0x110C, 0x110E, 0x110F, 0x1110, 0x1111, 0x1112];
-        const hangeulMedials = [0x1161, 0x1165, 0x1166, 0x1167, 0x1169, 0x116E, 0x1172, 0x1173, 0x1175];
-        const hangeulFinals = [0x0000, 0x11A8, 0x11AB, 0x11AF, 0x11B7, 0x11BA];
+        const hangeulInitials = [0x1100,0x1102,0x1103,0x1105,0x1106,0x1107,0x1109,0x110B,0x110C,0x110E,0x110F,0x1110,0x1111,0x1112];
+        const hangeulMedials = [0x1161,0x1165,0x1166,0x1167,0x1169,0x116E,0x1172,0x1173,0x1175];
+        const hangeulFinals = [0x0000,0x11A8,0x11AB,0x11AF,0x11B7,0x11BA];
         const initial = hangeulInitials[Math.floor(Math.random() * hangeulInitials.length)];
         const medial = hangeulMedials[Math.floor(Math.random() * hangeulMedials.length)];
         const final = hangeulFinals[Math.floor(Math.random() * hangeulFinals.length)];
         const syllableCode = 0xAC00 + ((initial - 0x1100) * 588) + ((medial - 0x1161) * 28) + (final ? (final - 0x11A7) : 0);
         const hangeulChar = String.fromCharCode(syllableCode);
-        const cyrillicLetters = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Э', 'Ю', 'Я'];
+        const cyrillicLetters = ['А','Б','В','Г','Д','Е','Ж','З','И','К','Л','М','Н','О','П','Р','С','Т','У','Ф','Х','Ц','Ч','Ш','Э','Ю','Я'];
         return Math.random() < 0.5 ? hangeulChar : cyrillicLetters[Math.floor(Math.random() * cyrillicLetters.length)];
     }
 
@@ -70,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sprite.position.x = (Math.random() - 0.5) * 5000;
             sprite.position.y = (Math.random() - 0.5) * 5000;
             sprite.position.z = (Math.random() - 0.5) * 5000;
-            sprite.scale.set(isMobile ? 150 : 150, isMobile ? 150 : 150, 1);
+            sprite.scale.set(150, 150, 1);
             sprite.speedX = (Math.random() - 0.5) * (isMobile ? 2 : 4);
             sprite.speedY = (Math.random() - 0.5) * (isMobile ? 2 : 4);
             sprite.speedZ = (Math.random() - 0.5) * (isMobile ? 2 : 4);
@@ -80,10 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const geometryTypes = [THREE.TetrahedronGeometry, THREE.OctahedronGeometry, THREE.IcosahedronGeometry, THREE.DodecahedronGeometry];
-        const shapeCount = isMobile ? 80 : 80;
+        const shapeCount = 80;
         for (let i = 0; i < shapeCount; i++) {
             const GeometryClass = geometryTypes[Math.floor(Math.random() * geometryTypes.length)];
-            const geometry = new GeometryClass(isMobile ? 80 : 80, 1);
+            const geometry = new GeometryClass(80, 1);
             const material = new THREE.MeshStandardMaterial({
                 color: 0x00FFD1,
                 wireframe: true,

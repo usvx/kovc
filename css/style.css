@@ -9,13 +9,13 @@
     --button-hover: #FF00FF;
     --input-focus: #00FFD1;
     --loader-color: rgba(0, 255, 209, 0.2);
-    /* Smaller form dimensions */
-    --h1-font-size: clamp(1.8rem,4.5vw,2.8rem);
-    --form-width: clamp(220px,40vw,320px);
-    --form-padding: clamp(25px,5vw,40px);
-    --input-font-size: clamp(0.95rem,1.5vw,1rem);
-    --button-font-size: clamp(0.95rem,1.5vw,1rem);
-    --button-padding: clamp(12px,3vw,16px) clamp(24px,5vw,30px);
+    /* Slightly smaller form than previous attempts */
+    --h1-font-size: clamp(1.8rem,4vw,2.5rem);
+    --form-width: clamp(220px,35vw,300px);
+    --form-padding: clamp(20px,5vw,35px);
+    --input-font-size: clamp(0.95rem,1.4vw,1rem);
+    --button-font-size: clamp(0.95rem,1.4vw,1rem);
+    --button-padding: clamp(10px,3vw,16px) clamp(20px,5vw,28px);
 }
 
 * {
@@ -78,7 +78,7 @@ main {
     padding:var(--form-padding);
     border-radius:20px;
     border:2px solid var(--accent-color);
-    backdrop-filter:blur(18px) saturate(130%);
+    backdrop-filter:blur(18px) saturate(150%);
     box-shadow:0 0 15px rgba(0,255,209,0.4);
     margin:20px;
     transform:translateY(50px);
@@ -92,14 +92,14 @@ main {
 
 h1 {
     font-size:var(--h1-font-size);
-    margin-bottom:35px;
+    margin-bottom:30px;
     font-weight:700; letter-spacing:2px;
     color:var(--accent-color);
     text-shadow:0 0 15px var(--accent-color),0 0 30px var(--secondary-accent);
 }
 
 form {
-    display:flex; flex-direction:column; align-items:center; gap:25px;
+    display:flex; flex-direction:column; align-items:center; gap:20px;
 }
 
 .input-container {
@@ -108,7 +108,8 @@ form {
 
 .input-container input,
 .custom-select select {
-    width:100%; padding:14px;
+    width:100%;
+    padding:12px;
     background:rgba(255,255,255,0.05);
     color:var(--foreground-color);
     border:none; border-radius:10px;
@@ -116,6 +117,7 @@ form {
     outline:none; appearance:none;
     box-shadow:0 0 10px rgba(0,255,209,0.3);
     transition:background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    box-sizing:border-box;
 }
 
 .input-container input::placeholder,
@@ -131,12 +133,13 @@ form {
 }
 
 .custom-select {
-    position:relative; display:inline-block;
+    position:relative; display:block;
+    width:100%; /* Ensure full width match input */
 }
 
 .custom-select::after {
     content:'▼';
-    position:absolute; top:50%; right:16px;
+    position:absolute; top:50%; right:14px;
     transform:translateY(-50%);
     color:var(--accent-color);
     pointer-events:none;
@@ -144,7 +147,7 @@ form {
 }
 
 .custom-select select {
-    padding-right:40px;
+    padding-right:35px; /* Room for arrow */
     cursor:pointer;
 }
 
@@ -174,9 +177,9 @@ input:focus, select:focus, button:focus {
 
 @media (max-width:768px) {
     .entrance {
-        width:80vw; padding:30px;
+        width:70vw; padding:25px;
     }
-    h1 { font-size:2rem; margin-bottom:25px; }
+    h1 { font-size:2rem; margin-bottom:20px; }
     input, .custom-select select, button {
         font-size:0.9rem;
     }
@@ -184,11 +187,11 @@ input:focus, select:focus, button:focus {
 
 @media (max-width:480px) {
     .entrance {
-        width:75vw; padding:25px;
+        width:70vw; padding:20px;
     }
-    h1 { font-size:1.8rem; margin-bottom:20px; }
+    h1 { font-size:1.8rem; margin-bottom:15px; }
     input, .custom-select select, button {
-        font-size:0.85rem; padding:12px;
+        font-size:0.85rem; padding:10px;
     }
-    button {padding:12px 24px;}
+    button {padding:10px 20px;}
 }

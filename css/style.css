@@ -49,12 +49,19 @@ html, body {
     -webkit-user-select: none;
     user-select: none;
     animation: gradientAnimation 20s ease infinite;
+    scroll-behavior: smooth;
 }
 
 @keyframes gradientAnimation {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html, body {
+        animation: none;
+    }
 }
 
 #preloader {
@@ -113,11 +120,39 @@ main {
     padding: var(--form-padding);
     border-radius: 25px;
     border: 2px solid var(--accent-color);
-    transform: translateZ(0);
+    transform: translateZ(0) translateY(50px);
     animation: fadeInUp 1.5s ease forwards;
     backdrop-filter: blur(15px);
     box-shadow: 0 0 20px rgba(0, 255, 209, 0.5);
     margin: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Glitch effect layers */
+.entrance::before,
+.entrance::after {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle at center, rgba(0,255,209,0.1), transparent 70%);
+    mix-blend-mode: screen;
+    animation: swirl 10s linear infinite;
+    opacity: 0.3;
+}
+
+.entrance::after {
+    animation-direction: reverse;
+    opacity: 0.2;
+}
+
+@keyframes swirl {
+    0% { transform: rotate(0deg) scale(1.1); }
+    50% { transform: rotate(180deg) scale(1.15); }
+    100% { transform: rotate(360deg) scale(1.1); }
 }
 
 h1 {
@@ -128,11 +163,17 @@ h1 {
     color: var(--accent-color);
     text-shadow: 0 0 15px var(--accent-color), 0 0 30px var(--secondary-accent);
     animation: glow 2s infinite alternate;
+    position: relative;
+    overflow: visible;
 }
 
 @keyframes glow {
-    from { text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent); }
-    to { text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent); }
+    from {
+        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent);
+    }
+    to {
+        text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
+    }
 }
 
 form {
@@ -157,7 +198,7 @@ form {
     font-size: var(--input-font-size);
     line-height: 1.6;
     outline: none;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     box-shadow: 0 0 15px rgba(0, 255, 209, 0.3);
 }
 
@@ -171,6 +212,7 @@ form {
 .custom-select select:focus {
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 25px var(--input-focus), 0 0 35px var(--secondary-accent);
+    transform: scale(1.02);
 }
 
 .custom-select {
@@ -233,16 +275,17 @@ button:focus {
 }
 
 @keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    from {
+    0% {
         opacity: 0;
         transform: translateY(50px);
     }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
+/* Responsive */
 @media (max-width: 1024px) {
     .entrance {
         width: 400px;

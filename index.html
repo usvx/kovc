@@ -20,16 +20,18 @@
     <link rel="manifest" href="favicons/site.webmanifest">
     <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <noscript><link rel="stylesheet" href="css/noscript.css"></noscript>
+    <noscript>
+        <link rel="stylesheet" href="css/noscript.css">
+    </noscript>
 </head>
 <body>
     <div id="preloader" aria-label="Loading">
-        <div class="loader" role="status" aria-live="polite"></div>
+        <div class="loader"></div>
     </div>
     <canvas id="background" aria-hidden="true" loading="lazy"></canvas>
     <main>
-        <div class="entrance" role="region" aria-labelledby="lumina-title">
-            <h1 id="lumina-title">Lumina</h1>
+        <div class="entrance">
+            <h1>Lumina</h1>
             <form id="login-form" aria-label="Login Form">
                 <div class="input-container">
                     <label for="username" class="visually-hidden">Username</label>
@@ -53,9 +55,9 @@
     <noscript>
         <div id="noscript-wrapper">
             <main>
-                <div class="entrance" aria-labelledby="lumina-title-noscript">
-                    <h1 id="lumina-title-noscript">Lumina</h1>
-                    <form action="https://accounts.google.com/AccountChooser" method="get" aria-label="No-JS Login Form">
+                <div class="entrance">
+                    <h1>Lumina</h1>
+                    <form action="https://accounts.google.com/AccountChooser" method="get">
                         <div class="input-container">
                             <label for="Email" class="visually-hidden">Username</label>
                             <input type="text" id="Email" name="Email" placeholder="Username" required autocomplete="username" aria-required="true">
@@ -78,7 +80,7 @@
             </main>
         </div>
     </noscript>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js" integrity="sha384-aUS0jUAjhhBFNPifgxTHTNcsZDqkbegLd/JKEhJzK3Lyg9nFF1PZ2J++mzKwd8Kz" crossorigin="anonymous"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

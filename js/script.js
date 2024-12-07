@@ -17,16 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = size;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0,0,size,size);
-        // Draw neon text without shadow to ensure fully transparent background:
         ctx.fillStyle='#00FFD1';
         ctx.textAlign='center';
         ctx.textBaseline='middle';
-        ctx.font=`${size * 0.6}px 'Urbanist', sans-serif`;
-        // Just pure text on transparent background - no shadows
+        ctx.font=`${size*0.6}px 'Urbanist', sans-serif`;
+        // Pure text on transparent background, no shadows
         ctx.fillText(char, size/2, size/2);
-        const texture = new THREE.Texture(canvas);
-        texture.needsUpdate = true;
-        texture.premultiplyAlpha = true;
+        const texture=new THREE.Texture(canvas);
+        texture.needsUpdate=true;
+        texture.premultiplyAlpha=true;
         return texture;
     }
 
@@ -44,15 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function init() {
-        const canvas = document.getElementById('background');
-        renderer = new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
+        const canvas=document.getElementById('background');
+        renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
         renderer.setSize(window.innerWidth,window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-        scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,1,10000);
+        scene=new THREE.Scene();
+        camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,1,10000);
         camera.position.z=isMobile?1000:1500;
 
-        const ambientLight = new THREE.AmbientLight(0x00FFD1,2);
+        const ambientLight=new THREE.AmbientLight(0x00FFD1,2);
         scene.add(ambientLight);
         const directionalLight=new THREE.DirectionalLight(0xFF00FF,1);
         directionalLight.position.set(1,1,1).normalize();
@@ -61,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup=new THREE.Group();
         scene.add(sceneGroup);
 
+        // Particles (letters)
         const particleCount=isMobile?1200:1200;
         for(let i=0;i<particleCount;i++) {
             const char=getRandomCharacter();
@@ -84,37 +84,40 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        const shapeCount=isMobile?80:80;
-        const geometryTypes=[
-            ()=>new THREE.TorusKnotGeometry(80,20,100,16),
-            ()=>new THREE.IcosahedronGeometry(90,1)
-        ];
-        for(let i=0;i<shapeCount;i++) {
-            const Geometry=geometryTypes[Math.floor(Math.random()*geometryTypes.length)]();
-            const material=new THREE.MeshStandardMaterial({
-                color:0x00FFD1,
-                wireframe:true,
-                transparent:true,
-                opacity:0.4,
-                emissive:0xFF00FF,
-                emissiveIntensity:0.4,
-                blending:THREE.AdditiveBlending,
-                depthWrite:false
-            });
-            const mesh=new THREE.Mesh(Geometry, material);
-            mesh.position.x=(Math.random()-0.5)*5000;
-            mesh.position.y=(Math.random()-0.5)*5000;
-            mesh.position.z=(Math.random()-0.5)*5000;
-            mesh.rotationSpeedX=(Math.random()-0.5)*0.015;
-            mesh.rotationSpeedY=(Math.random()-0.5)*0.015;
-            mesh.rotationSpeedZ=(Math.random()-0.5)*0.015;
-            sceneGroup.add(mesh);
-            shapes.push(mesh);
-        }
+        // Only 2 shapes in total:
+        // "5D triangle" - Tetrahedron
+        const tetraMaterial=new THREE.MeshStandardMaterial({
+            color:0x00FFD1,
+            wireframe:true,
+            transparent:true,
+            opacity:0.4,
+            emissive:0xFF00FF,
+            emissiveIntensity:0.4,
+            blending:THREE.AdditiveBlending,
+            depthWrite:false
+        });
+        const tetra=new THREE.Mesh(new THREE.TetrahedronGeometry(90,0), tetraMaterial);
+        tetra.position.set(-800,0,0);
+        tetra.rotationSpeedX=(Math.random()-0.5)*0.015;
+        tetra.rotationSpeedY=(Math.random()-0.5)*0.015;
+        tetra.rotationSpeedZ=(Math.random()-0.5)*0.015;
+        sceneGroup.add(tetra);
+        shapes.push(tetra);
+
+        // "5D sphere" - Icosahedron
+        const icosaMaterial=tetraMaterial.clone();
+        const icosa=new THREE.Mesh(new THREE.IcosahedronGeometry(90,1), icosaMaterial);
+        icosa.position.set(800,0,0);
+        icosa.rotationSpeedX=(Math.random()-0.5)*0.015;
+        icosa.rotationSpeedY=(Math.random()-0.5)*0.015;
+        icosa.rotationSpeedZ=(Math.random()-0.5)*0.015;
+        sceneGroup.add(icosa);
+        shapes.push(icosa);
 
         document.addEventListener('mousemove',onDocumentMouseMove,false);
         document.addEventListener('touchmove',onDocumentTouchMove,{passive:false});
         window.addEventListener('resize',onWindowResize,false);
+
         animate();
     }
 
@@ -141,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animate() {
         requestAnimationFrame(animate);
-        for(const p of particles) {
+        particles.forEach(p=>{
             p.position.x+=p.speedX;
             p.position.y+=p.speedY;
             p.position.z+=p.speedZ;
@@ -149,12 +152,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if(Math.abs(p.position.x)>2500) p.speedX*=-1;
             if(Math.abs(p.position.y)>2500) p.speedY*=-1;
             if(Math.abs(p.position.z)>2500) p.speedZ*=-1;
-        }
-        for(const s of shapes) {
+        });
+
+        shapes.forEach(s=>{
             s.rotation.x+=s.rotationSpeedX;
             s.rotation.y+=s.rotationSpeedY;
             s.rotation.z+=s.rotationSpeedZ;
-        }
+        });
+
         sceneGroup.rotation.y+=0.0025;
         sceneGroup.rotation.x+=0.002;
         const targetRotationY=mouseX*0.05;

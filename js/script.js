@@ -12,7 +12,7 @@ window.onload = () => {
 
     function createTextTexture(char) {
         const canvas = document.createElement('canvas');
-        const size = isMobile ? 256 : 256;
+        const size = 256;
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
@@ -59,7 +59,7 @@ window.onload = () => {
         sceneGroup = new THREE.Group();
         scene.add(sceneGroup);
 
-        const PARTICLE_COUNT = isMobile ? 1200 : 1200;
+        const PARTICLE_COUNT = 1200;
         for (let i=0; i<PARTICLE_COUNT; i++) {
             const char = getRandomCharacter();
             const texture = createTextTexture(char);
@@ -71,9 +71,7 @@ window.onload = () => {
                 opacity:0.7
             });
             const sprite = new THREE.Sprite(material);
-            sprite.position.x=(Math.random()-0.5)*5000;
-            sprite.position.y=(Math.random()-0.5)*5000;
-            sprite.position.z=(Math.random()-0.5)*5000;
+            sprite.position.set((Math.random()-0.5)*5000,(Math.random()-0.5)*5000,(Math.random()-0.5)*5000);
             sprite.scale.set(150,150,1);
             sprite.speedX=(Math.random()-0.5)*(isMobile?2:4);
             sprite.speedY=(Math.random()-0.5)*(isMobile?2:4);
@@ -102,13 +100,11 @@ window.onload = () => {
             ()=>new THREE.IcosahedronGeometry(90,1)
         ];
 
-        const shapeCount=isMobile?80:80;
-        for(let i=0; i<shapeCount; i++){
+        const SHAPE_COUNT = 80;
+        for (let i=0; i<SHAPE_COUNT; i++){
             const Geometry=geometryTypes[Math.floor(Math.random()*geometryTypes.length)]();
             const mesh=new THREE.Mesh(Geometry, shapeMaterial.clone());
-            mesh.position.x=(Math.random()-0.5)*5000;
-            mesh.position.y=(Math.random()-0.5)*5000;
-            mesh.position.z=(Math.random()-0.5)*5000;
+            mesh.position.set((Math.random()-0.5)*5000,(Math.random()-0.5)*5000,(Math.random()-0.5)*5000);
             mesh.rotationSpeedX=(Math.random()-0.5)*0.015;
             mesh.rotationSpeedY=(Math.random()-0.5)*0.015;
             mesh.rotationSpeedZ=(Math.random()-0.5)*0.015;
@@ -131,8 +127,8 @@ window.onload = () => {
     function onDocumentTouchMove(event) {
         if(event.touches.length===1) {
             event.preventDefault();
-            mouseX=(event.touches[0].pageX-windowHalfX)/windowHalfX;
-            mouseY=(event.touches[0].pageY-windowHalfY)/windowHalfY;
+            mouseX=(event.touches[0].pageX - windowHalfX)/windowHalfX;
+            mouseY=(event.touches[0].pageY - windowHalfY)/windowHalfY;
         }
     }
 
@@ -147,7 +143,6 @@ window.onload = () => {
     function animate() {
         requestAnimationFrame(animate);
 
-        // Ensure arrays are defined and have elements
         if (particles && particles.length) {
             for (let p of particles) {
                 if (p && p.position) {
@@ -175,8 +170,8 @@ window.onload = () => {
         if (sceneGroup && sceneGroup.rotation) {
             sceneGroup.rotation.y+=0.0025;
             sceneGroup.rotation.x+=0.002;
-            const targetRotationY=mouseX*0.05;
-            const targetRotationX=mouseY*0.05;
+            const targetRotationY = mouseX*0.05;
+            const targetRotationX = mouseY*0.05;
             sceneGroup.rotation.y+=(targetRotationY-sceneGroup.rotation.y)*0.05;
             sceneGroup.rotation.x+=(targetRotationX-sceneGroup.rotation.x)*0.05;
         }
@@ -186,10 +181,8 @@ window.onload = () => {
         }
     }
 
-    // Initialize after window load to ensure three.js and DOM are ready
     init();
 
-    // Handle preloader
     setTimeout(()=>{
         if (preloader) preloader.style.display='none';
     },1000);

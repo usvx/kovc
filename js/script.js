@@ -11,17 +11,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
     function createTextTexture(char) {
-        const canvas = document.createElement('canvas');
-        const size = isMobile ? 256 : 256;
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
+        const canvas=document.createElement('canvas');
+        const size=isMobile?256:256;
+        canvas.width=size;
+        canvas.height=size;
+        const ctx=canvas.getContext('2d');
         ctx.clearRect(0,0,size,size);
         ctx.fillStyle='#00FFD1';
         ctx.textAlign='center';
         ctx.textBaseline='middle';
         ctx.font=`${size*0.6}px 'Urbanist', sans-serif`;
-        // Pure text on transparent background, no shadows
         ctx.fillText(char, size/2, size/2);
         const texture=new THREE.Texture(canvas);
         texture.needsUpdate=true;
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sceneGroup=new THREE.Group();
         scene.add(sceneGroup);
 
-        // Particles (letters)
+        // Letters
         const particleCount=isMobile?1200:1200;
         for(let i=0;i<particleCount;i++) {
             const char=getRandomCharacter();
@@ -84,9 +83,9 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push(sprite);
         }
 
-        // Only 2 shapes in total:
-        // "5D triangle" - Tetrahedron
-        const tetraMaterial=new THREE.MeshStandardMaterial({
+        // Two shape types: Pentagonal prism & Icosahedron
+        // Pentagonal prism via CylinderGeometry with 5 radial segments:
+        const shapeMaterial=new THREE.MeshStandardMaterial({
             color:0x00FFD1,
             wireframe:true,
             transparent:true,
@@ -96,28 +95,29 @@ document.addEventListener('DOMContentLoaded', () => {
             blending:THREE.AdditiveBlending,
             depthWrite:false
         });
-        const tetra=new THREE.Mesh(new THREE.TetrahedronGeometry(90,0), tetraMaterial);
-        tetra.position.set(-800,0,0);
-        tetra.rotationSpeedX=(Math.random()-0.5)*0.015;
-        tetra.rotationSpeedY=(Math.random()-0.5)*0.015;
-        tetra.rotationSpeedZ=(Math.random()-0.5)*0.015;
-        sceneGroup.add(tetra);
-        shapes.push(tetra);
 
-        // "5D sphere" - Icosahedron
-        const icosaMaterial=tetraMaterial.clone();
-        const icosa=new THREE.Mesh(new THREE.IcosahedronGeometry(90,1), icosaMaterial);
-        icosa.position.set(800,0,0);
-        icosa.rotationSpeedX=(Math.random()-0.5)*0.015;
-        icosa.rotationSpeedY=(Math.random()-0.5)*0.015;
-        icosa.rotationSpeedZ=(Math.random()-0.5)*0.015;
-        sceneGroup.add(icosa);
-        shapes.push(icosa);
+        const geometryTypes=[
+            ()=>new THREE.CylinderGeometry(80,80,150,5,1,false), // Pentagonal prism
+            ()=>new THREE.IcosahedronGeometry(90,1) // Icosahedron
+        ];
+
+        const shapeCount=isMobile?80:80;
+        for(let i=0;i<shapeCount;i++){
+            const Geometry=geometryTypes[Math.floor(Math.random()*geometryTypes.length)]();
+            const mesh=new THREE.Mesh(Geometry, shapeMaterial.clone());
+            mesh.position.x=(Math.random()-0.5)*5000;
+            mesh.position.y=(Math.random()-0.5)*5000;
+            mesh.position.z=(Math.random()-0.5)*5000;
+            mesh.rotationSpeedX=(Math.random()-0.5)*0.015;
+            mesh.rotationSpeedY=(Math.random()-0.5)*0.015;
+            mesh.rotationSpeedZ=(Math.random()-0.5)*0.015;
+            sceneGroup.add(mesh);
+            shapes.push(mesh);
+        }
 
         document.addEventListener('mousemove',onDocumentMouseMove,false);
         document.addEventListener('touchmove',onDocumentTouchMove,{passive:false});
         window.addEventListener('resize',onWindowResize,false);
-
         animate();
     }
 
@@ -153,13 +153,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if(Math.abs(p.position.y)>2500) p.speedY*=-1;
             if(Math.abs(p.position.z)>2500) p.speedZ*=-1;
         });
-
         shapes.forEach(s=>{
             s.rotation.x+=s.rotationSpeedX;
             s.rotation.y+=s.rotationSpeedY;
             s.rotation.z+=s.rotationSpeedZ;
         });
-
         sceneGroup.rotation.y+=0.0025;
         sceneGroup.rotation.x+=0.002;
         const targetRotationY=mouseX*0.05;

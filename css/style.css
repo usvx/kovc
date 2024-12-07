@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap');
 
-/* Root Variables for Theme and Sizing */
+/* Root Variables */
 :root {
     --background-color: #000;
     --foreground-color: #00FFD1;
@@ -24,11 +24,9 @@
 
     --glow-base: 0 0 10px rgba(0,255,209,0.4);
     --glow-strong: 0 0 20px rgba(0,255,209,0.7);
-
     --background-gradient-duration: 20s;
 }
 
-/* Global Reset & Base Styles */
 * {
     margin:0; padding:0; box-sizing:border-box;
     font-family: var(--font-family), sans-serif;
@@ -37,12 +35,11 @@
 }
 
 .visually-hidden {
-    position:absolute; width:1px; height:1px;
-    padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0);
-    white-space:nowrap; border:0;
+    position:absolute; width:1px; height:1px; 
+    padding:0; margin:-1px; overflow:hidden; 
+    clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
 
-/* Allow scrolling on vertical overflow for mobile support */
 html, body {
     height:100%; width:100%;
     background: linear-gradient(135deg, #000010, #000022, #000010);
@@ -51,8 +48,6 @@ html, body {
     overflow-x:hidden; 
     overflow-y:auto;
     user-select:none;
-    -webkit-font-smoothing: antialiased;
-    /* Safe-area insets for devices with a notch */
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     animation: bgGradient var(--background-gradient-duration) ease-in-out infinite alternate;
 }
@@ -62,7 +57,6 @@ html, body {
     100% { background-position:100% 50%; }
 }
 
-/* Preloader Overlay */
 #preloader {
     position:fixed; inset:0;
     background-color:var(--background-color);
@@ -91,14 +85,12 @@ html, body {
     100% { box-shadow:0 0 20px var(--accent-color); }
 }
 
-/* Background Canvas */
 canvas#background {
     position:fixed; top:0; left:0;
     width:100%; height:100%;
     z-index:0;
 }
 
-/* Main Layout */
 main {
     position:relative; z-index:1;
     display:flex; align-items:center; justify-content:center;
@@ -107,11 +99,10 @@ main {
     box-sizing:border-box;
 }
 
-/* Entrance Container */
+/* More stable width sizing for Entrance on mobile */
 .entrance {
-    position:relative;
-    width:var(--form-width);
-    max-width:90vw;
+    width: clamp(240px,85vw,320px);
+    max-width:320px;
     text-align:center;
     opacity:0;
     background:rgba(0,0,0,0.5);
@@ -125,10 +116,9 @@ main {
     animation: fadeInUp 1.5s ease forwards;
     transition: transform var(--transition-medium), box-shadow var(--transition-medium);
 }
-
 .entrance:hover {
-    box-shadow:0 0 30px rgba(0,255,209,0.6), inset 0 0 45px rgba(255,0,255,0.1);
-    transform: translateY(50px) translateZ(0) perspective(600px) rotateX(3deg) rotateY(3deg);
+    box-shadow:0 0 20px rgba(0,255,209,0.6), inset 0 0 30px rgba(255,0,255,0.05);
+    transform: translateY(0);
 }
 
 @keyframes fadeInUp {
@@ -136,7 +126,6 @@ main {
     100% {opacity:1; transform:translateY(0);}
 }
 
-/* Heading */
 h1 {
     font-size:var(--h1-font-size);
     margin-bottom:30px;
@@ -151,7 +140,6 @@ h1 {
     50% { text-shadow:0 0 24px var(--accent-color),0 0 48px var(--secondary-accent); }
 }
 
-/* Form */
 form {
     display:flex; flex-direction:column; align-items:center; gap:20px;
     transition: all var(--transition-fast);
@@ -162,7 +150,6 @@ form {
     margin-bottom:10px;
 }
 
-/* Inputs & Selects */
 .input-container input,
 .custom-select select {
     width:100%;
@@ -170,7 +157,8 @@ form {
     background:rgba(255,255,255,0.05);
     color:var(--foreground-color);
     border:none; border-radius:10px;
-    font-size:var(--input-font-size); line-height:1.4;
+    font-size:var(--input-font-size);
+    line-height:1.4;
     outline:none; appearance:none;
     box-shadow: var(--glow-base);
     transition:background var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
@@ -186,11 +174,10 @@ form {
 .custom-select select:focus {
     background:rgba(255,255,255,0.1);
     box-shadow:0 0 20px var(--input-focus),0 0 25px var(--secondary-accent);
-    transform:scale(1.04);
     border:1px solid var(--secondary-accent);
+    transform:none; /* Avoid scaling on focus for stability */
 }
 
-/* Custom Select */
 .custom-select {
     position:relative; display:block; width:100%;
 }
@@ -209,7 +196,6 @@ form {
     cursor:pointer;
 }
 
-/* Button */
 button {
     padding:var(--button-padding);
     background:var(--accent-color);
@@ -224,24 +210,21 @@ button {
 }
 
 button:hover, button:focus {
-    transform:scale(1.06);
     background:var(--button-hover);
     box-shadow: var(--glow-strong), inset 0 0 10px rgba(255,255,255,0.2);
     outline:none;
     filter: brightness(1.15);
+    transform:none;
 }
 
-/* Focus States */
 input:focus, select:focus, button:focus {
     outline:2px solid var(--input-focus);
     outline-offset:4px;
 }
 
-/* Responsive Tweaks */
 @media (max-width:768px) {
     .entrance {
-        width:70vw; padding:25px;
-        box-shadow:0 0 15px rgba(0,255,209,0.4), inset 0 0 20px rgba(255,0,255,0.05);
+        padding:25px;
     }
     h1 { font-size:2rem; margin-bottom:20px; }
     input, .custom-select select, button {
@@ -251,8 +234,7 @@ input:focus, select:focus, button:focus {
 
 @media (max-width:480px) {
     .entrance {
-        width:90vw; padding:20px;
-        box-shadow:0 0 10px rgba(0,255,209,0.3), inset 0 0 20px rgba(255,0,255,0.05);
+        padding:20px;
     }
     h1 { font-size:1.8rem; margin-bottom:20px; }
     input, .custom-select select, button {
@@ -264,7 +246,6 @@ input:focus, select:focus, button:focus {
     }
 }
 
-/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
     * {
         animation: none !important;

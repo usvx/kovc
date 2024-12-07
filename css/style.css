@@ -1,59 +1,51 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
 
 :root {
-    --background-color: #0a0a0a;
+    --background-color: #000000;
     --foreground-color: #00FFD1;
     --accent-color: #00FFD1;
     --secondary-accent: #FF00FF;
     --font-family: 'Urbanist', sans-serif;
-    --gradient-start: #0a0a0a;
-    --gradient-mid: #141414;
-    --gradient-end: #1c1c1c;
     --button-hover: #FF00FF;
     --input-focus: #00FFD1;
     --loader-color: rgba(0, 255, 209, 0.2);
-    --h1-font-size: clamp(2rem, 5vw, 3rem);
-    --form-width: clamp(250px, 80%, 450px);
-    --form-padding: clamp(35px, 5vw, 60px);
+    --h1-font-size: clamp(2rem, 5vw, 3.2rem);
+    --form-width: clamp(260px, 75%, 480px);
+    --form-padding: clamp(40px, 5vw, 60px);
     --input-font-size: clamp(1rem, 2vw, 1.1rem);
     --button-font-size: clamp(1rem, 2vw, 1.1rem);
     --button-padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
     --glass-bg: rgba(255,255,255,0.07);
-    --glass-border: rgba(255,255,255,0.15);
+    --glass-border: rgba(255,255,255,0.2);
 }
 
 * {
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     box-sizing: border-box;
     font-family: var(--font-family);
 }
 
 .visually-hidden {
-    position: absolute;
-    width: 1px; height: 1px;
-    padding: 0; margin: -1px;
-    overflow: hidden;
-    clip: rect(0,0,0,0);
-    white-space: nowrap; border: 0;
+    position: absolute; width:1px; height:1px;
+    padding:0; margin:-1px; overflow:hidden;
+    clip: rect(0,0,0,0); white-space:nowrap; border:0;
 }
 
 html, body {
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
-    background-size: 400% 400%;
+    height: 100%; width: 100%;
+    background: #000; /* Solid black base */
     color: var(--foreground-color);
     overflow: hidden;
     user-select: none;
-    animation: gradientAnimation 20s ease infinite;
-    perspective: 1000px;
+    -webkit-font-smoothing: antialiased;
+    perspective: 1200px;
+    background: radial-gradient(circle at 50% 50%, #000000 0%, #050505 80%, #000 100%);
+    animation: subtleBG 25s ease-in-out infinite alternate;
 }
 
-@keyframes gradientAnimation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+@keyframes subtleBG {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -63,20 +55,17 @@ html, body {
 }
 
 #preloader {
-    position: fixed;
-    inset: 0;
-    background-color: var(--background-color);
+    position: fixed; inset:0;
+    background-color: #000;
     z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items:center; justify-content:center;
 }
 
 .loader {
     border: 5px solid var(--loader-color);
     border-top: 5px solid var(--accent-color);
     border-radius: 50%;
-    width: 60px; height: 60px;
+    width:60px; height:60px;
     animation: spin 1s linear infinite;
 }
 
@@ -85,9 +74,8 @@ html, body {
 }
 
 canvas#background {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    position: fixed; top:0; left:0;
+    width:100%; height:100%;
     z-index: 0;
 }
 
@@ -95,13 +83,14 @@ main {
     position: relative;
     z-index: 1;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items:center;
+    justify-content:center;
     min-height: 100vh;
     padding: 0 10px;
     transform-style: preserve-3d;
 }
 
+/* The login panel */
 .entrance {
     position: relative;
     width: var(--form-width);
@@ -111,104 +100,117 @@ main {
     padding: var(--form-padding);
     border-radius: 20px;
     border: 1px solid var(--glass-border);
-    backdrop-filter: blur(25px) saturate(150%);
+    backdrop-filter: blur(30px) saturate(200%);
     background: var(--glass-bg);
-    box-shadow: 0 0 40px rgba(0,255,209,0.15), 0 0 80px rgba(255,0,255,0.1);
-    margin: 20px;
-    animation: fadeInUp 1.5s ease forwards;
-    transform: translateZ(60px) rotateX(5deg) rotateY(-5deg);
-    pointer-events: auto;  /* Ensure it's interactive */
-    z-index: 2; /* Above pseudo elements */
+    box-shadow: 0 0 60px rgba(0,255,209,0.15),
+                0 0 120px rgba(255,0,255,0.1),
+                inset 0 0 50px rgba(255,255,255,0.05);
+    transform: translateZ(80px) translateY(50px) rotateX(7deg) rotateY(-4deg);
+    animation: fadeInUp 1.8s ease forwards;
+    pointer-events: auto;
+    z-index: 2;
+    overflow: hidden;
 }
 
-/* Decorative pseudo-elements without blocking clicks */
+/* Add subtle neon borders and floating shards */
 .entrance::before, .entrance::after {
     content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(0,255,209,0.08), transparent 70%), 
-                radial-gradient(circle at 80% 20%, rgba(255,0,255,0.05), transparent 60%);
+    position:absolute; inset:0;
+    pointer-events:none; z-index:-1;
+    background: none;
     mix-blend-mode: screen;
-    pointer-events: none;
-    z-index: -1;
-    animation: swirl 15s linear infinite;
+    animation: swirl 20s linear infinite;
 }
 
+.entrance::before {
+    background: radial-gradient(circle at 30% 30%, rgba(0,255,209,0.06), transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(255,0,255,0.05), transparent 60%);
+}
 .entrance::after {
-    background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.05), transparent 60%);
+    background: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.03), transparent 70%);
     animation-direction: reverse;
-    opacity: 0.4;
+    opacity:0.5;
 }
 
 @keyframes swirl {
-    0% { transform: rotate(0deg) scale(1.05); }
-    50% { transform: rotate(180deg) scale(1.07); }
-    100% { transform: rotate(360deg) scale(1.05); }
+    0% {transform:rotate(0deg) scale(1.05);}
+    50% {transform:rotate(180deg) scale(1.07);}
+    100% {transform:rotate(360deg) scale(1.05);}
 }
 
 h1 {
     font-size: var(--h1-font-size);
     margin-bottom: 50px;
-    font-weight: 700;
-    letter-spacing: 2px;
+    font-weight: 700; letter-spacing: 2px;
     color: var(--accent-color);
-    text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
-    animation: glow 2s infinite alternate;
-    will-change: transform, text-shadow;
+    text-shadow: 0 0 30px var(--accent-color),
+                 0 0 60px var(--secondary-accent);
+    animation: glow 3s infinite alternate ease-in-out;
+    position: relative;
     transform: translateZ(50px);
+}
+
+/* Add a reflection effect for H1 */
+h1::after {
+    content: 'Lumina';
+    position: absolute;
+    top:100%; left:0; right:0;
+    font-size:inherit; color: var(--accent-color);
+    opacity:0.1;
+    transform: translateY(-15%) scaleY(-1);
+    filter: blur(5px);
+    pointer-events:none;
 }
 
 @keyframes glow {
     from {
-        text-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent);
+        text-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
     }
     to {
-        text-shadow: 0 0 25px var(--accent-color), 0 0 50px var(--secondary-accent);
+        text-shadow: 0 0 40px var(--accent-color), 0 0 80px var(--secondary-accent);
     }
 }
 
 form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 35px;
-    pointer-events: auto; /* Ensure inputs/buttons are clickable */
-    position: relative;
-    z-index: 3;
+    display:flex; flex-direction:column;
+    align-items:center; gap:35px;
+    pointer-events:auto; 
+    position:relative; z-index:3;
+    will-change:transform;
+    transform: translateZ(40px);
 }
 
 .input-container {
-    width: 100%;
-    transform: translateZ(30px);
+    width:100%;
 }
 
 .input-container input,
 .custom-select select {
-    width: 100%;
-    padding: 18px;
-    background: rgba(255, 255, 255, 0.1);
+    width:100%;
+    padding:18px;
+    background: rgba(255,255,255,0.1);
     color: var(--foreground-color);
-    border: none;
-    border-radius: 12px;
+    border:none;
+    border-radius:12px;
     font-size: var(--input-font-size);
-    line-height: 1.6;
-    outline: none;
-    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-    box-shadow: inset 0 0 15px rgba(0, 255, 209, 0.1), 0 0 20px rgba(255,0,255,0.05);
+    line-height:1.6;
+    outline:none;
+    box-shadow: inset 0 0 20px rgba(0,255,209,0.1), 0 0 15px rgba(255,0,255,0.05);
     backdrop-filter: blur(10px);
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .input-container input::placeholder,
 .custom-select select:invalid {
     color: var(--foreground-color);
-    opacity: 0.6;
+    opacity:0.6;
 }
 
 .input-container input:focus,
 .custom-select select:focus {
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 25px var(--input-focus), 0 0 35px var(--secondary-accent);
-    transform: translateZ(10px) scale(1.02);
+    background: rgba(255,255,255,0.15);
+    box-shadow: 0 0 30px var(--input-focus), 0 0 45px var(--secondary-accent);
+    transform: translateZ(10px) scale(1.03);
 }
 
 .custom-select {
@@ -216,105 +218,94 @@ form {
 }
 
 .custom-select::after {
-    content: '▼';
-    position: absolute;
-    top: 50%; right: 20px;
-    transform: translateY(-50%);
+    content:'▼';
+    position:absolute; top:50%; right:20px;
+    transform:translateY(-50%);
     color: var(--accent-color);
-    pointer-events: none;
-    font-size: 1rem;
+    pointer-events:none;
+    font-size:1rem;
 }
 
 .custom-select select {
-    appearance: none;
-    cursor: pointer;
-    padding-right: 50px;
-}
-
-.custom-select select option {
-    color: var(--foreground-color);
-    background: var(--background-color);
+    appearance:none;
+    cursor:pointer;
+    padding-right:50px;
 }
 
 button {
     padding: var(--button-padding);
     background: var(--accent-color);
-    color: var(--background-color);
-    border: none;
-    border-radius: 12px;
+    color: #000;
+    border:none; border-radius:12px;
     font-size: var(--button-font-size);
-    cursor: pointer;
+    cursor:pointer;
     transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-    width: 100%;
-    box-shadow: 0 0 20px rgba(0, 255, 209, 0.4), 0 0 40px rgba(255,0,255,0.2);
+    width:100%;
+    box-shadow: 0 0 25px rgba(0,255,209,0.4),
+                0 0 50px rgba(255,0,255,0.2);
     transform: translateZ(30px);
 }
 
 button:hover,
 button:focus {
-    transform: translateZ(40px) scale(1.05);
+    transform: translateZ(40px) scale(1.07);
     background: var(--button-hover);
-    box-shadow: 0 0 30px rgba(0, 255, 209, 0.7), 0 0 60px rgba(255,0,255,0.4);
-    outline: none;
+    box-shadow: 0 0 40px rgba(0,255,209,0.7), 
+                0 0 80px rgba(255,0,255,0.4);
+    outline:none;
 }
 
 input:focus,
 select:focus,
 button:focus {
-    outline: 2px solid var(--input-focus);
-    outline-offset: 2px;
+    outline:2px solid var(--input-focus);
+    outline-offset:2px;
 }
 
 @keyframes fadeInUp {
     0% {
-        opacity: 0;
-        transform: translateY(50px) translateZ(60px);
+        opacity:0;
+        transform: translateY(50px) translateZ(80px) rotateX(7deg) rotateY(-4deg);
     }
     100% {
-        opacity: 1;
-        transform: translateY(0) translateZ(60px);
+        opacity:1;
+        transform: translateY(0) translateZ(80px) rotateX(0) rotateY(0);
     }
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
+/* Responsive Adjustments */
+@media (max-width:1024px) {
     .entrance {
-        width: 400px;
-        padding: 50px;
+        width:400px;
+        padding:45px;
     }
     h1 {
-        font-size: 3.5rem;
-        margin-bottom: 40px;
+        font-size:3rem; margin-bottom:40px;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width:768px) {
     .entrance {
-        width: 350px;
-        padding: 45px;
+        width:350px;
+        padding:40px;
     }
     h1 {
-        font-size: 3rem;
-        margin-bottom: 35px;
+        font-size:2.8rem; margin-bottom:35px;
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width:480px) {
     .entrance {
-        width: 300px;
-        padding: 35px;
+        width:300px;
+        padding:35px;
     }
     h1 {
-        font-size: 2.5rem;
-        margin-bottom: 25px;
+        font-size:2.5rem; margin-bottom:30px;
     }
-    input,
-    .custom-select select,
-    button {
-        font-size: 1rem;
-        padding: 14px;
+    input, .custom-select select, button {
+        font-size:1rem; padding:14px;
     }
     button {
-        padding: 14px 28px;
+        padding:14px 28px;
     }
 }

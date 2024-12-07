@@ -94,23 +94,15 @@ main {
     }
 }
 
+/* Stable glow without flicker */
 h1 {
     font-size: var(--h1-font-size);
     margin-bottom:50px;
     font-weight:700; letter-spacing:2px;
     color:var(--accent-color);
-    /* More subtle glow to avoid flicker */
-    text-shadow:0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent);
-    animation: softGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes softGlow {
-    from {
-        text-shadow:0 0 10px var(--accent-color), 0 0 20px var(--secondary-accent);
-    }
-    to {
-        text-shadow:0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
-    }
+    text-shadow:0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
+    /* No alternating keyframes, just a stable subtle glow */
+    will-change: text-shadow;
 }
 
 form {
@@ -131,6 +123,7 @@ form {
     outline:none;
     box-shadow:0 0 15px rgba(0,255,209,0.3);
     transition:background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    appearance:none;
 }
 
 .input-container input::placeholder,
@@ -147,6 +140,7 @@ form {
 
 .custom-select {
     position:relative;
+    display:inline-block;
 }
 
 .custom-select::after {
@@ -156,6 +150,12 @@ form {
     color:var(--accent-color);
     pointer-events:none;
     font-size:1rem;
+    opacity:0.8;
+}
+
+.custom-select select {
+    padding-right:50px;
+    cursor:pointer;
 }
 
 button {

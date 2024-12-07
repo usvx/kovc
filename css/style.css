@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean');
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap');
 
 :root {
-    --background-color: #000000;
+    --background-color: #000;
     --foreground-color: #00FFD1;
     --accent-color: #00FFD1;
     --secondary-accent: #FF00FF;
@@ -9,12 +9,12 @@
     --button-hover: #FF00FF;
     --input-focus: #00FFD1;
     --loader-color: rgba(0, 255, 209, 0.2);
-    --h1-font-size: clamp(2rem, 5vw, 3rem);
-    --form-width: clamp(250px, 80%, 450px);
-    --form-padding: clamp(35px, 5vw, 60px);
-    --input-font-size: clamp(1rem, 2vw, 1.1rem);
-    --button-font-size: clamp(1rem, 2vw, 1.1rem);
-    --button-padding: clamp(14px, 3vw, 18px) clamp(28px, 5vw, 35px);
+    --h1-font-size: clamp(2rem,5vw,3rem);
+    --form-width: clamp(260px,75%,480px);
+    --form-padding: clamp(40px,5vw,60px);
+    --input-font-size: clamp(1rem,1.8vw,1.1rem);
+    --button-font-size: clamp(1rem,1.8vw,1.1rem);
+    --button-padding: clamp(14px,3vw,18px) clamp(28px,5vw,35px);
 }
 
 * {
@@ -38,7 +38,7 @@ html, body {
 }
 
 #preloader {
-    position:fixed; top:0; left:0; right:0; bottom:0;
+    position:fixed; inset:0;
     background-color:var(--background-color);
     z-index:9999;
     display:flex; align-items:center; justify-content:center;
@@ -53,7 +53,7 @@ html, body {
 }
 
 @keyframes spin {
-    to { transform:rotate(360deg); }
+    to {transform:rotate(360deg);}
 }
 
 canvas#background {
@@ -70,15 +70,14 @@ main {
 
 .entrance {
     position:relative;
-    width:var(--form-width);
-    max-width:100%;
+    width:var(--form-width); max-width:100%;
     text-align:center;
     opacity:0;
     background:rgba(0,0,0,0.55);
     padding:var(--form-padding);
     border-radius:25px;
     border:2px solid var(--accent-color);
-    backdrop-filter: blur(15px) saturate(120%);
+    backdrop-filter:blur(20px) saturate(150%);
     box-shadow:0 0 20px rgba(0,255,209,0.5);
     margin:20px;
     transform:translateY(50px);
@@ -86,23 +85,17 @@ main {
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity:0; transform:translateY(50px);
-    }
-    to {
-        opacity:1; transform:translateY(0);
-    }
+    0% {opacity:0; transform:translateY(50px);}
+    100% {opacity:1; transform:translateY(0);}
 }
 
-/* Stable glow without flicker */
 h1 {
-    font-size: var(--h1-font-size);
+    font-size:var(--h1-font-size);
     margin-bottom:50px;
     font-weight:700; letter-spacing:2px;
     color:var(--accent-color);
-    text-shadow:0 0 20px var(--accent-color), 0 0 40px var(--secondary-accent);
-    /* No alternating keyframes, just a stable subtle glow */
-    will-change: text-shadow;
+    text-shadow:0 0 20px var(--accent-color),0 0 40px var(--secondary-accent);
+    /* Stable glow: no flicker animations */
 }
 
 form {
@@ -120,27 +113,25 @@ form {
     color:var(--foreground-color);
     border:none; border-radius:12px;
     font-size:var(--input-font-size); line-height:1.6;
-    outline:none;
+    outline:none; appearance:none;
     box-shadow:0 0 15px rgba(0,255,209,0.3);
     transition:background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-    appearance:none;
 }
 
 .input-container input::placeholder,
 .custom-select select:invalid {
-    color: var(--foreground-color); opacity:0.6;
+    color:var(--foreground-color); opacity:0.6;
 }
 
 .input-container input:focus,
 .custom-select select:focus {
     background:rgba(255,255,255,0.1);
-    box-shadow:0 0 25px var(--input-focus), 0 0 35px var(--secondary-accent);
+    box-shadow:0 0 25px var(--input-focus),0 0 35px var(--secondary-accent);
     transform:scale(1.02);
 }
 
 .custom-select {
-    position:relative;
-    display:inline-block;
+    position:relative; display:inline-block;
 }
 
 .custom-select::after {
@@ -149,19 +140,17 @@ form {
     transform:translateY(-50%);
     color:var(--accent-color);
     pointer-events:none;
-    font-size:1rem;
-    opacity:0.8;
+    font-size:1rem; opacity:0.8;
 }
 
 .custom-select select {
-    padding-right:50px;
-    cursor:pointer;
+    padding-right:50px; cursor:pointer;
 }
 
 button {
     padding:var(--button-padding);
     background:var(--accent-color);
-    color:var(--background-color);
+    color:#000;
     border:none; border-radius:12px;
     font-size:var(--button-font-size);
     cursor:pointer;
@@ -188,23 +177,23 @@ button:focus {
     .entrance {
         width:400px; padding:50px;
     }
-    h1 { font-size:3.5rem; margin-bottom:40px; }
+    h1 {font-size:3.5rem; margin-bottom:40px;}
 }
 
 @media (max-width:768px) {
     .entrance {
         width:350px; padding:45px;
     }
-    h1 { font-size:3rem; margin-bottom:35px; }
+    h1 {font-size:3rem; margin-bottom:35px;}
 }
 
 @media (max-width:480px) {
     .entrance {
         width:300px; padding:35px;
     }
-    h1 { font-size:2.5rem; margin-bottom:25px; }
-    input, .custom-select select, button {
+    h1 {font-size:2.5rem; margin-bottom:25px;}
+    input,.custom-select select,button {
         font-size:1rem; padding:14px;
     }
-    button { padding:14px 28px; }
+    button {padding:14px 28px;}
 }

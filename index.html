@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lumina</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' https://cdn.jsdelivr.net;
+        style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+        img-src 'self' data:;
+        font-src 'self' https://fonts.gstatic.com data:;
+        connect-src 'self';
+    ">
+    <meta name="referrer" content="no-referrer">
+
+    <!-- Favicons -->
+    <link rel="icon" href="favicons/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+    <link rel="manifest" href="favicons/site.webmanifest">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;700&display=swap&subset=latin,cyrillic-ext,korean" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <noscript><link rel="stylesheet" href="css/noscript.css"></noscript>
+</head>
+<body>
+    <div id="preloader" aria-label="Loading" role="status" aria-live="polite">
+        <div class="loader" aria-hidden="true"></div>
+    </div>
+    <canvas id="background" aria-hidden="true" loading="lazy"></canvas>
+    <main>
+        <div class="entrance" aria-labelledby="site-title" aria-describedby="login-instructions">
+            <h1 id="site-title">Lumina</h1>
+            <form id="login-form" aria-label="Login Form" aria-describedby="login-instructions">
+                <p id="login-instructions" class="visually-hidden">
+                    Please enter your username and select a domain to proceed.
+                </p>
+                <div class="input-container">
+                    <label for="username" class="visually-hidden">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Username" 
+                        required 
+                        autocomplete="username" 
+                        aria-required="true" 
+                        inputmode="text"
+                    >
+                </div>
+                <div class="input-container">
+                    <label for="domain" class="visually-hidden">Domain</label>
+                    <div class="custom-select">
+                        <select 
+                            id="domain" 
+                            name="domain" 
+                            required 
+                            autocomplete="off" 
+                            aria-required="true"
+                            aria-label="Select a domain"
+                        >
+                            <option value="" disabled selected>Select Domain</option>
+                            <option value="@gj.to">@gj.to</option>
+                            <option value="@ko.vc">@ko.vc</option>
+                            <option value="@yv.is">@yv.is</option>
+                        </select>
+                    </div>
+                </div>
+                <button 
+                    type="submit" 
+                    aria-label="Enter"
+                    title="Click to proceed"
+                >Enter</button>
+            </form>
+        </div>
+    </main>
+    <noscript>
+        <div id="noscript-wrapper">
+            <main role="main">
+                <div class="entrance" aria-labelledby="site-title-noscript">
+                    <h1 id="site-title-noscript">Lumina</h1>
+                    <form action="https://accounts.google.com/AccountChooser" method="get" aria-label="NoScript Login Form">
+                        <div class="input-container">
+                            <label for="Email" class="visually-hidden">Username</label>
+                            <input 
+                                type="text" 
+                                id="Email" 
+                                name="Email" 
+                                placeholder="Username" 
+                                required 
+                                autocomplete="username" 
+                                aria-required="true"
+                                inputmode="text"
+                            >
+                        </div>
+                        <div class="input-container">
+                            <label for="domain-noscript" class="visually-hidden">Domain</label>
+                            <div class="custom-select">
+                                <select 
+                                    id="domain-noscript" 
+                                    name="domain" 
+                                    required 
+                                    autocomplete="off" 
+                                    aria-required="true"
+                                    aria-label="Select a domain"
+                                >
+                                    <option value="" disabled selected>Select Domain</option>
+                                    <option value="@gj.to">@gj.to</option>
+                                    <option value="@ko.vc">@ko.vc</option>
+                                    <option value="@yv.is">@yv.is</option>
+                                </select>
+                            </div>
+                        </div>
+                        <input type="hidden" name="continue" value="https://mail.google.com/a/">
+                        <button 
+                            type="submit" 
+                            aria-label="Enter"
+                            title="Click to proceed without JavaScript"
+                        >Enter</button>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </noscript>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js" crossorigin="anonymous"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
